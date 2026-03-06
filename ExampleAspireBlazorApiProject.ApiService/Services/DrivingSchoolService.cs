@@ -1,6 +1,4 @@
-﻿using ExampleAspireBlazorApiProject.Shared.Models;
-
-namespace ExampleAspireBlazorApiProject.ApiService.Services;
+﻿namespace ExampleAspireBlazorApiProject.ApiService.Services;
 
 public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger<DrivingSchoolService> logger)
 {

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.AppHost\\ExampleAspireBlazorApiProject.AppHost.csproj": {}
+    "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.AppHost\\ExampleAspireBlazorApiProject.AppHost.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.AppHost\\ExampleAspireBlazorApiProject.AppHost.csproj": {
+    "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.AppHost\\ExampleAspireBlazorApiProject.AppHost.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.AppHost\\ExampleAspireBlazorApiProject.AppHost.csproj",
+        "projectUniqueName": "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.AppHost\\ExampleAspireBlazorApiProject.AppHost.csproj",
         "projectName": "ExampleAspireBlazorApiProject.AppHost",
-        "projectPath": "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.AppHost\\ExampleAspireBlazorApiProject.AppHost.csproj",
+        "projectPath": "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.AppHost\\ExampleAspireBlazorApiProject.AppHost.csproj",
         "packagesPath": "C:\\Users\\jumps\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.AppHost\\obj\\",
+        "outputPath": "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.AppHost\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\jumps\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -75,24 +75,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[9.0.13, 9.0.13]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.win-x64",
-              "version": "[9.0.13, 9.0.13]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[9.0.13, 9.0.13]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[9.0.13, 9.0.13]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"

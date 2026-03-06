@@ -1,6 +1,4 @@
-﻿using ExampleAspireBlazorApiProject.Shared.Models;
-
-namespace ExampleAspireBlazorApiProject.ApiService.Services;
+﻿namespace ExampleAspireBlazorApiProject.ApiService.Services;
 
 public sealed class DriverService(ApplicationDbContext dbContext, ILogger<DriverService> logger)
 {
@@ -72,7 +70,7 @@ public sealed class DriverService(ApplicationDbContext dbContext, ILogger<Driver
             driver.Mail = editDriver.Mail;
             driver.Phone = editDriver.Phone;
             driver.DrivingSchoolId = editDriver.DrivingSchoolId;
-            driver.IsActive = driver.IsActive;
+            driver.IsActive = editDriver.IsActive;
             
             await dbContext.SaveChangesAsync();
 

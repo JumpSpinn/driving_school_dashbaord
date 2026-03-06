@@ -17,5 +17,5 @@ public class ExampleAspireBlazorApiProject_AppHost
     /// <summary>
     /// The path to the Aspire Host project.
     /// </summary>
-    public static string ProjectPath => """C:\Users\jumps\Projects\example_driving_school_web_application\ExampleAspireBlazorApiProject.AppHost""";
+    public static string ProjectPath => """C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.AppHost""";
 }

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "djU8SfwwwjU=",
+  "dgSpecHash": "A7r7jZGvRhQ=",
   "success": true,
-  "projectFilePath": "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.ServiceDefaults\\ExampleAspireBlazorApiProject.ServiceDefaults.csproj",
+  "projectFilePath": "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.ServiceDefaults\\ExampleAspireBlazorApiProject.ServiceDefaults.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\jumps\\.nuget\\packages\\microsoft.entityframeworkcore\\9.0.13\\microsoft.entityframeworkcore.9.0.13.nupkg.sha512",
     "C:\\Users\\jumps\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\9.0.13\\microsoft.entityframeworkcore.abstractions.9.0.13.nupkg.sha512",
@@ -51,10 +51,7 @@
     "C:\\Users\\jumps\\.nuget\\packages\\polly.extensions\\8.4.2\\polly.extensions.8.4.2.nupkg.sha512",
     "C:\\Users\\jumps\\.nuget\\packages\\polly.ratelimiting\\8.4.2\\polly.ratelimiting.8.4.2.nupkg.sha512",
     "C:\\Users\\jumps\\.nuget\\packages\\system.diagnostics.diagnosticsource\\10.0.0\\system.diagnostics.diagnosticsource.10.0.0.nupkg.sha512",
-    "C:\\Users\\jumps\\.nuget\\packages\\system.threading.ratelimiting\\8.0.0\\system.threading.ratelimiting.8.0.0.nupkg.sha512",
-    "C:\\Users\\jumps\\.nuget\\packages\\microsoft.netcore.app.ref\\9.0.13\\microsoft.netcore.app.ref.9.0.13.nupkg.sha512",
-    "C:\\Users\\jumps\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\9.0.13\\microsoft.windowsdesktop.app.ref.9.0.13.nupkg.sha512",
-    "C:\\Users\\jumps\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\9.0.13\\microsoft.aspnetcore.app.ref.9.0.13.nupkg.sha512"
+    "C:\\Users\\jumps\\.nuget\\packages\\system.threading.ratelimiting\\8.0.0\\system.threading.ratelimiting.8.0.0.nupkg.sha512"
   ],
   "logs": []
 }

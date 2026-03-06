@@ -17,17 +17,17 @@ using System.Reflection;
     "ext\\"))]
 [assembly: System.Reflection.AssemblyMetadata("dcpbinpath", ("C:\\Users\\jumps\\.nuget\\packages\\aspire.hosting.orchestration.win-x64\\13.1.0\\tools\\" +
     "ext\\bin\\"))]
-[assembly: System.Reflection.AssemblyMetadata("apphostprojectpath", ("C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazo" +
-    "rApiProject.AppHost"))]
+[assembly: System.Reflection.AssemblyMetadata("apphostprojectpath", ("C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.Ap" +
+    "pHost"))]
 [assembly: System.Reflection.AssemblyMetadata("apphostprojectname", "ExampleAspireBlazorApiProject.AppHost.csproj")]
 [assembly: System.Reflection.AssemblyMetadata("aspiredashboardpath", ("C:\\Users\\jumps\\.nuget\\packages\\aspire.dashboard.sdk.win-x64\\13.1.0\\tools\\Aspire.D" +
     "ashboard.exe"))]
-[assembly: System.Reflection.AssemblyMetadataAttribute("apphostprojectbaseintermediateoutputpath", ("C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazo" +
-    "rApiProject.AppHost\\obj\\"))]
+[assembly: System.Reflection.AssemblyMetadataAttribute("apphostprojectbaseintermediateoutputpath", ("C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.Ap" +
+    "pHost\\obj\\"))]
 [assembly: System.Reflection.AssemblyCompanyAttribute("ExampleAspireBlazorApiProject.AppHost")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3d516c7c3a8f836395563675fa19fadfc6eae494")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1d2565e1c16407c47807ab02298aecf14e0c5824")]
 [assembly: System.Reflection.AssemblyProductAttribute("ExampleAspireBlazorApiProject.AppHost")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ExampleAspireBlazorApiProject.AppHost")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

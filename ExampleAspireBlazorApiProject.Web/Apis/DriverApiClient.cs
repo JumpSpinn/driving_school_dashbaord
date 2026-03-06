@@ -41,12 +41,4 @@ public sealed class DriverApiClient(HttpClient client, ILogger<DriverApiClient> 
         logger.LogInformation($"Web API => driver with id {editDriver.Id} updated! - Success: {result.IsSuccessStatusCode}");
         return result.IsSuccessStatusCode;
     }
-    
-    public async Task<bool> UpdateDriverActiveState(int id, bool isActive)
-    {
-        var request = new DriverStateRequest(id, isActive);
-        var response = await client.PutAsJsonAsync($"api/Driver/state", request);
-        logger.LogInformation($"Web API => driver with id {id} state updated! - Success: {response.IsSuccessStatusCode}");
-        return response.IsSuccessStatusCode;
-    }
 }

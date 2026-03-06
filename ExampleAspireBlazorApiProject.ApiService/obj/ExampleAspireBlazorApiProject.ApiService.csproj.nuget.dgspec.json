@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.ApiService\\ExampleAspireBlazorApiProject.ApiService.csproj": {}
+    "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.ApiService\\ExampleAspireBlazorApiProject.ApiService.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.ApiService\\ExampleAspireBlazorApiProject.ApiService.csproj": {
+    "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.ApiService\\ExampleAspireBlazorApiProject.ApiService.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.ApiService\\ExampleAspireBlazorApiProject.ApiService.csproj",
+        "projectUniqueName": "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.ApiService\\ExampleAspireBlazorApiProject.ApiService.csproj",
         "projectName": "ExampleAspireBlazorApiProject.ApiService",
-        "projectPath": "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.ApiService\\ExampleAspireBlazorApiProject.ApiService.csproj",
+        "projectPath": "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.ApiService\\ExampleAspireBlazorApiProject.ApiService.csproj",
         "packagesPath": "C:\\Users\\jumps\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.ApiService\\obj\\",
+        "outputPath": "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.ApiService\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\jumps\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -26,11 +26,11 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.ServiceDefaults\\ExampleAspireBlazorApiProject.ServiceDefaults.csproj": {
-                "projectPath": "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.ServiceDefaults\\ExampleAspireBlazorApiProject.ServiceDefaults.csproj"
+              "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.ServiceDefaults\\ExampleAspireBlazorApiProject.ServiceDefaults.csproj": {
+                "projectPath": "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.ServiceDefaults\\ExampleAspireBlazorApiProject.ServiceDefaults.csproj"
               },
-              "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.Shared\\ExampleAspireBlazorApiProject.Shared.csproj": {
-                "projectPath": "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.Shared\\ExampleAspireBlazorApiProject.Shared.csproj"
+              "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.Shared\\ExampleAspireBlazorApiProject.Shared.csproj": {
+                "projectPath": "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.Shared\\ExampleAspireBlazorApiProject.Shared.csproj"
               }
             }
           }
@@ -75,24 +75,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[9.0.13, 9.0.13]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.win-x64",
-              "version": "[9.0.13, 9.0.13]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[9.0.13, 9.0.13]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[9.0.13, 9.0.13]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -105,14 +87,14 @@
         }
       }
     },
-    "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.ServiceDefaults\\ExampleAspireBlazorApiProject.ServiceDefaults.csproj": {
+    "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.ServiceDefaults\\ExampleAspireBlazorApiProject.ServiceDefaults.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.ServiceDefaults\\ExampleAspireBlazorApiProject.ServiceDefaults.csproj",
+        "projectUniqueName": "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.ServiceDefaults\\ExampleAspireBlazorApiProject.ServiceDefaults.csproj",
         "projectName": "ExampleAspireBlazorApiProject.ServiceDefaults",
-        "projectPath": "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.ServiceDefaults\\ExampleAspireBlazorApiProject.ServiceDefaults.csproj",
+        "projectPath": "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.ServiceDefaults\\ExampleAspireBlazorApiProject.ServiceDefaults.csproj",
         "packagesPath": "C:\\Users\\jumps\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.ServiceDefaults\\obj\\",
+        "outputPath": "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.ServiceDefaults\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\jumps\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -189,20 +171,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[9.0.13, 9.0.13]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[9.0.13, 9.0.13]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[9.0.13, 9.0.13]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -215,14 +183,14 @@
         }
       }
     },
-    "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.Shared\\ExampleAspireBlazorApiProject.Shared.csproj": {
+    "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.Shared\\ExampleAspireBlazorApiProject.Shared.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.Shared\\ExampleAspireBlazorApiProject.Shared.csproj",
+        "projectUniqueName": "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.Shared\\ExampleAspireBlazorApiProject.Shared.csproj",
         "projectName": "ExampleAspireBlazorApiProject.Shared",
-        "projectPath": "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.Shared\\ExampleAspireBlazorApiProject.Shared.csproj",
+        "projectPath": "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.Shared\\ExampleAspireBlazorApiProject.Shared.csproj",
         "packagesPath": "C:\\Users\\jumps\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jumps\\Projects\\example_driving_school_web_application\\ExampleAspireBlazorApiProject.Shared\\obj\\",
+        "outputPath": "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.Shared\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\jumps\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -265,20 +233,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[9.0.13, 9.0.13]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[9.0.13, 9.0.13]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[9.0.13, 9.0.13]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"

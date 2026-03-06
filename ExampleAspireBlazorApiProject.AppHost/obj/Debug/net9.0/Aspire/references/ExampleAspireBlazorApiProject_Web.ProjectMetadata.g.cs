@@ -15,7 +15,7 @@ public class ExampleAspireBlazorApiProject_Web : global::Aspire.Hosting.IProject
     /// <summary>
     /// The path to the ExampleAspireBlazorApiProject_Web project.
     /// </summary>
-    public string ProjectPath => """C:\Users\jumps\Projects\example_driving_school_web_application\ExampleAspireBlazorApiProject.Web\ExampleAspireBlazorApiProject.Web.csproj""";
+    public string ProjectPath => """C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\ExampleAspireBlazorApiProject.Web.csproj""";
 
     /// <summary>
     /// Gets a value indicating whether building the project before running it should be suppressed.

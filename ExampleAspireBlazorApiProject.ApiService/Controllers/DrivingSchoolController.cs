@@ -1,6 +1,4 @@
-﻿using ExampleAspireBlazorApiProject.Shared.Models;
-
-namespace ExampleAspireBlazorApiProject.ApiService.Controllers;
+﻿namespace ExampleAspireBlazorApiProject.ApiService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
