@@ -9,15 +9,25 @@
 @code {
     private bool _dataLoading;
     private List<DriverModel> _drivers = [];
-    private Grid<DriverModel> _driverGridRef = default!;
+    private MudDataGrid<DriverModel> _mudDataGrid = default!;
     
-    private Modal? _createModalRef;
-    private Modal? _editModalRef;
-    private ConfirmDialog? _confirmDialogRef;
-    private string _modalError = string.Empty;
+    private readonly DialogOptions _dialogOptions = new()
+    {
+        MaxWidth = MaxWidth.Small,
+        FullWidth = true,
+        BackdropClick = true,
+        CloseOnEscapeKey = true,
+        BackgroundClass = "dialog_backdrop_blur"
+    };
+    
+    private MudDialog _createDialog = default!;
+    private MudDialog _deleteDialog = default!;
+    private MudDialog _editDialog = default!;
+    private string _modalError = string.Empty; // TODO: reimplement
     
     private List<DrivingSchoolModel> _drivingSchools = [];
     private DriverModel? _editDriver;
+    private DriverModel? _deleteDriver;
     private DriverModel _newDriver = new();
     
     protected override void OnInitialized()
@@ -66,24 +76,21 @@
         StateHasChanged();
     }
     
-    private async Task<GridDataProviderResult<DriverModel>> DriversDataProvider(GridDataProviderRequest<DriverModel> request) 
-        => await Task.FromResult(request.ApplyTo(_drivers));
-    
     // MODALS
-    private async Task OnShowModal(Modal? modal)
+    private async Task OnShowModal(MudDialog? dialog)
     {
-        if (modal is null) return;
+        if (dialog is null) return;
         
-        if(modal == _createModalRef)
+        if(dialog == _createDialog)
             _newDriver = new();
         
-        await modal.ShowAsync();
+        await dialog.ShowAsync(options: _dialogOptions);
     }
     
-    private async Task OnHideModal(Modal? modal)
+    private async Task OnHideModal(MudDialog? dialog)
     {
-        if (modal is null) return;
-        await modal.HideAsync();
+        if (dialog is null) return;
+        await dialog.CloseAsync();
     }
     
     // CREATE
@@ -95,9 +102,9 @@
         if (newDriver is not null)
             _drivers.Add(newDriver);
         
-        _newDriver = new();
-        await OnHideModal(_createModalRef);
-        await _driverGridRef.RefreshDataAsync();
+         _newDriver = new();
+        await OnHideModal(_createDialog);
+        await _mudDataGrid.ReloadServerData();
     }
     
     // EDIT
@@ -105,7 +112,7 @@
     {
         _modalError = string.Empty;
         _editDriver = new(driver);
-        _ = OnShowModal(_editModalRef);
+        _ = OnShowModal(_editDialog);
     }
     
     private async Task ConfirmEditDrivingSchoolAsync()
@@ -134,35 +141,32 @@
         driverToUpdate.DrivingSchoolId = _editDriver.DrivingSchoolId;
         driverToUpdate.IsActive = _editDriver.IsActive;
         
-        await OnHideModal(_editModalRef);
-        await _driverGridRef.RefreshDataAsync();
+        await OnHideModal(_editDialog);
+        await _mudDataGrid.ReloadServerData();
         _editDriver = null;
     }
     
     // DELETE
-    private async Task OnRequestDeleteDriverAsync(DriverModel driver)
+    private void OnShowDeleteModal(DriverModel driver)
     {
-        if (_confirmDialogRef is null) return;
+        _modalError = string.Empty;
+        _deleteDriver = new(driver);
+        _ = OnShowModal(_deleteDialog);
+    }
+    
+    private async Task OnRequestDeleteDriverAsync()
+    {
+        if (_deleteDriver is null) return;
         
-        var confirmed = await _confirmDialogRef.ShowAsync(
-            title: $"Fahrschüler löschen", 
-            message1: $"Bist du dir sicher, dass du den Fahrschüler {driver.FullName} löschen möchtest?",
-                confirmDialogOptions: new ConfirmDialogOptions()
-                {
-                    YesButtonText = "Ja",
-                    NoButtonText = "Nein"
-                });
-
-        if (!confirmed) return;
-        
-        var deleted = await DriverApiClient.DeleteDriverAsync(driver.Id);
+        var deleted = await DriverApiClient.DeleteDriverAsync(_deleteDriver.Id);
         if (!deleted) return;
         
-        var remove = _drivers.FirstOrDefault(x => x.Id == driver.Id);
+        var remove = _drivers.FirstOrDefault(x => x.Id == _deleteDriver.Id);
         if(remove is not null)
             _drivers.Remove(remove);
         
-        await _driverGridRef.RefreshDataAsync();
+        await _mudDataGrid.ReloadServerData();
+        await OnHideModal(_deleteDialog);
     }
     
     // SCHOOL
@@ -175,23 +179,6 @@
 
         var school = GetDrivingSchool((int)schoolId);
         return school?.Name ?? "Unbekannte Fahrschule";
-    }
-
-    private void OnSelectSchool(int schoolId, DriverModel driver)
-    {
-        if (driver.DrivingSchoolId == schoolId) return;
-
-        var school = GetDrivingSchool(schoolId);
-        if (school is null) return;
-        
-        driver.DrivingSchoolId = schoolId;
-    }
-
-    private void OnSelectDriverState(bool isActive, DriverModel driver)
-    {
-        if (driver.IsActive == isActive) return;
-
-        driver.IsActive = isActive;
     }
 }
 
@@ -208,7 +195,7 @@
         EndIcon="@Icons.Material.Filled.Add"
         Variant="Variant.Outlined"
         Color="Color.Primary"
-        OnClick="() => OnShowModal(_createModalRef)">
+        OnClick="() => OnShowModal(_createDialog)">
         Eintragen
     </MudButton>
 </MudPaper>
@@ -222,53 +209,68 @@
 else
 {
     <div class="@(_drivers.Count == 0 ? "d-none" : "")">
-        <Grid TItem="DriverModel"
-              @ref="_driverGridRef"
-              Class="table table-hover table-bordered table-striped"
-              DataProvider="DriversDataProvider"
-              AllowPaging="true"
-              PageSize="20"
-              AllowSorting="true"
-              Responsive="true">
-            <GridColumns>
-                <GridColumn TItem="DriverModel" HeaderText="ID" SortKeySelector="item => item.Id">
-                    @context.Id
-                </GridColumn>
-                <GridColumn TItem="DriverModel" HeaderText="Vorname" SortKeySelector="item => item.FirstName">
-                    @context.FirstName
-                </GridColumn>
-                <GridColumn TItem="DriverModel" HeaderText="Nachname" SortKeySelector="item => item.LastName">
-                    @context.LastName
-                </GridColumn>
-                <GridColumn TItem="DriverModel" HeaderText="E-Mail" SortKeySelector="item => item.Mail">
-                    @context.Mail
-                </GridColumn>
-                <GridColumn TItem="DriverModel" HeaderText="Telefon" SortKeySelector="item => item.Phone">
-                    @(string.IsNullOrWhiteSpace(context.Phone) ? "-" : context.Phone)
-                </GridColumn>
-                <GridColumn TItem="DriverModel" HeaderText="Fahrschule" SortKeySelector="item => item.DrivingSchoolId">
-                    @GetDrivingSchoolName(context.DrivingSchoolId)
-                </GridColumn>
-                <GridColumn TItem="DriverModel" HeaderText="Aktiv?" SortKeySelector="item => item.IsActive">
-                    <Badge Color="@(context.IsActive ? BadgeColor.Success : BadgeColor.Danger)">
-                        @(context.IsActive ? "Ja" : "Nein")
-                    </Badge>
-                </GridColumn>
-                <GridColumn TItem="DriverModel" HeaderText="Aktionen">
-                    <div style="width: 200px;">
-                        <Dropdown Class="w-100" Color="DropdownColor.Secondary" Direction="DropdownDirection.DropdownCentered">
-                            <DropdownToggleButton Class="w-100 d-flex justify-content-between align-items-center">
-                                Aktion wählen
-                            </DropdownToggleButton>
-                            <DropdownMenu Class="w-100">
-                                <DropdownItem Type="DropdownItemType.Button" @onclick="() => OnShowEditModal(context)">Bearbeiten</DropdownItem>
-                                <DropdownItem Type="DropdownItemType.Button" @onclick="() => OnRequestDeleteDriverAsync(context)">Löschen</DropdownItem>
-                            </DropdownMenu>
-                        </Dropdown>
-                    </div>
-                </GridColumn>
-            </GridColumns>
-        </Grid>
+        <MudPaper Class="mud-theme-dark pa-4 ma-4" Elevation="1">
+            <MudDataGrid 
+                @ref="_mudDataGrid" 
+                Items="@_drivers" 
+                Bordered="false"
+                Dense="true"
+                RowsPerPage="10"
+                SortMode="SortMode.Multiple"
+                Hover="true"
+                Loading="@_dataLoading"
+            >
+                <Columns>
+                    <PropertyColumn Property="x => x.Id" Title="ID" />
+                    <PropertyColumn Property="x => x.FirstName" Title="Vorname" />
+                    <PropertyColumn Property="x => x.LastName" Title="Nachname" />
+                    <PropertyColumn Property="x => x.Mail" Title="E-Mail" />
+                    <PropertyColumn Property="x => x.Phone" Title="Telefon" />
+                    <TemplateColumn Title="Fahrschule">
+                        <CellTemplate>
+                            <MudChip T="string"
+                                     Size="Size.Medium"
+                                     Variant="Variant.Text"
+                                     Color="@(context.Item.DrivingSchoolId > 0 ? Color.Info : Color.Error)">
+                                @GetDrivingSchoolName(context.Item.DrivingSchoolId)
+                            </MudChip>
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn Title="Aktiv">
+                        <CellTemplate>
+                            <MudChip T="string"
+                                     Size="Size.Medium"
+                                     Variant="Variant.Text"
+                                     Color="@(context.Item.IsActive ? Color.Success : Color.Error)">
+                                @(context.Item.IsActive ? "Ja" : "Nein")
+                            </MudChip>
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn>
+                        <CellTemplate>
+                            <MudIconButton
+                                Variant="Variant.Outlined"
+                                Color="Color.Warning"
+                                Size="Size.Small"
+                                Icon="@Icons.Material.Filled.Edit"
+                                OnClick="() => OnShowEditModal(context.Item)"
+                                Class="mr-2"
+                                aria-label="Bearbeiten" />
+                            <MudIconButton
+                                Variant="Variant.Outlined"
+                                Color="Color.Error"
+                                Size="Size.Small"
+                                Icon="@Icons.Material.Filled.Delete"
+                                OnClick="() => OnShowDeleteModal(context.Item)"
+                                aria-label="Löschen" />
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+                <PagerContent>
+                    <MudDataGridPager />
+                </PagerContent>
+            </MudDataGrid>
+        </MudPaper>
     </div>
     
     @if (_drivers.Count == 0)
@@ -279,130 +281,95 @@ else
     }
 }
 
-<Modal @ref="_createModalRef" title="Fahrschüler anlegen" UseStaticBackdrop="true" CloseOnEscape="true">
-    <BodyTemplate>
-        <div class="mb-3">
-            <label for="firstname">Vorname:</label>
-            <TextInput @bind-Value="@_newDriver.FirstName" Id="firstname"/>
-        </div>
-        <div class="mb-3">
-            <label for="lastname">Nachname:</label>
-            <TextInput @bind-Value="@_newDriver.LastName" Id="lastname"/>
-        </div>
-        <div class="mb-3">
-            <label for="mail">E-Mail:</label>
-            <TextInput @bind-Value="@_newDriver.Mail" Id="mail"/>
-        </div>
-        <div class="mb-3">
-            <label for="phone">Telefon:</label>
-            <TextInput @bind-Value="@_newDriver.Phone" Id="phone"/>
-        </div>
-        <div class="mb-3">
-            <label for="active">Fahrschüler aktiv/inaktiv?</label>
-            <Dropdown Class="w-100" Color="DropdownColor.Primary" @bind-Value="@_newDriver.IsActive" Id="active">
-                <DropdownToggleButton Class="w-100 d-flex justify-content-between align-items-center">
-                    @(_newDriver.IsActive ? "Aktiv" : "Inaktiv")
-                </DropdownToggleButton>
-                <DropdownMenu Class="w-100">
-                    <DropdownItem Type="DropdownItemType.Button" Active="@_newDriver.IsActive" @onclick="() => OnSelectDriverState(true, _newDriver)">Aktiv</DropdownItem>
-                    <DropdownItem Type="DropdownItemType.Button" Active="@(!_newDriver.IsActive)" @onclick="() => OnSelectDriverState(false, _newDriver)">Inaktiv</DropdownItem>
-                </DropdownMenu>
-            </Dropdown>
-        </div>
-        <div class="mb-3">
-            <label for="drivingSchool">Zugewiesene Fahrschule:</label>
-            <Dropdown Class="w-100" Color="DropdownColor.Primary" @bind-Value="@_newDriver.DrivingSchoolId" Disabled="@(!_drivingSchools.Any())" Id="drivingSchool">
-                <DropdownToggleButton Class="w-100 d-flex justify-content-between align-items-center">
-                    @GetDrivingSchoolName(_newDriver.DrivingSchoolId)
-                </DropdownToggleButton>
-                <DropdownMenu Class="w-100">
-                    @foreach (var school in _drivingSchools)
-                    {
-                        <DropdownItem 
-                            Class="w-100" 
-                            Type="DropdownItemType.Button"
-                            Active="@(_newDriver.DrivingSchoolId != null && _newDriver.DrivingSchoolId == school.Id)"
-                            @onclick="() => OnSelectSchool(school.Id, _newDriver)">
-                            @school.Name
-                        </DropdownItem>
-                    }
-                </DropdownMenu>
-            </Dropdown>
-        </div>
-        @if (!string.IsNullOrWhiteSpace(_modalError))
-        {
-            <div class="mb-3">
-                <Alert Color="AlertColor.Danger">@_modalError</Alert>
-            </div>
-        }
-    </BodyTemplate>
-    <FooterTemplate>
-        <Button Color="ButtonColor.Secondary" @onclick="() => OnHideModal(_createModalRef)">Abbrechen</Button>
-        <Button Color="ButtonColor.Primary" @onclick="HandleCreateDriverAsync">Eintragen</Button>
-    </FooterTemplate>
-</Modal>
+<MudDialog @ref="_createDialog">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Fahrschüler anlegen</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
+            <MudTextField AutoFocus="true" Class="mb-4" ShrinkLabel @bind-Value="_newDriver.FirstName" Label="Vorname" Variant="Variant.Text"/>
+            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_newDriver.LastName" Label="Nachname" Variant="Variant.Text"/>
+            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_newDriver.Mail" Label="E-Mail" Variant="Variant.Text"/>
+            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_newDriver.Phone" Label="Telefon" Variant="Variant.Text"/>
+            <MudSelect
+                Class="mb-4"
+                @bind-Value="_newDriver.IsActive"
+                Variant="Variant.Text"
+                Label="Aktiv"
+                Placeholder="Aktiv-Status wählen">
+                <MudSelectItem Value="true">Aktiv</MudSelectItem>
+                <MudSelectItem Value="false">Inaktiv</MudSelectItem>
+            </MudSelect>
+            <MudSelect
+                Class="mb-4"
+                @bind-Value="_newDriver.DrivingSchoolId"
+                Variant="Variant.Text"
+                Label="Fahrschule zuweisen"
+                Disabled="!_drivingSchools.Any()"
+                Placeholder="Fahrschule wählen">
+                @foreach (var school in _drivingSchools)
+                {
+                    <MudSelectItem Value="@((int?)school.Id)">@school.Name</MudSelectItem>
+                }
+            </MudSelect>
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => OnHideModal(_createDialog)">Abbrechen</MudButton>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary" OnClick="HandleCreateDriverAsync">Eintragen</MudButton>
+    </DialogActions>
+</MudDialog>
 
-<ConfirmDialog @ref="_confirmDialogRef" />
+<MudDialog @ref="_editDialog">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Fahrschüler bearbeiten</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
+            <MudTextField AutoFocus="true" Class="mb-4" ShrinkLabel @bind-Value="_editDriver!.FirstName" Label="Vorname" Variant="Variant.Text"/>
+            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_editDriver!.LastName" Label="Nachname" Variant="Variant.Text"/>
+            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_editDriver!.Mail" Label="E-Mail" Variant="Variant.Text"/>
+            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_editDriver!.Phone" Label="Telefon" Variant="Variant.Text"/>
+            <MudSelect
+                Class="mb-4"
+                @bind-Value="_editDriver!.IsActive"
+                Variant="Variant.Text"
+                Label="Aktiv"
+                Placeholder="Aktiv-Status wählen">
+                <MudSelectItem Value="true">Aktiv</MudSelectItem>
+                <MudSelectItem Value="false">Inaktiv</MudSelectItem>
+            </MudSelect>
+            <MudSelect
+                Class="mb-4"
+                @bind-Value="_editDriver!.DrivingSchoolId"
+                Variant="Variant.Text"
+                Label="Fahrschule zuweisen"
+                Disabled="!_drivingSchools.Any()"
+                Placeholder="Fahrschule wählen">
+                @foreach (var school in _drivingSchools)
+                {
+                    <MudSelectItem Value="@((int?)school.Id)">@school.Name</MudSelectItem>
+                }
+            </MudSelect>
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => OnHideModal(_editDialog)">Abbrechen</MudButton>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary" OnClick="ConfirmEditDrivingSchoolAsync">Änderungen speichern</MudButton>
+    </DialogActions>
+</MudDialog>
 
-<Modal @ref="_editModalRef" title="Fahrschüler bearbeiten" UseStaticBackdrop="true" CloseOnEscape="true">
-    <BodyTemplate>
-        <div class="mb-3">
-            <label for="edit_firstname">Vorname:</label>
-            <TextInput @bind-Value="@_editDriver!.FirstName" Id="edit_firstname"/>
-        </div>
-        <div class="mb-3">
-            <label for="edit_lastname">Nachname:</label>
-            <TextInput @bind-Value="@_editDriver.LastName" Id="edit_lastname"/>
-        </div>
-        <div class="mb-3">
-            <label for="edit_mail">E-Mail:</label>
-            <TextInput @bind-Value="@_editDriver.Mail" Id="edit_mail"/>
-        </div>
-        <div class="mb-3">
-            <label for="edit_phone">Telefon:</label>
-            <TextInput @bind-Value="@_editDriver.Phone" Id="edit_phone"/>
-        </div>
-        <div class="mb-3">
-            <label for="active">Fahrschüler aktiv/inaktiv?</label>
-            <Dropdown Class="w-100" Color="DropdownColor.Primary" @bind-Value="@_editDriver.IsActive" Id="active">
-                <DropdownToggleButton Class="w-100 d-flex justify-content-between align-items-center">
-                    @(_editDriver.IsActive ? "Aktiv" : "Inaktiv")
-                </DropdownToggleButton>
-                <DropdownMenu Class="w-100">
-                    <DropdownItem Type="DropdownItemType.Button" Active="@_editDriver.IsActive" @onclick="() => OnSelectDriverState(true, _editDriver)">Aktiv</DropdownItem>
-                    <DropdownItem Type="DropdownItemType.Button" Active="@(!_editDriver.IsActive)" @onclick="() => OnSelectDriverState(false, _editDriver)">Inaktiv</DropdownItem>
-                </DropdownMenu>
-            </Dropdown>
-        </div>
-        <div class="mb-3">
-            <label for="drivingSchool">Zugewiesene Fahrschule:</label>
-            <Dropdown Class="w-100" Color="DropdownColor.Primary" @bind-Value="@_editDriver.DrivingSchoolId" Disabled="@(!_drivingSchools.Any())" Id="drivingSchool">
-                <DropdownToggleButton Class="w-100 d-flex justify-content-between align-items-center">
-                    @GetDrivingSchoolName(_editDriver.DrivingSchoolId)
-                </DropdownToggleButton>
-                <DropdownMenu Class="w-100">
-                    @foreach (var school in _drivingSchools)
-                    {
-                        <DropdownItem 
-                            Class="w-100" 
-                            Type="DropdownItemType.Button"
-                            Active="@(_editDriver.DrivingSchoolId != null && _editDriver.DrivingSchoolId == school.Id)"
-                            @onclick="() => OnSelectSchool(school.Id, _editDriver)">
-                            @school.Name
-                        </DropdownItem>
-                    }
-                </DropdownMenu>
-            </Dropdown>
-        </div>
-        @if (!string.IsNullOrWhiteSpace(_modalError))
-        {
-            <div class="mb-3">
-                <Alert Color="AlertColor.Danger">@_modalError</Alert>
-            </div>
-        }
-    </BodyTemplate>
-    <FooterTemplate>
-        <Button Color="ButtonColor.Secondary" @onclick="() => OnHideModal(_editModalRef)">Abbrechen</Button>
-        <Button Color="ButtonColor.Primary" @onclick="ConfirmEditDrivingSchoolAsync">Änderungen speichern</Button>
-    </FooterTemplate>
-</Modal>
+<MudDialog @ref="_deleteDialog">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Fahrschüler löschen</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
+            <MudText>Bist du sicher, dass du die Fahrschüler @_editDriver?.FullName löschen möchtest?</MudText>
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => OnHideModal(_deleteDialog)">Nein</MudButton>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary" OnClick="OnRequestDeleteDriverAsync">Ja</MudButton>
+    </DialogActions>
+</MudDialog>

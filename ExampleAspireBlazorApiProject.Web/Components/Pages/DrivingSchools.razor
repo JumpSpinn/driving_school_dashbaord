@@ -57,9 +57,6 @@
         StateHasChanged();
     }
     
-    private async Task<GridDataProviderResult<DrivingSchoolModel>> DrivingSchoolsDataProvider(GridDataProviderRequest<DrivingSchoolModel> request) 
-        => await Task.FromResult(request.ApplyTo(_drivingSchools));
-    
     // MODALS
     private async Task OnShowModal(MudDialog? dialog)
     {
@@ -85,7 +82,6 @@
         _newDrivingSchool = new();
         await OnHideModal(_createDialog);
         await _mudDataGrid.ReloadServerData();
-        // await _drivingSchoolGridRef.RefreshDataAsync();
     }
     
     // EDIT
@@ -118,7 +114,6 @@
         drivingSchoolToUpdate.Name = _editDrivingSchool.Name;
 
         await OnHideModal(_editDialog);
-        // await _drivingSchoolGridRef.RefreshDataAsync();
         await _mudDataGrid.ReloadServerData();
         _editDrivingSchool = null;
     }
@@ -143,7 +138,6 @@
             _drivingSchools.Remove(remove);
         
         await OnHideModal(_deleteDialog);
-        // await _drivingSchoolGridRef.RefreshDataAsync();
         await _mudDataGrid.ReloadServerData();
     }
 }
@@ -235,7 +229,7 @@ else
     </TitleContent>
     <DialogContent>
         <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
-            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_newDrivingSchool.Name" Label="Bezeichnung" Variant="Variant.Text" />
+            <MudTextField AutoFocus="true" Class="mb-4" ShrinkLabel @bind-Value="_newDrivingSchool.Name" Label="Bezeichnung" Variant="Variant.Text" />
         </MudPaper>
     </DialogContent>
     <DialogActions>
@@ -265,11 +259,11 @@ else
     </TitleContent>
     <DialogContent>
         <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
-            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_editDrivingSchool!.Name" Label="Bezeichnung" Variant="Variant.Text" />
+            <MudTextField AutoFocus="true" Class="mb-4" ShrinkLabel @bind-Value="_editDrivingSchool!.Name" Label="Bezeichnung" Variant="Variant.Text" />
         </MudPaper>
     </DialogContent>
     <DialogActions>
-        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => OnHideModal(_editDialog)">Nein</MudButton>
-        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary" OnClick="ConfirmEditDrivingSchoolAsync">Ja</MudButton>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => OnHideModal(_editDialog)">Abbrechen</MudButton>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary" OnClick="ConfirmEditDrivingSchoolAsync">Änderungen speichern</MudButton>
     </DialogActions>
 </MudDialog>
