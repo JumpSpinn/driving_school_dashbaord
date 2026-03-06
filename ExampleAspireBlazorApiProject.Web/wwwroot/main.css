@@ -1,0 +1,36 @@
+﻿h1, h2, h3, h4{
+    outline: none;
+    border: none;
+}
+
+.page_header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    .description{
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .actions{
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+}
+
+.dropdown-menu.show {
+    z-index: 1050 !important;
+}
+
+.table-responsive {
+    overflow: visible !important;
+}
+
+td {
+    overflow: visible !important;
+    position: relative;
+}

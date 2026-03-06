@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="ExampleAspireBlazorApiProject.ApiService/ExampleAspireBlazorApiProject.ApiService.csproj" />
+  <Project Path="ExampleAspireBlazorApiProject.AppHost/ExampleAspireBlazorApiProject.AppHost.csproj" />
+  <Project Path="ExampleAspireBlazorApiProject.ServiceDefaults/ExampleAspireBlazorApiProject.ServiceDefaults.csproj" />
+  <Project Path="ExampleAspireBlazorApiProject.Shared/ExampleAspireBlazorApiProject.Shared.csproj" />
+  <Project Path="ExampleAspireBlazorApiProject.Tests/ExampleAspireBlazorApiProject.Tests.csproj" />
+  <Project Path="ExampleAspireBlazorApiProject.Web/ExampleAspireBlazorApiProject.Web.csproj" />
+</Solution>

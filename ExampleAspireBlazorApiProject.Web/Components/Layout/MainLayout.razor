@@ -1,0 +1,41 @@
+﻿@inherits LayoutComponentBase
+
+@code {
+    IEnumerable<NavItem>? _navItems;
+
+    private async Task<Sidebar2DataProviderResult> Sidebar2DataProvider(Sidebar2DataProviderRequest  request)
+    {
+        _navItems ??= GetNavItems();
+        return await Task.FromResult(request.ApplyTo(_navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        _navItems = new List<NavItem>
+        {
+            new NavItem { Href = "/", IconName = IconName.House, Text = "Übersicht"},
+            new NavItem { Href = "/drivingSchools", IconName = IconName.House, Text = "Fahrschulen"},
+            new NavItem { Href = "/drivers", IconName = IconName.House, Text = "Fahrschüler"},
+        };
+        return _navItems;
+    }
+}
+
+<BlazorBootstrapLayout StickyHeader="true">
+
+    <HeaderSection>
+        <ThemeSwitcher Class="ps-3 ps-lg-2" Position="DropdownMenuPosition.End"/>
+    </HeaderSection>
+
+    <SidebarSection>
+        <Sidebar2 Href="/"
+                  Title="Fahrschul Manager"
+                  DataProvider="Sidebar2DataProvider"
+                  WidthUnit="Unit.Px" />
+    </SidebarSection>
+
+    <ContentSection>
+        @Body
+    </ContentSection>
+
+</BlazorBootstrapLayout>

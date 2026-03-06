@@ -1,0 +1,244 @@
+﻿@page "/drivingSchools"
+@using ExampleAspireBlazorApiProject.Shared.Models
+@using ExampleAspireBlazorApiProject.Web.Apis
+@rendermode InteractiveServer
+@inject DrivingSchoolApiClient DrivingSchoolApi
+
+@code
+{
+    private bool _dataLoading;
+    private List<DrivingSchoolModel> _drivingSchools = [];
+    private Grid<DrivingSchoolModel> _drivingSchoolGridRef = default!;
+    
+    private Modal? _createModalRef;
+    private Modal? _editModalRef;
+    private ConfirmDialog? _confirmDialogRef;
+    private string _modalError = string.Empty;
+    
+    private DrivingSchoolModel? _editDrivingSchool;
+    private DrivingSchoolModel _newDrivingSchool = new();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _ = LoadAllDrivingSchoolDataAsync();
+    }
+    
+    // VALIDATION
+    private bool ValidateDrivingSchoolName(string name)
+    {
+        _modalError = string.Empty;
+        if (string.IsNullOrWhiteSpace(name))
+            _modalError = "Du musst einen Namen angeben!";
+        else if (name.Length < 3)
+            _modalError = "Der Name muss mindestens 3 Zeichen lang sein!";
+        return string.IsNullOrWhiteSpace(_modalError);
+    }
+    
+    // LOAD
+    private async Task LoadAllDrivingSchoolDataAsync()
+    {
+        _dataLoading = true;
+        StateHasChanged();
+        
+        _drivingSchools = await DrivingSchoolApi.GetAllDrivingSchoolsAsync() ?? [];
+        
+        _dataLoading = false;
+        StateHasChanged();
+    }
+    
+    private async Task<GridDataProviderResult<DrivingSchoolModel>> DrivingSchoolsDataProvider(GridDataProviderRequest<DrivingSchoolModel> request) 
+        => await Task.FromResult(request.ApplyTo(_drivingSchools));
+    
+    // MODALS
+    private async Task OnShowModal(Modal? modal)
+    {
+        if (modal is null) return;
+        await modal.ShowAsync();
+    }
+    
+    private async Task OnHideModal(Modal? modal)
+    {
+        if (modal is null) return;
+        await modal.HideAsync();
+    }
+    
+    // CREATE
+    private async Task HandleCreateDrivingSchoolAsync()
+    {
+        if (!ValidateDrivingSchoolName(_newDrivingSchool.Name)) return;
+        
+        var newDrivingSchool = await DrivingSchoolApi.CreateDrivingSchoolAsync(_newDrivingSchool);
+        if (newDrivingSchool is not null)
+            _drivingSchools.Add(newDrivingSchool);
+        
+        _newDrivingSchool = new();
+        await OnHideModal(_createModalRef);
+        await _drivingSchoolGridRef.RefreshDataAsync();
+    }
+    
+    // EDIT
+    private void OnShowEditModal(DrivingSchoolModel drivingSchool)
+    {
+        _modalError = string.Empty;
+        _editDrivingSchool = new(drivingSchool);
+        _ = OnShowModal(_editModalRef);
+    }
+    
+    private async Task ConfirmEditDrivingSchoolAsync()
+    {
+        if (_editDrivingSchool is null) return;
+        if (!ValidateDrivingSchoolName(_editDrivingSchool.Name)) return;
+
+        var updated = await DrivingSchoolApi.UpdateDrivingSchoolAsync(_editDrivingSchool);
+        if (!updated)
+        {
+            _modalError = $"Fahrschule {_editDrivingSchool.Name} konnte nicht bearbeitet werden!";
+            return;
+        }
+        
+        var drivingSchoolToUpdate = _drivingSchools.FirstOrDefault(x => x.Id == _editDrivingSchool.Id);
+        if (drivingSchoolToUpdate is null)
+        {
+            _modalError = "Die zu bearbeitende Fahrschule ist nicht bekannt!";
+            return;
+        }
+        
+        drivingSchoolToUpdate.Name = _editDrivingSchool.Name;
+
+        await OnHideModal(_editModalRef);
+        await _drivingSchoolGridRef.RefreshDataAsync();
+        _editDrivingSchool = null;
+    }
+
+    // DELETE
+    private async Task OnRequestDeleteDrivingSchoolAsync(DrivingSchoolModel drivingSchool)
+    {
+        if (_confirmDialogRef is null) return;
+        
+        var confirmed = await _confirmDialogRef.ShowAsync(
+            title: $"Fahrschule löschen", 
+            message1: $"Bist du dir sicher, dass du die Fahrschule {drivingSchool.Name} löschen möchtest?",
+            confirmDialogOptions: new ConfirmDialogOptions()
+            {
+                YesButtonText = "Ja",
+                NoButtonText = "Nein"
+            });
+
+        if (!confirmed) return;
+        
+        var deleted = await DrivingSchoolApi.DeleteDrivingSchoolAsync(drivingSchool.Id);
+        if (!deleted) return;
+        
+        var remove = _drivingSchools.FirstOrDefault(x => x.Id == drivingSchool.Id);
+        if(remove is not null)
+            _drivingSchools.Remove(remove);
+        
+        await _drivingSchoolGridRef.RefreshDataAsync();
+    }
+}
+
+<PageTitle>Fahrschulen</PageTitle>
+<div class="page_header">
+    <div class="description">
+        <h1>Fahrschulen</h1>
+        <p>Hier sind alle Fahrschulen aufgelistet, die im System registriert wurden.</p>
+    </div>
+    <div class="actions">
+        <Button Color="ButtonColor.Primary" Outline="true" @onclick="() => OnShowModal(_createModalRef)">Fahrschule registrieren</Button>
+    </div>
+</div>
+
+@if (_dataLoading)
+{
+    <div class="d-flex justify-content-center">
+        <Spinner Type="SpinnerType.Border" />
+    </div>
+}
+else
+{
+    <div class="@(_drivingSchools.Count == 0 ? "d-none" : "")">
+        <Grid TItem="DrivingSchoolModel"
+              @ref="_drivingSchoolGridRef"
+              Class="table table-hover table-bordered table-striped"
+              DataProvider="DrivingSchoolsDataProvider"
+              AllowPaging="true"
+              PageSize="20"
+              AllowSorting="true"
+              Responsive="true">
+            <GridColumns>
+                <GridColumn TItem="DrivingSchoolModel" HeaderText="ID" SortKeySelector="item => item.Id">
+                    @context.Id
+                </GridColumn>
+                <GridColumn TItem="DrivingSchoolModel" HeaderText="Bezeichnung" SortKeySelector="item => item.Name">
+                    @context.Name
+                </GridColumn>
+                <GridColumn TItem="DrivingSchoolModel" HeaderText="Fahrschüler" SortKeySelector="item => item.Drivers.Count">
+                    <Badge Color="@(context.Drivers.Count > 0 ? BadgeColor.Success : BadgeColor.Danger)">
+                        @context.Drivers.Count
+                    </Badge>
+                </GridColumn>
+                <GridColumn TItem="DrivingSchoolModel" HeaderText="Aktionen">
+                    <div style="width: 200px;">
+                        <Dropdown Class="w-100" Color="DropdownColor.Secondary" Direction="DropdownDirection.DropdownCentered">
+                            <DropdownToggleButton Class="w-100 d-flex justify-content-between align-items-center">
+                                Aktion wählen
+                            </DropdownToggleButton>
+                            <DropdownMenu Class="w-100">
+                                <DropdownItem Type="DropdownItemType.Button" @onclick="() => OnShowEditModal(context)">Bearbeiten</DropdownItem>
+                                <DropdownItem Type="DropdownItemType.Button" @onclick="() => OnRequestDeleteDrivingSchoolAsync(context)">Löschen</DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
+                    </div>
+                </GridColumn>
+            </GridColumns>
+        </Grid>
+    </div>
+    
+    @if (_drivingSchools.Count == 0)
+    {
+        <div class="text-center">
+            <Alert Color="AlertColor.Primary">Keine Daten vorhanden.</Alert>
+        </div>
+    }
+}
+
+<Modal @ref="_createModalRef" title="Fahrschule registrieren" UseStaticBackdrop="true" CloseOnEscape="true">
+    <BodyTemplate>
+        <div class="mb-3">
+            <label for="drivingSchoolName">Bezeichnung der Fahrschule:</label>
+            <TextInput @bind-Value="@_newDrivingSchool.Name" Id="drivingSchoolName"/>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(_modalError))
+        {
+            <div class="mb-3">
+                <Alert Color="AlertColor.Danger">@_modalError</Alert>
+            </div>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="() => OnHideModal(_createModalRef)">Abbrechen</Button>
+        <Button Color="ButtonColor.Primary" @onclick="HandleCreateDrivingSchoolAsync">Eintragen</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="_editModalRef" title="Fahrschule bearbeiten" UseStaticBackdrop="true" CloseOnEscape="true">
+    <BodyTemplate>
+        <div class="mb-3">
+            <label for="edit_drivingSchoolName">Bezeichnung der Fahrschule:</label>
+            <TextInput @bind-Value="@_editDrivingSchool!.Name" Id="edit_drivingSchoolName"/>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(_modalError))
+        {
+            <div class="mb-3">
+                <Alert Color="AlertColor.Danger">@_modalError</Alert>
+            </div>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="() => OnHideModal(_editModalRef)">Abbrechen</Button>
+        <Button Color="ButtonColor.Primary" @onclick="ConfirmEditDrivingSchoolAsync">Änderungen speichern</Button>
+    </FooterTemplate>
+</Modal>
+
+<ConfirmDialog @ref="_confirmDialogRef" />

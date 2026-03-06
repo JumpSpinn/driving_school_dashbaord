@@ -1,0 +1,3 @@
+﻿global using ExampleAspireBlazorApiProject.Web;
+global using ExampleAspireBlazorApiProject.Web.Components;
+global using ExampleAspireBlazorApiProject.Shared.Records;

@@ -1,0 +1,402 @@
+﻿@page "/drivers"
+@using System.Text.RegularExpressions
+@using ExampleAspireBlazorApiProject.Shared.Models
+@using ExampleAspireBlazorApiProject.Web.Apis
+@inject DriverApiClient DriverApiClient
+@inject DrivingSchoolApiClient DrivingSchoolApiClient
+@rendermode InteractiveServer
+
+@code {
+    private bool _dataLoading;
+    private List<DriverModel> _drivers = [];
+    private Grid<DriverModel> _driverGridRef = default!;
+    
+    private Modal? _createModalRef;
+    private Modal? _editModalRef;
+    private ConfirmDialog? _confirmDialogRef;
+    private string _modalError = string.Empty;
+    
+    private List<DrivingSchoolModel> _drivingSchools = [];
+    private DriverModel? _editDriver;
+    private DriverModel _newDriver = new();
+    
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _ = LoadAllDriversAsync();
+    }
+    
+    // VALIDATION
+    private bool ValidateCreateDriver(DriverModel validateDriver)
+    {
+        _modalError = string.Empty;
+        
+        if (string.IsNullOrWhiteSpace(validateDriver.FirstName))
+            _modalError = "Vorname muss angegeben werden!";
+        else if (validateDriver.FirstName.Length < 3)
+            _modalError = "Vorname muss mindestens 3 Zeichen lang sein!";
+        else if (string.IsNullOrWhiteSpace(validateDriver.LastName))
+            _modalError = "Nachname muss angegeben werden";
+        else if (validateDriver.LastName.Length < 3)
+            _modalError = "Nachname muss mindestens 3 Zeichen lang sein!";
+        else if (string.IsNullOrWhiteSpace(validateDriver.Mail))
+            _modalError = "E-Mail muss angegeben werden!";
+        else if (!validateDriver.Mail.Contains("@"))
+            _modalError = "Ungültige E-Mail Adresse!";
+        else if (!string.IsNullOrWhiteSpace(validateDriver.Phone))
+        {
+            var isMatch = Regex.IsMatch(validateDriver.Phone, @"^\d+$");
+            if (!isMatch)
+                _modalError = "Ungültige Telefonnummer. Darf nur aus Zahlen bestehen!";
+        }
+
+        return string.IsNullOrWhiteSpace(_modalError);
+    }
+    
+    // LOAD
+    private async Task LoadAllDriversAsync()
+    {
+        _dataLoading = true;
+        StateHasChanged();
+
+        _drivers = await DriverApiClient.GetAllDriversAsync() ?? [];
+        _drivingSchools = await DrivingSchoolApiClient.GetAllDrivingSchoolsAsync() ?? [];
+        
+        _dataLoading = false;
+        StateHasChanged();
+    }
+    
+    private async Task<GridDataProviderResult<DriverModel>> DriversDataProvider(GridDataProviderRequest<DriverModel> request) 
+        => await Task.FromResult(request.ApplyTo(_drivers));
+    
+    // MODALS
+    private async Task OnShowModal(Modal? modal)
+    {
+        if (modal is null) return;
+        
+        if(modal == _createModalRef)
+            _newDriver = new();
+        
+        await modal.ShowAsync();
+    }
+    
+    private async Task OnHideModal(Modal? modal)
+    {
+        if (modal is null) return;
+        await modal.HideAsync();
+    }
+    
+    // CREATE
+    private async Task HandleCreateDriverAsync()
+    {
+        if (!ValidateCreateDriver(_newDriver)) return;
+        
+        var newDriver = await DriverApiClient.CreateDriverAsync(_newDriver);
+        if (newDriver is not null)
+            _drivers.Add(newDriver);
+        
+        _newDriver = new();
+        await OnHideModal(_createModalRef);
+        await _driverGridRef.RefreshDataAsync();
+    }
+    
+    // EDIT
+    private void OnShowEditModal(DriverModel driver)
+    {
+        _modalError = string.Empty;
+        _editDriver = new(driver);
+        _ = OnShowModal(_editModalRef);
+    }
+    
+    private async Task ConfirmEditDrivingSchoolAsync()
+    {
+        if (_editDriver is null) return;
+        if (!ValidateCreateDriver(_editDriver)) return;
+
+        var updated = await DriverApiClient.UpdateDriverAsync(_editDriver);
+        if (!updated)
+        {
+            _modalError = $"Fahrschüler {_editDriver.FirstName} {_editDriver.LastName} konnte nicht bearbeitet werden!";
+            return;
+        }
+        
+        var driverToUpdate = _drivers.FirstOrDefault(x => x.Id == _editDriver.Id);
+        if (driverToUpdate is null)
+        {
+            _modalError = "Der zu bearbeitende Fahrschüler ist nicht bekannt!";
+            return;
+        }
+        
+        driverToUpdate.FirstName = _editDriver.FirstName;
+        driverToUpdate.LastName = _editDriver.LastName;
+        driverToUpdate.Mail = _editDriver.Mail;
+        driverToUpdate.Phone = _editDriver.Phone;
+        driverToUpdate.DrivingSchoolId = _editDriver.DrivingSchoolId;
+        driverToUpdate.IsActive = _editDriver.IsActive;
+        
+        await OnHideModal(_editModalRef);
+        await _driverGridRef.RefreshDataAsync();
+        _editDriver = null;
+    }
+    
+    // DELETE
+    private async Task OnRequestDeleteDriverAsync(DriverModel driver)
+    {
+        if (_confirmDialogRef is null) return;
+        
+        var confirmed = await _confirmDialogRef.ShowAsync(
+            title: $"Fahrschüler löschen", 
+            message1: $"Bist du dir sicher, dass du den Fahrschüler {driver.FullName} löschen möchtest?",
+                confirmDialogOptions: new ConfirmDialogOptions()
+                {
+                    YesButtonText = "Ja",
+                    NoButtonText = "Nein"
+                });
+
+        if (!confirmed) return;
+        
+        var deleted = await DriverApiClient.DeleteDriverAsync(driver.Id);
+        if (!deleted) return;
+        
+        var remove = _drivers.FirstOrDefault(x => x.Id == driver.Id);
+        if(remove is not null)
+            _drivers.Remove(remove);
+        
+        await _driverGridRef.RefreshDataAsync();
+    }
+    
+    // SCHOOL
+    private DrivingSchoolModel? GetDrivingSchool(int id) 
+        => _drivingSchools.FirstOrDefault(s => s.Id == id);
+    
+    private string GetDrivingSchoolName(int? schoolId)
+    {
+        if (schoolId is null or 0) return "Keine Zuweisung";
+
+        var school = GetDrivingSchool((int)schoolId);
+        return school?.Name ?? "Unbekannte Fahrschule";
+    }
+
+    private void OnSelectSchool(int schoolId, DriverModel driver)
+    {
+        if (driver.DrivingSchoolId == schoolId) return;
+
+        var school = GetDrivingSchool(schoolId);
+        if (school is null) return;
+        
+        driver.DrivingSchoolId = schoolId;
+    }
+
+    private void OnSelectDriverState(bool isActive, DriverModel driver)
+    {
+        if (driver.IsActive == isActive) return;
+
+        driver.IsActive = isActive;
+    }
+}
+
+<PageTitle>Fahrschüler</PageTitle>
+
+<div class="page_header">
+    <div class="description">
+        <h1>Fahrschüler</h1>
+        <p>Hier sind alle Fahrschüler aufgelistet, die im System eingetragen wurden.</p>
+    </div>
+    <div class="actions">
+        <Button Color="ButtonColor.Primary" Outline="true" @onclick="() => OnShowModal(_createModalRef)">Fahrschüler eintragen</Button>
+    </div>
+</div>
+
+@if (_dataLoading)
+{
+    <div class="d-flex justify-content-center">
+        <Spinner Type="SpinnerType.Border" />
+    </div>
+}
+else
+{
+    <div class="@(_drivers.Count == 0 ? "d-none" : "")">
+        <Grid TItem="DriverModel"
+              @ref="_driverGridRef"
+              Class="table table-hover table-bordered table-striped"
+              DataProvider="DriversDataProvider"
+              AllowPaging="true"
+              PageSize="20"
+              AllowSorting="true"
+              Responsive="true">
+            <GridColumns>
+                <GridColumn TItem="DriverModel" HeaderText="ID" SortKeySelector="item => item.Id">
+                    @context.Id
+                </GridColumn>
+                <GridColumn TItem="DriverModel" HeaderText="Vorname" SortKeySelector="item => item.FirstName">
+                    @context.FirstName
+                </GridColumn>
+                <GridColumn TItem="DriverModel" HeaderText="Nachname" SortKeySelector="item => item.LastName">
+                    @context.LastName
+                </GridColumn>
+                <GridColumn TItem="DriverModel" HeaderText="E-Mail" SortKeySelector="item => item.Mail">
+                    @context.Mail
+                </GridColumn>
+                <GridColumn TItem="DriverModel" HeaderText="Telefon" SortKeySelector="item => item.Phone">
+                    @(string.IsNullOrWhiteSpace(context.Phone) ? "-" : context.Phone)
+                </GridColumn>
+                <GridColumn TItem="DriverModel" HeaderText="Fahrschule" SortKeySelector="item => item.DrivingSchoolId">
+                    @GetDrivingSchoolName(context.DrivingSchoolId)
+                </GridColumn>
+                <GridColumn TItem="DriverModel" HeaderText="Aktiv?" SortKeySelector="item => item.IsActive">
+                    <Badge Color="@(context.IsActive ? BadgeColor.Success : BadgeColor.Danger)">
+                        @(context.IsActive ? "Ja" : "Nein")
+                    </Badge>
+                </GridColumn>
+                <GridColumn TItem="DriverModel" HeaderText="Aktionen">
+                    <div style="width: 200px;">
+                        <Dropdown Class="w-100" Color="DropdownColor.Secondary" Direction="DropdownDirection.DropdownCentered">
+                            <DropdownToggleButton Class="w-100 d-flex justify-content-between align-items-center">
+                                Aktion wählen
+                            </DropdownToggleButton>
+                            <DropdownMenu Class="w-100">
+                                <DropdownItem Type="DropdownItemType.Button" @onclick="() => OnShowEditModal(context)">Bearbeiten</DropdownItem>
+                                <DropdownItem Type="DropdownItemType.Button" @onclick="() => OnRequestDeleteDriverAsync(context)">Löschen</DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
+                    </div>
+                </GridColumn>
+            </GridColumns>
+        </Grid>
+    </div>
+    
+    @if (_drivers.Count == 0)
+    {
+        <div class="text-center">
+            <Alert Color="AlertColor.Primary">Keine Daten vorhanden. Legen Sie Ihren ersten Fahrschüler an!</Alert>
+        </div>
+    }
+}
+
+<Modal @ref="_createModalRef" title="Fahrschüler anlegen" UseStaticBackdrop="true" CloseOnEscape="true">
+    <BodyTemplate>
+        <div class="mb-3">
+            <label for="firstname">Vorname:</label>
+            <TextInput @bind-Value="@_newDriver.FirstName" Id="firstname"/>
+        </div>
+        <div class="mb-3">
+            <label for="lastname">Nachname:</label>
+            <TextInput @bind-Value="@_newDriver.LastName" Id="lastname"/>
+        </div>
+        <div class="mb-3">
+            <label for="mail">E-Mail:</label>
+            <TextInput @bind-Value="@_newDriver.Mail" Id="mail"/>
+        </div>
+        <div class="mb-3">
+            <label for="phone">Telefon:</label>
+            <TextInput @bind-Value="@_newDriver.Phone" Id="phone"/>
+        </div>
+        <div class="mb-3">
+            <label for="active">Fahrschüler aktiv/inaktiv?</label>
+            <Dropdown Class="w-100" Color="DropdownColor.Primary" @bind-Value="@_newDriver.IsActive" Id="active">
+                <DropdownToggleButton Class="w-100 d-flex justify-content-between align-items-center">
+                    @(_newDriver.IsActive ? "Aktiv" : "Inaktiv")
+                </DropdownToggleButton>
+                <DropdownMenu Class="w-100">
+                    <DropdownItem Type="DropdownItemType.Button" Active="@_newDriver.IsActive" @onclick="() => OnSelectDriverState(true, _newDriver)">Aktiv</DropdownItem>
+                    <DropdownItem Type="DropdownItemType.Button" Active="@(!_newDriver.IsActive)" @onclick="() => OnSelectDriverState(false, _newDriver)">Inaktiv</DropdownItem>
+                </DropdownMenu>
+            </Dropdown>
+        </div>
+        <div class="mb-3">
+            <label for="drivingSchool">Zugewiesene Fahrschule:</label>
+            <Dropdown Class="w-100" Color="DropdownColor.Primary" @bind-Value="@_newDriver.DrivingSchoolId" Disabled="@(!_drivingSchools.Any())" Id="drivingSchool">
+                <DropdownToggleButton Class="w-100 d-flex justify-content-between align-items-center">
+                    @GetDrivingSchoolName(_newDriver.DrivingSchoolId)
+                </DropdownToggleButton>
+                <DropdownMenu Class="w-100">
+                    @foreach (var school in _drivingSchools)
+                    {
+                        <DropdownItem 
+                            Class="w-100" 
+                            Type="DropdownItemType.Button"
+                            Active="@(_newDriver.DrivingSchoolId != null && _newDriver.DrivingSchoolId == school.Id)"
+                            @onclick="() => OnSelectSchool(school.Id, _newDriver)">
+                            @school.Name
+                        </DropdownItem>
+                    }
+                </DropdownMenu>
+            </Dropdown>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(_modalError))
+        {
+            <div class="mb-3">
+                <Alert Color="AlertColor.Danger">@_modalError</Alert>
+            </div>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="() => OnHideModal(_createModalRef)">Abbrechen</Button>
+        <Button Color="ButtonColor.Primary" @onclick="HandleCreateDriverAsync">Eintragen</Button>
+    </FooterTemplate>
+</Modal>
+
+<ConfirmDialog @ref="_confirmDialogRef" />
+
+<Modal @ref="_editModalRef" title="Fahrschüler bearbeiten" UseStaticBackdrop="true" CloseOnEscape="true">
+    <BodyTemplate>
+        <div class="mb-3">
+            <label for="edit_firstname">Vorname:</label>
+            <TextInput @bind-Value="@_editDriver!.FirstName" Id="edit_firstname"/>
+        </div>
+        <div class="mb-3">
+            <label for="edit_lastname">Nachname:</label>
+            <TextInput @bind-Value="@_editDriver.LastName" Id="edit_lastname"/>
+        </div>
+        <div class="mb-3">
+            <label for="edit_mail">E-Mail:</label>
+            <TextInput @bind-Value="@_editDriver.Mail" Id="edit_mail"/>
+        </div>
+        <div class="mb-3">
+            <label for="edit_phone">Telefon:</label>
+            <TextInput @bind-Value="@_editDriver.Phone" Id="edit_phone"/>
+        </div>
+        <div class="mb-3">
+            <label for="active">Fahrschüler aktiv/inaktiv?</label>
+            <Dropdown Class="w-100" Color="DropdownColor.Primary" @bind-Value="@_editDriver.IsActive" Id="active">
+                <DropdownToggleButton Class="w-100 d-flex justify-content-between align-items-center">
+                    @(_editDriver.IsActive ? "Aktiv" : "Inaktiv")
+                </DropdownToggleButton>
+                <DropdownMenu Class="w-100">
+                    <DropdownItem Type="DropdownItemType.Button" Active="@_editDriver.IsActive" @onclick="() => OnSelectDriverState(true, _editDriver)">Aktiv</DropdownItem>
+                    <DropdownItem Type="DropdownItemType.Button" Active="@(!_editDriver.IsActive)" @onclick="() => OnSelectDriverState(false, _editDriver)">Inaktiv</DropdownItem>
+                </DropdownMenu>
+            </Dropdown>
+        </div>
+        <div class="mb-3">
+            <label for="drivingSchool">Zugewiesene Fahrschule:</label>
+            <Dropdown Class="w-100" Color="DropdownColor.Primary" @bind-Value="@_editDriver.DrivingSchoolId" Disabled="@(!_drivingSchools.Any())" Id="drivingSchool">
+                <DropdownToggleButton Class="w-100 d-flex justify-content-between align-items-center">
+                    @GetDrivingSchoolName(_editDriver.DrivingSchoolId)
+                </DropdownToggleButton>
+                <DropdownMenu Class="w-100">
+                    @foreach (var school in _drivingSchools)
+                    {
+                        <DropdownItem 
+                            Class="w-100" 
+                            Type="DropdownItemType.Button"
+                            Active="@(_editDriver.DrivingSchoolId != null && _editDriver.DrivingSchoolId == school.Id)"
+                            @onclick="() => OnSelectSchool(school.Id, _editDriver)">
+                            @school.Name
+                        </DropdownItem>
+                    }
+                </DropdownMenu>
+            </Dropdown>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(_modalError))
+        {
+            <div class="mb-3">
+                <Alert Color="AlertColor.Danger">@_modalError</Alert>
+            </div>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="() => OnHideModal(_editModalRef)">Abbrechen</Button>
+        <Button Color="ButtonColor.Primary" @onclick="ConfirmEditDrivingSchoolAsync">Änderungen speichern</Button>
+    </FooterTemplate>
+</Modal>
