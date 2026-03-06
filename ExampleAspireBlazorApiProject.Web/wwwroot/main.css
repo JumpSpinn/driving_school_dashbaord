@@ -34,3 +34,7 @@ td {
     overflow: visible !important;
     position: relative;
 }
+
+.dialog_backdrop_blur{
+    backdrop-filter: blur(2px);
+}

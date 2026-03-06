@@ -27,7 +27,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ExampleAspireBlazorApiProject.AppHost")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bc603c8dbcc6efc50edee2a63cdedccd9b53a0b0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+330cf5e513cc884ccd5032fb83610d7623d34119")]
 [assembly: System.Reflection.AssemblyProductAttribute("ExampleAspireBlazorApiProject.AppHost")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ExampleAspireBlazorApiProject.AppHost")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

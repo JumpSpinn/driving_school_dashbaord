@@ -197,21 +197,27 @@
 
 <PageTitle>Fahrschüler</PageTitle>
 
-<div class="page_header">
-    <div class="description">
-        <h1>Fahrschüler</h1>
-        <p>Hier sind alle Fahrschüler aufgelistet, die im System eingetragen wurden.</p>
-    </div>
-    <div class="actions">
-        <Button Color="ButtonColor.Primary" Outline="true" @onclick="() => OnShowModal(_createModalRef)">Fahrschüler eintragen</Button>
-    </div>
-</div>
+<MudPaper Class="d-flex flex-row align-center mud-theme-dark pa-4 ma-4" Elevation="1">
+    <MudPaper Class="d-flex flex-column mud-theme-dark" Elevation="0">
+        <MudText Typo="Typo.h5" Color="Color.Secondary">Fahrschüler</MudText>
+        <MudText Typo="Typo.body1">Hier sind alle Fahrschüler aufgelistet, die im System eingetragen wurden.</MudText>
+    </MudPaper>
+    <MudSpacer/>
+    <MudButton
+        Size="Size.Small"
+        EndIcon="@Icons.Material.Filled.Add"
+        Variant="Variant.Outlined"
+        Color="Color.Primary"
+        OnClick="() => OnShowModal(_createModalRef)">
+        Eintragen
+    </MudButton>
+</MudPaper>
 
 @if (_dataLoading)
 {
-    <div class="d-flex justify-content-center">
-        <Spinner Type="SpinnerType.Border" />
-    </div>
+    <MudPaper Class="mud-theme-dark pa-4 ma-4" Elevation="1">
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true"/>
+    </MudPaper>
 }
 else
 {
@@ -267,9 +273,9 @@ else
     
     @if (_drivers.Count == 0)
     {
-        <div class="text-center">
-            <Alert Color="AlertColor.Primary">Keine Daten vorhanden. Legen Sie Ihren ersten Fahrschüler an!</Alert>
-        </div>
+        <MudPaper Class="mud-theme-dark pa-4 ma-4" Elevation="1">
+            <MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">Keine Daten vorhanden.</MudAlert>
+        </MudPaper>
     }
 }
 

@@ -6,13 +6,30 @@
 <MudSnackbarProvider/>
 
 <MudLayout>
-    <MudAppBar Elevation="2" Fixed="true">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h5" Class="ml-3">Fahrschul Manager</MudText>
-        <MudSpacer />
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" />
+    <MudAppBar
+        Elevation="2"
+        Fixed="true">
+        <MudIconButton
+            Icon="@Icons.Material.Filled.Menu"
+            Color="Color.Inherit"
+            Edge="Edge.Start"
+            OnClick="@((e) => DrawerToggle())"/>
+        <MudText
+            Typo="Typo.h5"
+            Class="ml-3">
+            Fahrschul Manager
+        </MudText>
+        <MudSpacer/>
+        <MudIconButton
+            Icon="@Icons.Custom.Brands.GitHub"
+            Href="https://github.com/JumpSpinn/driving_school_dashbaord"
+            Target="_blank"
+            Color="Color.Inherit"/>
     </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+    <MudDrawer 
+        @bind-Open="_drawerOpen" 
+        ClipMode="DrawerClipMode.Always" 
+        Elevation="2">
         <MainNavLayout />
     </MudDrawer>
     <MudMainContent>
@@ -23,7 +40,7 @@
 @code {
     private bool _isDarkMode;
     private MudThemeProvider? _mudThemeProvider;
-    bool _drawerOpen;
+    bool _drawerOpen = true;
 
     readonly MudTheme _myCustomTheme = new MudTheme()
     {
@@ -43,7 +60,6 @@
             {
                 FontFamily = new[] { "Open Sans", "Helvetica", "Arial", "sans-serif" },
                 FontSize = ".9rem",
-                FontWeight = "200",
                 LineHeight = "1",
                 LetterSpacing = "-.025rem"
             }
