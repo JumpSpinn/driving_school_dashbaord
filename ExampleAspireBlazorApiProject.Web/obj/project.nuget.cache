@@ -1,10 +1,9 @@
 {
   "version": 2,
-  "dgSpecHash": "5sSOHAXjs/8=",
+  "dgSpecHash": "J1DSvEPJbAY=",
   "success": true,
   "projectFilePath": "C:\\Users\\jumps\\Projects\\driving_school_dashbaord\\ExampleAspireBlazorApiProject.Web\\ExampleAspireBlazorApiProject.Web.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\jumps\\.nuget\\packages\\blazor.bootstrap\\3.5.0\\blazor.bootstrap.3.5.0.nupkg.sha512",
     "C:\\Users\\jumps\\.nuget\\packages\\microsoft.aspnetcore.authorization\\9.0.1\\microsoft.aspnetcore.authorization.9.0.1.nupkg.sha512",
     "C:\\Users\\jumps\\.nuget\\packages\\microsoft.aspnetcore.components\\9.0.1\\microsoft.aspnetcore.components.9.0.1.nupkg.sha512",
     "C:\\Users\\jumps\\.nuget\\packages\\microsoft.aspnetcore.components.analyzers\\9.0.1\\microsoft.aspnetcore.components.analyzers.9.0.1.nupkg.sha512",

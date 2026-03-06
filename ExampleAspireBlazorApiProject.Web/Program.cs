@@ -7,7 +7,6 @@ builder.Services
     .AddInteractiveServerComponents();
 
 builder.Services.AddOutputCache();
-builder.Services.AddBlazorBootstrap();
 builder.Services.AddMudServices();
 
 // add https clients

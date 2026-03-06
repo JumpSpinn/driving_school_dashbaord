@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ExampleAspireBlazorApiProject.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1d2565e1c16407c47807ab02298aecf14e0c5824")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ae98c1a4dd764043088ada15a17c0acd62ea39f4")]
 [assembly: System.Reflection.AssemblyProductAttribute("ExampleAspireBlazorApiProject.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ExampleAspireBlazorApiProject.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

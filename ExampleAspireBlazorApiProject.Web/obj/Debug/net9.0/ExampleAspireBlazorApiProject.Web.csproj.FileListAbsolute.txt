@@ -199,7 +199,6 @@ C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.W
 C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\bin\Debug\net9.0\ExampleAspireBlazorApiProject.Web.runtimeconfig.json
 C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\bin\Debug\net9.0\ExampleAspireBlazorApiProject.Web.dll
 C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\bin\Debug\net9.0\ExampleAspireBlazorApiProject.Web.pdb
-C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\bin\Debug\net9.0\BlazorBootstrap.dll
 C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\bin\Debug\net9.0\Microsoft.AspNetCore.Authorization.dll
 C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\bin\Debug\net9.0\Microsoft.AspNetCore.Components.dll
 C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\bin\Debug\net9.0\Microsoft.AspNetCore.Components.Forms.dll
@@ -274,15 +273,6 @@ C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.W
 C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\obj\Debug\net9.0\compressed\tzxjg6is5z-{0}-rlc4y2i51z-rlc4y2i51z.gz
 C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\obj\Debug\net9.0\compressed\0wz98yz2xy-{0}-9ci77co5cp-9ci77co5cp.gz
 C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\obj\Debug\net9.0\compressed\o7k4cxtn0u-{0}-7h25wudq12-7h25wudq12.gz
-C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\obj\Debug\net9.0\compressed\yxfdm33bor-{0}-63oqyoiiv4-63oqyoiiv4.gz
-C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\obj\Debug\net9.0\compressed\refgsao5tb-{0}-5c2gp224fj-5c2gp224fj.gz
-C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\obj\Debug\net9.0\compressed\d5o4a4wkq9-{0}-n1mvvrfiip-n1mvvrfiip.gz
-C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\obj\Debug\net9.0\compressed\sismm8xg1l-{0}-ezlxc6gzv3-ezlxc6gzv3.gz
-C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\obj\Debug\net9.0\compressed\q8v6i1uv3e-{0}-pisakkcwob-pisakkcwob.gz
-C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\obj\Debug\net9.0\compressed\36w3eu0hkb-{0}-j8zp7bt7w3-j8zp7bt7w3.gz
-C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\obj\Debug\net9.0\compressed\mfzx4sb2rv-{0}-79hai7knhw-79hai7knhw.gz
-C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\obj\Debug\net9.0\compressed\8kf3rcg0xy-{0}-olwso25aue-olwso25aue.gz
-C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\obj\Debug\net9.0\compressed\eskrbmazzz-{0}-lid26yebh4-lid26yebh4.gz
 C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\obj\Debug\net9.0\staticwebassets.build.json
 C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\obj\Debug\net9.0\staticwebassets.build.json.cache
 C:\Users\jumps\Projects\driving_school_dashbaord\ExampleAspireBlazorApiProject.Web\obj\Debug\net9.0\staticwebassets.development.json
