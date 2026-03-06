@@ -1,41 +1,64 @@
 ﻿@inherits LayoutComponentBase
 
+<MudThemeProvider @ref="_mudThemeProvider" @bind-IsDarkMode="_isDarkMode" Theme="_myCustomTheme" />
+<MudPopoverProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
+<MudLayout>
+    <MudAppBar Elevation="2" Fixed="true">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h5" Class="ml-3">Fahrschul Manager</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" />
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <MainNavLayout />
+    </MudDrawer>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+
 @code {
-    IEnumerable<NavItem>? _navItems;
+    private bool _isDarkMode;
+    private MudThemeProvider? _mudThemeProvider;
+    bool _drawerOpen;
 
-    private async Task<Sidebar2DataProviderResult> Sidebar2DataProvider(Sidebar2DataProviderRequest  request)
+    readonly MudTheme _myCustomTheme = new MudTheme()
     {
-        _navItems ??= GetNavItems();
-        return await Task.FromResult(request.ApplyTo(_navItems));
-    }
-
-    private IEnumerable<NavItem> GetNavItems()
-    {
-        _navItems = new List<NavItem>
+        PaletteLight = new PaletteLight()
         {
-            new NavItem { Href = "/", IconName = IconName.House, Text = "Übersicht"},
-            new NavItem { Href = "/drivingSchools", IconName = IconName.House, Text = "Fahrschulen"},
-            new NavItem { Href = "/drivers", IconName = IconName.House, Text = "Fahrschüler"},
-        };
-        return _navItems;
+            Primary = "#fd49a8",
+            Secondary = "#4ebcef"
+        },
+        PaletteDark = new PaletteDark()
+        {
+            Primary = "#fd49a8",
+            Secondary = "#4ebcef"
+        },
+        Typography = new Typography()
+        {
+            Default = new DefaultTypography()
+            {
+                FontFamily = new[] { "Open Sans", "Helvetica", "Arial", "sans-serif" },
+                FontSize = ".9rem",
+                FontWeight = "200",
+                LineHeight = "1",
+                LetterSpacing = "-.025rem"
+            }
+        }
+    };
+
+    void DrawerToggle() 
+        => _drawerOpen = !_drawerOpen;
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        if (_mudThemeProvider is null) return;
+        
+        _isDarkMode = await _mudThemeProvider.GetSystemDarkModeAsync();
+        StateHasChanged();
     }
 }
-
-<BlazorBootstrapLayout StickyHeader="true">
-
-    <HeaderSection>
-        <ThemeSwitcher Class="ps-3 ps-lg-2" Position="DropdownMenuPosition.End"/>
-    </HeaderSection>
-
-    <SidebarSection>
-        <Sidebar2 Href="/"
-                  Title="Fahrschul Manager"
-                  DataProvider="Sidebar2DataProvider"
-                  WidthUnit="Unit.Px" />
-    </SidebarSection>
-
-    <ContentSection>
-        @Body
-    </ContentSection>
-
-</BlazorBootstrapLayout>

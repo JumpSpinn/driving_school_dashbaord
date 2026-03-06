@@ -1,6 +1,3 @@
-using ExampleAspireBlazorApiProject.ServiceDefaults;
-using ExampleAspireBlazorApiProject.Web.Apis;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
@@ -11,6 +8,7 @@ builder.Services
 
 builder.Services.AddOutputCache();
 builder.Services.AddBlazorBootstrap();
+builder.Services.AddMudServices();
 
 // add https clients
 builder.Services.AddHttpClient<DrivingSchoolApiClient>(client =>
