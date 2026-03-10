@@ -30,6 +30,9 @@ public sealed class StudentModel
     // Navigator Properties
     public int? DrivingSchoolId { get; set; }
     
+    [ForeignKey("DrivingSchoolId")]
+    public DrivingSchoolModel? DrivingSchool { get; set; }
+    
     public StudentModel() { }
     public StudentModel(StudentModel other)
     {

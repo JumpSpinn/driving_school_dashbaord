@@ -20,6 +20,7 @@ public sealed class StudentService(ApplicationDbContext dbContext, ILogger<Stude
         {
             dbContext.Students.Add(newStudent);
             await dbContext.SaveChangesAsync();
+            await dbContext.Entry(newStudent).Reference(x => x.DrivingSchool).LoadAsync();
             return newStudent;
         }
         catch (Exception e)

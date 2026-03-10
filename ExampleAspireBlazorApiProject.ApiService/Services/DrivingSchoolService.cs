@@ -106,6 +106,10 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
             if (drivingSchool is null || drivingSchool.IsDeleted) return false;
             
             drivingSchool.IsDeleted = true;
+            
+            foreach (var student in drivingSchool.Students)
+                student.DrivingSchoolId = null;
+            
             await dbContext.SaveChangesAsync();
             
             return true;

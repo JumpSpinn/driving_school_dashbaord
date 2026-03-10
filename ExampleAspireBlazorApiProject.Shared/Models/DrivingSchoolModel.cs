@@ -9,7 +9,8 @@ public sealed class DrivingSchoolModel
     [StringLength(50, MinimumLength = 3, ErrorMessage = "Bezeichnung muss zwischen 3 und 50 Zeichen lang sein")]
     public string Name { get; set; } = string.Empty;
     
-    public List<StudentModel> Students { get; set; } = [];
+    public ICollection<StudentModel> Students { get; set; } = [];
+    
     public bool IsDeleted { get; set; }
 
     

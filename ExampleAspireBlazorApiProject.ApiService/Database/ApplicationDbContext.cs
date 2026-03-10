@@ -5,6 +5,7 @@ public sealed partial class ApplicationDbContext(DbContextOptions<ApplicationDbC
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<StudentModel>().Navigation(d => d.DrivingSchool).AutoInclude();
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
     }
 }

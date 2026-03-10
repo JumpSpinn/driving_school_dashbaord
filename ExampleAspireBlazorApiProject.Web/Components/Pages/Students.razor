@@ -143,8 +143,6 @@
         var school = GetDrivingSchool((int)schoolId);
         return school?.Name ?? "Unbekannte Fahrschule";
     }
-    
-    private DateTime? _date = DateTime.Today;
 }
 
 <PageTitle>Fahrschüler</PageTitle>
@@ -227,8 +225,8 @@ else
                             <MudChip T="string"
                                      Size="Size.Medium"
                                      Variant="Variant.Text"
-                                     Color="@(context.Item.DrivingSchoolId > 0 ? Color.Info : Color.Error)">
-                                @GetDrivingSchoolName(context.Item.DrivingSchoolId)
+                                     Color="@(context.Item.DrivingSchool != null ? Color.Info : Color.Error)">
+                                @(context.Item.DrivingSchool?.Name ?? "Keine Zuweisung")
                             </MudChip>
                         </CellTemplate>
                     </TemplateColumn>
