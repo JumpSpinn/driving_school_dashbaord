@@ -135,8 +135,12 @@
         studentToUpdate.LastName = _editStudent.LastName;
         studentToUpdate.Mail = _editStudent.Mail;
         studentToUpdate.Phone = _editStudent.Phone;
+        studentToUpdate.Birthday = _editStudent.Birthday;
+        studentToUpdate.License = _editStudent.License;
+        studentToUpdate.EnrollmentDate = _editStudent.EnrollmentDate;
+        studentToUpdate.ExamDate = _editStudent.ExamDate;
+        studentToUpdate.HasPassed = _editStudent.HasPassed;
         studentToUpdate.DrivingSchoolId = _editStudent.DrivingSchoolId;
-        studentToUpdate.IsActive = _editStudent.IsActive;
         
         await OnHideModal(_editDialog);
         await _mudDataGrid.ReloadServerData();
@@ -177,6 +181,8 @@
         var school = GetDrivingSchool((int)schoolId);
         return school?.Name ?? "Unbekannte Fahrschule";
     }
+    
+    private DateTime? _date = DateTime.Today;
 }
 
 <PageTitle>Fahrschüler</PageTitle>
@@ -187,6 +193,7 @@
         <MudText Typo="Typo.body1">Hier sind alle Fahrschüler aufgelistet, die im System eingetragen wurden.</MudText>
     </MudPaper>
     <MudSpacer/>
+    
     <MudButton
         Size="Size.Small"
         EndIcon="@Icons.Material.Filled.Add"
@@ -219,10 +226,40 @@ else
             >
                 <Columns>
                     <PropertyColumn Property="x => x.Id" Title="ID" />
-                    <PropertyColumn Property="x => x.FirstName" Title="Vorname" />
-                    <PropertyColumn Property="x => x.LastName" Title="Nachname" />
+                    <PropertyColumn Property="x => x.FullName" Title="Vor- Nachname" />
                     <PropertyColumn Property="x => x.Mail" Title="E-Mail" />
                     <PropertyColumn Property="x => x.Phone" Title="Telefon" />
+                    <TemplateColumn Title="Geburtstag">
+                        <CellTemplate>
+                            @context.Item.Birthday?.ToString("dd.MM.yyyy")
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn Title="Klasse">
+                        <CellTemplate>
+                            @LicenseHelper.GetName(context.Item.License)
+                        </CellTemplate>
+                    </TemplateColumn>
+                    
+                    <TemplateColumn Title="Anmeldedatum">
+                        <CellTemplate>
+                            @context.Item.EnrollmentDate?.ToString("dd.MM.yyyy")
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn Title="Prüfungsdatum">
+                        <CellTemplate>
+                            @context.Item.ExamDate?.ToString("dd.MM.yyyy")
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn Title="Bestanden">
+                        <CellTemplate>
+                            <MudChip T="string"
+                                     Size="Size.Medium"
+                                     Variant="Variant.Text"
+                                     Color="@(context.Item.HasPassed ? Color.Success : Color.Warning)">
+                                @(context.Item.HasPassed ? "Ja" : "Nein")
+                            </MudChip>
+                        </CellTemplate>
+                    </TemplateColumn>
                     <TemplateColumn Title="Fahrschule">
                         <CellTemplate>
                             <MudChip T="string"
@@ -230,16 +267,6 @@ else
                                      Variant="Variant.Text"
                                      Color="@(context.Item.DrivingSchoolId > 0 ? Color.Info : Color.Error)">
                                 @GetDrivingSchoolName(context.Item.DrivingSchoolId)
-                            </MudChip>
-                        </CellTemplate>
-                    </TemplateColumn>
-                    <TemplateColumn Title="Aktiv">
-                        <CellTemplate>
-                            <MudChip T="string"
-                                     Size="Size.Medium"
-                                     Variant="Variant.Text"
-                                     Color="@(context.Item.IsActive ? Color.Success : Color.Error)">
-                                @(context.Item.IsActive ? "Ja" : "Nein")
                             </MudChip>
                         </CellTemplate>
                     </TemplateColumn>
@@ -288,15 +315,7 @@ else
             <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_newStudent.LastName" Label="Nachname" Variant="Variant.Text"/>
             <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_newStudent.Mail" Label="E-Mail" Variant="Variant.Text"/>
             <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_newStudent.Phone" Label="Telefon" Variant="Variant.Text"/>
-            <MudSelect
-                Class="mb-4"
-                @bind-Value="_newStudent.IsActive"
-                Variant="Variant.Text"
-                Label="Aktiv"
-                Placeholder="Aktiv-Status wählen">
-                <MudSelectItem Value="true">Aktiv</MudSelectItem>
-                <MudSelectItem Value="false">Inaktiv</MudSelectItem>
-            </MudSelect>
+            <MudDatePicker Class="mb-4" Label="Geburtstag" @bind-Date="_newStudent.Birthday" />
             <MudSelect
                 Class="mb-4"
                 @bind-Value="_newStudent.DrivingSchoolId"
@@ -309,6 +328,18 @@ else
                     <MudSelectItem Value="@((int?)school.Id)">@school.Name</MudSelectItem>
                 }
             </MudSelect>
+            <MudSelect
+                Class="mb-4"
+                @bind-Value="_newStudent.License"
+                Variant="Variant.Text"
+                Label="Fahrzeug-Klasse wählen"
+                Placeholder="Fahrzeug-Klasse wählen">
+                @foreach (var license in Enum.GetValues<LicenseClass>())
+                {
+                    <MudSelectItem Value="@((LicenseClass?)license)">@LicenseHelper.GetName(license)</MudSelectItem>
+                }
+            </MudSelect>
+            <MudDatePicker Class="mb-4" Label="Prüfungstermin" @bind-Date="_newStudent.ExamDate" />
         </MudPaper>
     </DialogContent>
     <DialogActions>
@@ -327,15 +358,7 @@ else
             <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_editStudent!.LastName" Label="Nachname" Variant="Variant.Text"/>
             <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_editStudent!.Mail" Label="E-Mail" Variant="Variant.Text"/>
             <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_editStudent!.Phone" Label="Telefon" Variant="Variant.Text"/>
-            <MudSelect
-                Class="mb-4"
-                @bind-Value="_editStudent!.IsActive"
-                Variant="Variant.Text"
-                Label="Aktiv"
-                Placeholder="Aktiv-Status wählen">
-                <MudSelectItem Value="true">Aktiv</MudSelectItem>
-                <MudSelectItem Value="false">Inaktiv</MudSelectItem>
-            </MudSelect>
+            <MudDatePicker Class="mb-4" Label="Geburtstag" @bind-Date="_editStudent!.Birthday" />
             <MudSelect
                 Class="mb-4"
                 @bind-Value="_editStudent!.DrivingSchoolId"
@@ -348,6 +371,22 @@ else
                     <MudSelectItem Value="@((int?)school.Id)">@school.Name</MudSelectItem>
                 }
             </MudSelect>
+            <MudSelect
+                Class="mb-4"
+                @bind-Value="_editStudent!.License"
+                Variant="Variant.Text"
+                Label="Fahrzeug-Klasse wählen"
+                Placeholder="Fahrzeug-Klasse wählen">
+                @foreach (var license in Enum.GetValues<LicenseClass>())
+                {
+                    <MudSelectItem Value="@license">@LicenseHelper.GetName(license)</MudSelectItem>
+                }
+            </MudSelect>
+            <MudDatePicker Class="mb-4" Label="Prüfungstermin" @bind-Date="_editStudent!.ExamDate" />
+            <MudRadioGroup Class="mb-4" Row="true" @bind-Value="_editStudent!.HasPassed">
+                <MudRadio Value="true" Color="Color.Primary" Dense="true">Bestanden</MudRadio>
+                <MudRadio Value="false" Color="Color.Secondary" Dense="false">nicht Bestanden / Prüfung ausstehend</MudRadio>
+            </MudRadioGroup>
         </MudPaper>
     </DialogContent>
     <DialogActions>

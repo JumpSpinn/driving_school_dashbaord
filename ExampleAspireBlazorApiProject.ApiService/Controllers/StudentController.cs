@@ -41,15 +41,4 @@ public sealed class StudentController(StudentService studentService, ILogger<Stu
             return NotFound($"Fahrschüler mit der ID {editStudent.Id} konnte nicht aktualisiert werden!");
         return NoContent();
     }
-    
-    [HttpPut]
-    [Route("state")]
-    public async Task<IActionResult> UpdateStudentActiveStateAsync([FromBody] StudentStateRequest request)
-    {
-        var updated = await studentService.UpdateStudentAsync(request.StudentId, request.IsActive);
-        logger.LogDebug("Student #{Id} state was updated to {NewState}", request.StudentId, updated ? "active" : "inactive");
-        if (!updated)
-            return NotFound($"Fahrschüler mit der ID {request.StudentId} konnte der Status nicht aktualisiert werden!");
-        return NoContent();
-    }
 }

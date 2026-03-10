@@ -69,8 +69,12 @@ public sealed class StudentService(ApplicationDbContext dbContext, ILogger<Stude
             student.LastName = editStudent.LastName;
             student.Mail = editStudent.Mail;
             student.Phone = editStudent.Phone;
+            student.Birthday = editStudent.Birthday;
+            student.License = editStudent.License;
+            student.EnrollmentDate = editStudent.EnrollmentDate;
+            student.ExamDate = editStudent.ExamDate;
+            student.HasPassed = editStudent.HasPassed;
             student.DrivingSchoolId = editStudent.DrivingSchoolId;
-            student.IsActive = editStudent.IsActive;
             
             await dbContext.SaveChangesAsync();
 
@@ -79,27 +83,6 @@ public sealed class StudentService(ApplicationDbContext dbContext, ILogger<Stude
         catch (Exception e)
         {
             logger.LogError(e, "Error updating student #1");
-        }
-
-        return false;
-    }
-    
-    public async Task<bool> UpdateStudentAsync(int id, bool isActive)
-    {
-        try
-        {
-            var student = GetStudent(id);
-            if (student is null) return false;
-            
-            student.IsActive = isActive;
-            
-            await dbContext.SaveChangesAsync();
-
-            return true;
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, "Error updating student #2");
         }
 
         return false;
