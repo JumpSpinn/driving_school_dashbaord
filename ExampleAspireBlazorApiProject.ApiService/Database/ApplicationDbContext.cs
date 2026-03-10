@@ -6,6 +6,8 @@ public sealed partial class ApplicationDbContext(DbContextOptions<ApplicationDbC
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<StudentModel>().Navigation(d => d.DrivingSchool).AutoInclude();
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+        modelBuilder.Entity<TheoryLessonModel>().Navigation(d => d.Instructor).AutoInclude();
+        modelBuilder.Entity<CourseBookingModel>().Navigation(d => d.Student).AutoInclude();
+        modelBuilder.Entity<CourseBookingModel>().Navigation(d => d.TheoryLesson).AutoInclude();
     }
 }

@@ -26,6 +26,7 @@ public sealed class TheoryLessonModel
     
     // Navigator Properties
     public int? InstructorId { get; set; }
+    [ForeignKey(nameof(InstructorId))]
     public InstructorModel? Instructor { get; set; }
     
     

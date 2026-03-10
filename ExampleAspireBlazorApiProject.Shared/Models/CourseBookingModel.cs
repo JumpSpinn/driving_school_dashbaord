@@ -15,6 +15,8 @@ public sealed class CourseBookingModel
     public DateTime BookingDate { get; set; } = DateTime.Now;
 
     // Navigation Properties
+    [ForeignKey(nameof(StudentId))]
     public StudentModel? Student { get; set; }
+    [ForeignKey(nameof(TheoryLessonId))]
     public TheoryLessonModel? TheoryLesson { get; set; }
 }
