@@ -19,6 +19,9 @@ artifacts/
 # User-specific files
 *.rsuser
 
+# Test coverage
+.msCoverage/
+
 # JetBrains Rider
 .idea/
 *.sln.iml
@@ -40,6 +43,7 @@ ScaffoldingReadMe.txt
 *.iobj
 *.pch
 *.pdb
+*.exe
 *.ipdb
 *.pgc
 *.pgd
@@ -58,6 +62,7 @@ ScaffoldingReadMe.txt
 *.pidb
 *.svclog
 *.scc
+*.cache
 
 # Test Results
 [Tt]est[Rr]esult*/
