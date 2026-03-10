@@ -1,6 +1,4 @@
-﻿using ExampleAspireBlazorApiProject.Shared.Models;
-
-namespace ExampleAspireBlazorApiProject.Web.Apis;
+﻿namespace ExampleAspireBlazorApiProject.Web.Apis;
 
 public sealed class DrivingSchoolApiClient(HttpClient client, ILogger<DrivingSchoolApiClient> logger)
 {

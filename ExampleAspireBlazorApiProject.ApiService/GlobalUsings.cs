@@ -1,6 +1,16 @@
-﻿global using ExampleAspireBlazorApiProject.ApiService.Database;
+﻿global using System;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Threading.Tasks;
+global using Microsoft.Extensions.Logging;
+global using ExampleAspireBlazorApiProject.ApiService.Database;
 global using Microsoft.EntityFrameworkCore;
 global using ExampleAspireBlazorApiProject.ApiService.Services;
 global using ExampleAspireBlazorApiProject.Shared.Models;
 global using Microsoft.AspNetCore.Mvc;
 global using ExampleAspireBlazorApiProject.Shared.Records;
+global using ExampleAspireBlazorApiProject.ServiceDefaults;
+global using Microsoft.AspNetCore.Builder;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Hosting;
+global using Microsoft.AspNetCore.Http;

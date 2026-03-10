@@ -1,5 +1,3 @@
-using ExampleAspireBlazorApiProject.ServiceDefaults;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
