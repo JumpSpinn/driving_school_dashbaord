@@ -3,6 +3,7 @@ global using System.Collections.Generic;
 global using System.Linq;
 global using System.Threading.Tasks;
 global using Microsoft.Extensions.Logging;
+global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using ExampleAspireBlazorApiProject.ApiService.Database;
 global using Microsoft.EntityFrameworkCore;
 global using ExampleAspireBlazorApiProject.ApiService.Services;
