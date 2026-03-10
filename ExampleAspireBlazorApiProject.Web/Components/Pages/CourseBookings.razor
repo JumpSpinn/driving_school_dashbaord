@@ -1,0 +1,106 @@
+﻿@page "/bookings"
+@rendermode InteractiveServer
+
+@code{
+    private bool _dataLoading;
+    private List<CourseBookingModel> _courseBookings = [];
+    private MudDataGrid<CourseBookingModel> _mudDataGrid = default!;
+
+    private MudDialog _createDialog = default!;
+    private MudDialog _deleteDialog = default!;
+    private MudDialog _editDialog = default!;
+    
+    private CourseBookingModel? _editCourseBooking;
+    private CourseBookingModel? _deleteCourseBooking;
+    private CourseBookingModel _newCourseBooking = new();
+    
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _ = LoadAllDataAsync();
+    }
+    
+    // LOAD
+    private async Task LoadAllDataAsync()
+    {
+        _dataLoading = true;
+        StateHasChanged();
+        
+        //_drivingSchools = await DrivingSchoolApi.GetAllDrivingSchoolsAsync() ?? [];
+        
+        _dataLoading = false;
+        StateHasChanged();
+    }
+    
+    // MODALS
+    private async Task OnShowModal(MudDialog? dialog)
+    {
+        if (dialog is null) return;
+        await dialog.ShowAsync(options: DialogData.DialogDefaultOptions);
+    }
+    
+    private async Task OnHideModal(MudDialog? dialog)
+    {
+        if (dialog is null) return;
+        await dialog.CloseAsync();
+    }
+}
+
+<PageTitle>Kursbuchungen</PageTitle>
+
+<MudPaper Class="d-flex flex-row align-center mud-theme-dark pa-4 ma-4" Elevation="1">
+    <MudPaper Class="d-flex flex-column mud-theme-dark" Elevation="0">
+        <MudText Typo="Typo.h5" Color="Color.Secondary">Kursbuchungen</MudText>
+        <MudText Typo="Typo.body1">Hier sind alle Kurse aufgelistet, die eine Buchung aufweisen.</MudText>
+    </MudPaper>
+    <MudSpacer/>
+    <MudButton
+        Size="Size.Small"
+        EndIcon="@Icons.Material.Filled.Add"
+        Variant="Variant.Outlined"
+        Color="Color.Primary"
+        OnClick="() => OnShowModal(_createDialog)">
+        Neue Buchung
+    </MudButton>
+</MudPaper>
+
+@if (_dataLoading)
+{
+    <MudPaper Class="mud-theme-dark pa-4 ma-4" Elevation="1">
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true"/>
+    </MudPaper>
+}
+else
+{
+    <div class="@(_courseBookings.Count == 0 ? "d-none" : "")">
+        <MudPaper Class="mud-theme-dark pa-4 ma-4" Elevation="1">
+            <MudDataGrid 
+                @ref="_mudDataGrid" 
+                Items="@_courseBookings" 
+                Bordered="false"
+                Dense="true"
+                RowsPerPage="10"
+                SortMode="SortMode.Multiple"
+                Hover="true"
+                Loading="@_dataLoading"
+            >
+                <Columns>
+                    <PropertyColumn Property="x => x.Id" Title="ID" />
+                    <PropertyColumn Property="x => x.Student!.FullName" Title="Fahrschüler" />
+                    <PropertyColumn Property="x => x.TheoryLesson!.Name" Title="Kursname" />
+                    <PropertyColumn Property="x => x.BookingDate" Title="Buchungsdatum" />
+                </Columns>
+                <PagerContent>
+                    <MudDataGridPager />
+                </PagerContent>
+            </MudDataGrid>
+        </MudPaper>
+    </div>
+    
+    if (_courseBookings.Count == 0)
+    {
+        <MudPaper Class="mud-theme-dark pa-4 ma-4" Elevation="1">
+            <MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">Keine Daten vorhanden.</MudAlert>
+        </MudPaper>
+    }
+}

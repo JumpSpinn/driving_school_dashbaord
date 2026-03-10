@@ -8,15 +8,6 @@
     private List<DrivingSchoolModel> _drivingSchools = [];
     private MudDataGrid<DrivingSchoolModel> _mudDataGrid = default!;
 
-    private readonly DialogOptions _dialogOptions = new()
-    {
-        MaxWidth = MaxWidth.Small,
-        FullWidth = true,
-        BackdropClick = true,
-        CloseOnEscapeKey = true,
-        BackgroundClass = "dialog_backdrop_blur"
-    };
-
     private MudDialog _createDialog = default!;
     private MudDialog _deleteDialog = default!;
     private MudDialog _editDialog = default!;
@@ -28,11 +19,11 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        _ = LoadAllDrivingSchoolDataAsync();
+        _ = LoadAllDataAsync();
     }
     
     // LOAD
-    private async Task LoadAllDrivingSchoolDataAsync()
+    private async Task LoadAllDataAsync()
     {
         _dataLoading = true;
         StateHasChanged();
@@ -47,7 +38,7 @@
     private async Task OnShowModal(MudDialog? dialog)
     {
         if (dialog is null) return;
-        await dialog.ShowAsync(options: _dialogOptions);
+        await dialog.ShowAsync(options: DialogData.DialogDefaultOptions);
     }
     
     private async Task OnHideModal(MudDialog? dialog)

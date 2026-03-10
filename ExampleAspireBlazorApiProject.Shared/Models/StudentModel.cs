@@ -3,7 +3,7 @@
 public sealed class StudentModel
 {
     [Key]
-    public int Id { get; set; }
+    public int Id { get; init; }
     
     [Required(ErrorMessage = "Vorname ist Pflicht")]
     [StringLength(50, MinimumLength = 3, ErrorMessage = "Vorname muss zwischen 3 und 50 Zeichen lang sein")]
@@ -25,9 +25,10 @@ public sealed class StudentModel
     public DateTime? EnrollmentDate { get; set; } = DateTime.Now;
     public DateTime? ExamDate { get; set; }
     public bool HasPassed { get; set; }
-    public int? DrivingSchoolId { get; set; }
     public bool IsDeleted { get; set; }
     
+    // Navigator Properties
+    public int? DrivingSchoolId { get; set; }
     
     public StudentModel() { }
     public StudentModel(StudentModel other)
@@ -43,8 +44,9 @@ public sealed class StudentModel
         EnrollmentDate = other.EnrollmentDate;
         ExamDate = other.ExamDate;
         HasPassed = other.HasPassed;
-        
-        DrivingSchoolId = other.DrivingSchoolId;
         IsDeleted = other.IsDeleted;
+        
+        // Navigator Properties
+        DrivingSchoolId = other.DrivingSchoolId;
     }
 }

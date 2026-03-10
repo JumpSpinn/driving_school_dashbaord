@@ -1,0 +1,104 @@
+﻿@page "/instructors"
+@rendermode InteractiveServer
+
+@code{
+    private bool _dataLoading;
+    private List<InstructorModel> _instructors = [];
+    private MudDataGrid<InstructorModel> _mudDataGrid = default!;
+
+    private MudDialog _createDialog = default!;
+    private MudDialog _deleteDialog = default!;
+    private MudDialog _editDialog = default!;
+    
+    private InstructorModel? _editInstructor;
+    private InstructorModel? _deleteInstructor;
+    private InstructorModel _newInstructor = new();
+    
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _ = LoadAllDataAsync();
+    }
+    
+    // LOAD
+    private async Task LoadAllDataAsync()
+    {
+        _dataLoading = true;
+        StateHasChanged();
+        
+        //_drivingSchools = await DrivingSchoolApi.GetAllDrivingSchoolsAsync() ?? [];
+        
+        _dataLoading = false;
+        StateHasChanged();
+    }
+    
+    // MODALS
+    private async Task OnShowModal(MudDialog? dialog)
+    {
+        if (dialog is null) return;
+        await dialog.ShowAsync(options: DialogData.DialogDefaultOptions);
+    }
+    
+    private async Task OnHideModal(MudDialog? dialog)
+    {
+        if (dialog is null) return;
+        await dialog.CloseAsync();
+    }
+}
+
+<PageTitle>Fahrlehrer</PageTitle>
+
+<MudPaper Class="d-flex flex-row align-center mud-theme-dark pa-4 ma-4" Elevation="1">
+    <MudPaper Class="d-flex flex-column mud-theme-dark" Elevation="0">
+        <MudText Typo="Typo.h5" Color="Color.Secondary">Fahrlehrer</MudText>
+        <MudText Typo="Typo.body1">Hier sind alle Fahrlehrer aufgelistet, die unterrichten dürfen.</MudText>
+    </MudPaper>
+    <MudSpacer/>
+    <MudButton
+        Size="Size.Small"
+        EndIcon="@Icons.Material.Filled.Add"
+        Variant="Variant.Outlined"
+        Color="Color.Primary"
+        OnClick="() => OnShowModal(_createDialog)">
+        Eintragen
+    </MudButton>
+</MudPaper>
+
+@if (_dataLoading)
+{
+    <MudPaper Class="mud-theme-dark pa-4 ma-4" Elevation="1">
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true"/>
+    </MudPaper>
+}
+else
+{
+    <div class="@(_instructors.Count == 0 ? "d-none" : "")">
+        <MudPaper Class="mud-theme-dark pa-4 ma-4" Elevation="1">
+            <MudDataGrid 
+                @ref="_mudDataGrid" 
+                Items="@_instructors" 
+                Bordered="false"
+                Dense="true"
+                RowsPerPage="10"
+                SortMode="SortMode.Multiple"
+                Hover="true"
+                Loading="@_dataLoading"
+            >
+                <Columns>
+                    <PropertyColumn Property="x => x.Id" Title="ID" />
+                    <PropertyColumn Property="x => x.FullName" Title="Vor- Nachname" />
+                </Columns>
+                <PagerContent>
+                    <MudDataGridPager />
+                </PagerContent>
+            </MudDataGrid>
+        </MudPaper>
+    </div>
+    
+    if (_instructors.Count == 0)
+    {
+        <MudPaper Class="mud-theme-dark pa-4 ma-4" Elevation="1">
+            <MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">Keine Daten vorhanden.</MudAlert>
+        </MudPaper>
+    }
+}

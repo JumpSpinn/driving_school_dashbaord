@@ -8,6 +8,8 @@ global using MudBlazor.Services;
 global using System.Collections.Generic;
 global using System.Net.Http;
 global using System.Net.Http.Json;
+global using ExampleAspireBlazorApiProject.Web.Data;
+global using MudBlazor;
 global using System.Threading.Tasks;
 global using ExampleAspireBlazorApiProject.Shared.Models;
 global using Microsoft.Extensions.Logging;
