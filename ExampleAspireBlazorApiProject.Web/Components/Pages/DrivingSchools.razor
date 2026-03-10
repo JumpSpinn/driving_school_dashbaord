@@ -20,7 +20,6 @@
     private MudDialog _createDialog = default!;
     private MudDialog _deleteDialog = default!;
     private MudDialog _editDialog = default!;
-    private string _modalError = string.Empty; // TODO: reimplement
     
     private DrivingSchoolModel? _editDrivingSchool;
     private DrivingSchoolModel? _deleteDrivingSchool;
@@ -30,17 +29,6 @@
     {
         base.OnInitialized();
         _ = LoadAllDrivingSchoolDataAsync();
-    }
-    
-    // VALIDATION
-    private bool ValidateDrivingSchoolName(string name)
-    {
-        _modalError = string.Empty;
-        if (string.IsNullOrWhiteSpace(name))
-            _modalError = "Du musst einen Namen angeben!";
-        else if (name.Length < 3)
-            _modalError = "Der Name muss mindestens 3 Zeichen lang sein!";
-        return string.IsNullOrWhiteSpace(_modalError);
     }
     
     // LOAD
@@ -69,9 +57,13 @@
     }
     
     // CREATE
+    MudForm _createForm;
+    bool _createFormSuccess;
+    
     private async Task HandleCreateDrivingSchoolAsync()
     {
-        if (!ValidateDrivingSchoolName(_newDrivingSchool.Name)) return;
+        await _createForm.ValidateAsync();
+        if (!_createForm.IsValid) return;
         
         var newDrivingSchool = await DrivingSchoolApi.CreateDrivingSchoolAsync(_newDrivingSchool);
         if (newDrivingSchool is not null)
@@ -83,9 +75,11 @@
     }
     
     // EDIT
+    MudForm _editForm;
+    bool _editFormSuccess;
+    
     private void OnShowEditModal(DrivingSchoolModel drivingSchool)
     {
-        _modalError = string.Empty;
         _editDrivingSchool = new(drivingSchool);
         _ = OnShowModal(_editDialog);
     }
@@ -93,21 +87,15 @@
     private async Task ConfirmEditDrivingSchoolAsync()
     {
         if (_editDrivingSchool is null) return;
-        if (!ValidateDrivingSchoolName(_editDrivingSchool.Name)) return;
+        
+        await _editForm.ValidateAsync();
+        if (!_editForm.IsValid) return;
 
         var updated = await DrivingSchoolApi.UpdateDrivingSchoolAsync(_editDrivingSchool);
-        if (!updated)
-        {
-            _modalError = $"Fahrschule {_editDrivingSchool.Name} konnte nicht bearbeitet werden!";
-            return;
-        }
+        if (!updated) return;
         
         var drivingSchoolToUpdate = _drivingSchools.FirstOrDefault(x => x.Id == _editDrivingSchool.Id);
-        if (drivingSchoolToUpdate is null)
-        {
-            _modalError = "Die zu bearbeitende Fahrschule ist nicht bekannt!";
-            return;
-        }
+        if (drivingSchoolToUpdate is null) return;
         
         drivingSchoolToUpdate.Name = _editDrivingSchool.Name;
 
@@ -119,7 +107,6 @@
     // DELETE
     private void OnShowDeleteModal(DrivingSchoolModel drivingSchool)
     {
-        _modalError = string.Empty;
         _deleteDrivingSchool = new(drivingSchool);
         _ = OnShowModal(_deleteDialog);
     }
@@ -226,9 +213,18 @@ else
         <MudText Typo="Typo.h6">Fahrschule registrieren</MudText>
     </TitleContent>
     <DialogContent>
-        <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
-            <MudTextField AutoFocus="true" Class="mb-4" ShrinkLabel @bind-Value="_newDrivingSchool.Name" Label="Bezeichnung" Variant="Variant.Text" />
-        </MudPaper>
+        <MudForm @ref="_createForm" @bind-IsValid="@_createFormSuccess">
+            <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
+                <MudTextField T="string"
+                              Class="mb-4"
+                              Variant="Variant.Text"
+                              @bind-Value="_newDrivingSchool!.Name"
+                              ShrinkLabel
+                              Label="Bezeichnung"
+                              For="@(() => _newDrivingSchool!.Name)"
+                              Immediate="true"/>
+            </MudPaper>
+        </MudForm>
     </DialogContent>
     <DialogActions>
         <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => OnHideModal(_createDialog)">Abbrechen</MudButton>
@@ -256,9 +252,18 @@ else
         <MudText Typo="Typo.h6">Fahrschule bearbeiten</MudText>
     </TitleContent>
     <DialogContent>
-        <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
-            <MudTextField AutoFocus="true" Class="mb-4" ShrinkLabel @bind-Value="_editDrivingSchool!.Name" Label="Bezeichnung" Variant="Variant.Text" />
-        </MudPaper>
+        <MudForm @ref="_editForm" @bind-IsValid="@_editFormSuccess">
+            <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
+                <MudTextField T="string"
+                              Class="mb-4"
+                              Variant="Variant.Text"
+                              @bind-Value="_editDrivingSchool!.Name"
+                              ShrinkLabel
+                              Label="Bezeichnung"
+                              For="@(() => _editDrivingSchool!.Name)"
+                              Immediate="true"/>
+            </MudPaper>
+        </MudForm>
     </DialogContent>
     <DialogActions>
         <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => OnHideModal(_editDialog)">Abbrechen</MudButton>
