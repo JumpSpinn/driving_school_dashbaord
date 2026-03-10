@@ -20,7 +20,6 @@
     private MudDialog _createDialog = default!;
     private MudDialog _deleteDialog = default!;
     private MudDialog _editDialog = default!;
-    private string _modalError = string.Empty; // TODO: reimplement
     
     private List<DrivingSchoolModel> _drivingSchools = [];
     private StudentModel? _editStudent;
@@ -31,33 +30,6 @@
     {
         base.OnInitialized();
         _ = LoadAllStudentsAsync();
-    }
-    
-    // VALIDATION
-    private bool ValidateCreateStudent(StudentModel validateStudent)
-    {
-        _modalError = string.Empty;
-        
-        if (string.IsNullOrWhiteSpace(validateStudent.FirstName))
-            _modalError = "Vorname muss angegeben werden!";
-        else if (validateStudent.FirstName.Length < 3)
-            _modalError = "Vorname muss mindestens 3 Zeichen lang sein!";
-        else if (string.IsNullOrWhiteSpace(validateStudent.LastName))
-            _modalError = "Nachname muss angegeben werden";
-        else if (validateStudent.LastName.Length < 3)
-            _modalError = "Nachname muss mindestens 3 Zeichen lang sein!";
-        else if (string.IsNullOrWhiteSpace(validateStudent.Mail))
-            _modalError = "E-Mail muss angegeben werden!";
-        else if (!validateStudent.Mail.Contains("@"))
-            _modalError = "Ungültige E-Mail Adresse!";
-        else if (!string.IsNullOrWhiteSpace(validateStudent.Phone))
-        {
-            var isMatch = Regex.IsMatch(validateStudent.Phone, @"^\d+$");
-            if (!isMatch)
-                _modalError = "Ungültige Telefonnummer. Darf nur aus Zahlen bestehen!";
-        }
-
-        return string.IsNullOrWhiteSpace(_modalError);
     }
     
     // LOAD
@@ -91,9 +63,13 @@
     }
     
     // CREATE
+    MudForm _createForm;
+    bool _createFormSuccess;
+    
     private async Task HandleCreateDriverAsync()
     {
-        if (!ValidateCreateStudent(_newStudent)) return;
+        await _createForm.ValidateAsync();
+        if (!_createForm.IsValid) return;
         
         var newStudent = await StudentApiClient.CreateStudentAsync(_newStudent);
         if (newStudent is not null)
@@ -105,9 +81,11 @@
     }
     
     // EDIT
+    MudForm _editForm;
+    bool _editFormSuccess;
+    
     private void OnShowEditModal(StudentModel student)
     {
-        _modalError = string.Empty;
         _editStudent = new(student);
         _ = OnShowModal(_editDialog);
     }
@@ -115,21 +93,15 @@
     private async Task ConfirmEditDrivingSchoolAsync()
     {
         if (_editStudent is null) return;
-        if (!ValidateCreateStudent(_editStudent)) return;
+        
+        await _editForm.ValidateAsync();
+        if (!_editForm.IsValid) return;
 
         var updated = await StudentApiClient.UpdateStudentAsync(_editStudent);
-        if (!updated)
-        {
-            _modalError = $"Fahrschüler {_editStudent.FirstName} {_editStudent.LastName} konnte nicht bearbeitet werden!";
-            return;
-        }
+        if (!updated) return;
         
         var studentToUpdate = _students.FirstOrDefault(x => x.Id == _editStudent.Id);
-        if (studentToUpdate is null)
-        {
-            _modalError = "Der zu bearbeitende Fahrschüler ist nicht bekannt!";
-            return;
-        }
+        if (studentToUpdate is null) return;
         
         studentToUpdate.FirstName = _editStudent.FirstName;
         studentToUpdate.LastName = _editStudent.LastName;
@@ -150,7 +122,6 @@
     // DELETE
     private void OnShowDeleteModal(StudentModel student)
     {
-        _modalError = string.Empty;
         _deleteStudent = new(student);
         _ = OnShowModal(_deleteDialog);
     }
@@ -310,37 +281,67 @@ else
         <MudText Typo="Typo.h6">Fahrschüler anlegen</MudText>
     </TitleContent>
     <DialogContent>
-        <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
-            <MudTextField AutoFocus="true" Class="mb-4" ShrinkLabel @bind-Value="_newStudent.FirstName" Label="Vorname" Variant="Variant.Text"/>
-            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_newStudent.LastName" Label="Nachname" Variant="Variant.Text"/>
-            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_newStudent.Mail" Label="E-Mail" Variant="Variant.Text"/>
-            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_newStudent.Phone" Label="Telefon" Variant="Variant.Text"/>
-            <MudDatePicker Class="mb-4" Label="Geburtstag" @bind-Date="_newStudent.Birthday" />
-            <MudSelect
-                Class="mb-4"
-                @bind-Value="_newStudent.DrivingSchoolId"
-                Variant="Variant.Text"
-                Label="Fahrschule zuweisen"
-                Disabled="!_drivingSchools.Any()"
-                Placeholder="Fahrschule wählen">
-                @foreach (var school in _drivingSchools)
-                {
-                    <MudSelectItem Value="@((int?)school.Id)">@school.Name</MudSelectItem>
-                }
-            </MudSelect>
-            <MudSelect
-                Class="mb-4"
-                @bind-Value="_newStudent.License"
-                Variant="Variant.Text"
-                Label="Fahrzeug-Klasse wählen"
-                Placeholder="Fahrzeug-Klasse wählen">
-                @foreach (var license in Enum.GetValues<LicenseClass>())
-                {
-                    <MudSelectItem Value="@((LicenseClass?)license)">@LicenseHelper.GetName(license)</MudSelectItem>
-                }
-            </MudSelect>
-            <MudDatePicker Class="mb-4" Label="Prüfungstermin" @bind-Date="_newStudent.ExamDate" />
-        </MudPaper>
+        <MudForm @ref="_createForm" @bind-IsValid="@_createFormSuccess">
+            <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
+                <MudTextField T="string"
+                              Class="mb-4"
+                              ShrinkLabel
+                              Variant="Variant.Text"
+                              @bind-Value="_newStudent.FirstName"
+                              Label="Vorname"
+                              For="@(() => _newStudent.FirstName)"
+                              Immediate="true"/>
+                <MudTextField T="string"
+                              Class="mb-4"
+                              ShrinkLabel
+                              Variant="Variant.Text"
+                              @bind-Value="_newStudent.LastName"
+                              Label="Nachname"
+                              For="@(() => _newStudent.LastName)"
+                              Immediate="true"/>
+                <MudTextField T="string"
+                              Class="mb-4"
+                              ShrinkLabel
+                              Variant="Variant.Text"
+                              @bind-Value="_newStudent.Mail"
+                              Label="E-Mail"
+                              For="@(() => _newStudent.Mail)"
+                              Immediate="true"/>
+                <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_newStudent.Phone" Label="Telefon" Variant="Variant.Text"/>
+
+                <MudDatePicker Class="mb-4" Label="Geburtstag" @bind-Date="_newStudent.Birthday"/>
+                <MudSelect
+                    Class="mb-4"
+                    @bind-Value="_newStudent.DrivingSchoolId"
+                    ShrinkLabel
+                    Variant="Variant.Text"
+                    Label="Fahrschule zuweisen"
+                    Disabled="!_drivingSchools.Any()"
+                    Placeholder="Fahrschule wählen">
+                    @foreach (var school in _drivingSchools)
+                    {
+                        <MudSelectItem Value="@((int?)school.Id)">@school.Name</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudSelect
+                    Class="mb-4"
+                    @bind-Value="_newStudent.License"
+                    ShrinkLabel
+                    Variant="Variant.Text"
+                    Label="Fahrzeug-Klasse wählen"
+                    Placeholder="Fahrzeug-Klasse wählen">
+                    @foreach (var license in Enum.GetValues<LicenseClass>())
+                    {
+                        <MudSelectItem Value="@((LicenseClass?)license)">@LicenseHelper.GetName(license)</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudDatePicker 
+                    Class="mb-4" 
+                    ShrinkLabel
+                    Label="Prüfungstermin" 
+                    @bind-Date="_newStudent.ExamDate"/>
+            </MudPaper>
+        </MudForm>
     </DialogContent>
     <DialogActions>
         <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => OnHideModal(_createDialog)">Abbrechen</MudButton>
@@ -353,41 +354,66 @@ else
         <MudText Typo="Typo.h6">Fahrschüler bearbeiten</MudText>
     </TitleContent>
     <DialogContent>
-        <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
-            <MudTextField AutoFocus="true" Class="mb-4" ShrinkLabel @bind-Value="_editStudent!.FirstName" Label="Vorname" Variant="Variant.Text"/>
-            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_editStudent!.LastName" Label="Nachname" Variant="Variant.Text"/>
-            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_editStudent!.Mail" Label="E-Mail" Variant="Variant.Text"/>
-            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_editStudent!.Phone" Label="Telefon" Variant="Variant.Text"/>
-            <MudDatePicker Class="mb-4" Label="Geburtstag" @bind-Date="_editStudent!.Birthday" />
-            <MudSelect
-                Class="mb-4"
-                @bind-Value="_editStudent!.DrivingSchoolId"
-                Variant="Variant.Text"
-                Label="Fahrschule zuweisen"
-                Disabled="!_drivingSchools.Any()"
-                Placeholder="Fahrschule wählen">
-                @foreach (var school in _drivingSchools)
-                {
-                    <MudSelectItem Value="@((int?)school.Id)">@school.Name</MudSelectItem>
-                }
-            </MudSelect>
-            <MudSelect
-                Class="mb-4"
-                @bind-Value="_editStudent!.License"
-                Variant="Variant.Text"
-                Label="Fahrzeug-Klasse wählen"
-                Placeholder="Fahrzeug-Klasse wählen">
-                @foreach (var license in Enum.GetValues<LicenseClass>())
-                {
-                    <MudSelectItem Value="@license">@LicenseHelper.GetName(license)</MudSelectItem>
-                }
-            </MudSelect>
-            <MudDatePicker Class="mb-4" Label="Prüfungstermin" @bind-Date="_editStudent!.ExamDate" />
-            <MudRadioGroup Class="mb-4" Row="true" @bind-Value="_editStudent!.HasPassed">
-                <MudRadio Value="true" Color="Color.Primary" Dense="true">Bestanden</MudRadio>
-                <MudRadio Value="false" Color="Color.Secondary" Dense="false">nicht Bestanden / Prüfung ausstehend</MudRadio>
-            </MudRadioGroup>
-        </MudPaper>
+        <MudForm @ref="_editForm" @bind-IsValid="@_editFormSuccess">
+            <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
+                <MudTextField T="string"
+                              Class="mb-4"
+                              Variant="Variant.Text"
+                              @bind-Value="_editStudent!.FirstName"
+                              ShrinkLabel
+                              Label="Vorname"
+                              For="@(() => _editStudent!.FirstName)"
+                              Immediate="true"/>
+                <MudTextField T="string"
+                              Class="mb-4"
+                              Variant="Variant.Text"
+                              @bind-Value="_editStudent!.LastName"
+                              ShrinkLabel
+                              Label="Nachname"
+                              For="@(() => _editStudent!.LastName)"
+                              Immediate="true"/>
+                <MudTextField T="string"
+                              Class="mb-4"
+                              Variant="Variant.Text"
+                              @bind-Value="_editStudent!.Mail"
+                              ShrinkLabel
+                              Label="E-Mail"
+                              For="@(() => _editStudent!.Mail)"
+                              Immediate="true"/>
+                <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_editStudent!.Phone" Label="Telefon" Variant="Variant.Text"/>
+                <MudDatePicker Class="mb-4" ShrinkLabel Label="Geburtstag" @bind-Date="_editStudent!.Birthday" />
+                <MudSelect
+                    Class="mb-4"
+                    @bind-Value="_editStudent!.DrivingSchoolId"
+                    ShrinkLabel
+                    Variant="Variant.Text"
+                    Label="Fahrschule zuweisen"
+                    Disabled="!_drivingSchools.Any()"
+                    Placeholder="Fahrschule wählen">
+                    @foreach (var school in _drivingSchools)
+                    {
+                        <MudSelectItem Value="@((int?)school.Id)">@school.Name</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudSelect
+                    Class="mb-4"
+                    @bind-Value="_editStudent!.License"
+                    ShrinkLabel
+                    Variant="Variant.Text"
+                    Label="Fahrzeug-Klasse wählen"
+                    Placeholder="Fahrzeug-Klasse wählen">
+                    @foreach (var license in Enum.GetValues<LicenseClass>())
+                    {
+                        <MudSelectItem Value="@license">@LicenseHelper.GetName(license)</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudDatePicker Class="mb-4" ShrinkLabel Label="Prüfungstermin" @bind-Date="_editStudent!.ExamDate" />
+                <MudRadioGroup Class="mb-4" Row="true" @bind-Value="_editStudent!.HasPassed">
+                    <MudRadio Value="true" Color="Color.Primary" Dense="true">Bestanden</MudRadio>
+                    <MudRadio Value="false" Color="Color.Secondary" Dense="false">nicht Bestanden / Prüfung ausstehend</MudRadio>
+                </MudRadioGroup>
+            </MudPaper>
+        </MudForm>
     </DialogContent>
     <DialogActions>
         <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => OnHideModal(_editDialog)">Abbrechen</MudButton>
