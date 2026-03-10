@@ -14,7 +14,7 @@ builder.Services.AddHttpClient<DrivingSchoolApiClient>(client =>
 {
     client.BaseAddress = new("https+http://apiservice");
 });
-builder.Services.AddHttpClient<DriverApiClient>(client =>
+builder.Services.AddHttpClient<StudentApiClient>(client =>
 {
     client.BaseAddress = new("https+http://apiservice");
 });

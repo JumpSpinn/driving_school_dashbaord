@@ -1,6 +1,6 @@
 ﻿namespace ExampleAspireBlazorApiProject.Shared.Models;
 
-public sealed class DriverModel
+public sealed class StudentModel
 {
     [Key]
     public int Id { get; set; } // asd
@@ -15,8 +15,8 @@ public sealed class DriverModel
     public bool IsDeleted { get; set; }
     
     
-    public DriverModel() { }
-    public DriverModel(DriverModel other)
+    public StudentModel() { }
+    public StudentModel(StudentModel other)
     {
         Id = other.Id;
         FirstName = other.FirstName;

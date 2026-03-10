@@ -1,15 +1,15 @@
-﻿@page "/drivers"
+﻿@page "/students"
 @using System.Text.RegularExpressions
 @using ExampleAspireBlazorApiProject.Shared.Models
 @using ExampleAspireBlazorApiProject.Web.Apis
-@inject DriverApiClient DriverApiClient
+@inject StudentApiClient StudentApiClient
 @inject DrivingSchoolApiClient DrivingSchoolApiClient
 @rendermode InteractiveServer
 
 @code {
     private bool _dataLoading;
-    private List<DriverModel> _drivers = [];
-    private MudDataGrid<DriverModel> _mudDataGrid = default!;
+    private List<StudentModel> _students = [];
+    private MudDataGrid<StudentModel> _mudDataGrid = default!;
     
     private readonly DialogOptions _dialogOptions = new()
     {
@@ -26,36 +26,36 @@
     private string _modalError = string.Empty; // TODO: reimplement
     
     private List<DrivingSchoolModel> _drivingSchools = [];
-    private DriverModel? _editDriver;
-    private DriverModel? _deleteDriver;
-    private DriverModel _newDriver = new();
+    private StudentModel? _editStudent;
+    private StudentModel? _deleteStudent;
+    private StudentModel _newStudent = new();
     
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        _ = LoadAllDriversAsync();
+        _ = LoadAllStudentsAsync();
     }
     
     // VALIDATION
-    private bool ValidateCreateDriver(DriverModel validateDriver)
+    private bool ValidateCreateStudent(StudentModel validateStudent)
     {
         _modalError = string.Empty;
         
-        if (string.IsNullOrWhiteSpace(validateDriver.FirstName))
+        if (string.IsNullOrWhiteSpace(validateStudent.FirstName))
             _modalError = "Vorname muss angegeben werden!";
-        else if (validateDriver.FirstName.Length < 3)
+        else if (validateStudent.FirstName.Length < 3)
             _modalError = "Vorname muss mindestens 3 Zeichen lang sein!";
-        else if (string.IsNullOrWhiteSpace(validateDriver.LastName))
+        else if (string.IsNullOrWhiteSpace(validateStudent.LastName))
             _modalError = "Nachname muss angegeben werden";
-        else if (validateDriver.LastName.Length < 3)
+        else if (validateStudent.LastName.Length < 3)
             _modalError = "Nachname muss mindestens 3 Zeichen lang sein!";
-        else if (string.IsNullOrWhiteSpace(validateDriver.Mail))
+        else if (string.IsNullOrWhiteSpace(validateStudent.Mail))
             _modalError = "E-Mail muss angegeben werden!";
-        else if (!validateDriver.Mail.Contains("@"))
+        else if (!validateStudent.Mail.Contains("@"))
             _modalError = "Ungültige E-Mail Adresse!";
-        else if (!string.IsNullOrWhiteSpace(validateDriver.Phone))
+        else if (!string.IsNullOrWhiteSpace(validateStudent.Phone))
         {
-            var isMatch = Regex.IsMatch(validateDriver.Phone, @"^\d+$");
+            var isMatch = Regex.IsMatch(validateStudent.Phone, @"^\d+$");
             if (!isMatch)
                 _modalError = "Ungültige Telefonnummer. Darf nur aus Zahlen bestehen!";
         }
@@ -64,12 +64,12 @@
     }
     
     // LOAD
-    private async Task LoadAllDriversAsync()
+    private async Task LoadAllStudentsAsync()
     {
         _dataLoading = true;
         StateHasChanged();
 
-        _drivers = await DriverApiClient.GetAllDriversAsync() ?? [];
+        _students = await StudentApiClient.GetAllStudentsAsync() ?? [];
         _drivingSchools = await DrivingSchoolApiClient.GetAllDrivingSchoolsAsync() ?? [];
         
         _dataLoading = false;
@@ -82,7 +82,7 @@
         if (dialog is null) return;
         
         if(dialog == _createDialog)
-            _newDriver = new();
+            _newStudent = new();
         
         await dialog.ShowAsync(options: _dialogOptions);
     }
@@ -96,74 +96,74 @@
     // CREATE
     private async Task HandleCreateDriverAsync()
     {
-        if (!ValidateCreateDriver(_newDriver)) return;
+        if (!ValidateCreateStudent(_newStudent)) return;
         
-        var newDriver = await DriverApiClient.CreateDriverAsync(_newDriver);
-        if (newDriver is not null)
-            _drivers.Add(newDriver);
+        var newStudent = await StudentApiClient.CreateStudentAsync(_newStudent);
+        if (newStudent is not null)
+            _students.Add(newStudent);
         
-         _newDriver = new();
+         _newStudent = new();
         await OnHideModal(_createDialog);
         await _mudDataGrid.ReloadServerData();
     }
     
     // EDIT
-    private void OnShowEditModal(DriverModel driver)
+    private void OnShowEditModal(StudentModel student)
     {
         _modalError = string.Empty;
-        _editDriver = new(driver);
+        _editStudent = new(student);
         _ = OnShowModal(_editDialog);
     }
     
     private async Task ConfirmEditDrivingSchoolAsync()
     {
-        if (_editDriver is null) return;
-        if (!ValidateCreateDriver(_editDriver)) return;
+        if (_editStudent is null) return;
+        if (!ValidateCreateStudent(_editStudent)) return;
 
-        var updated = await DriverApiClient.UpdateDriverAsync(_editDriver);
+        var updated = await StudentApiClient.UpdateStudentAsync(_editStudent);
         if (!updated)
         {
-            _modalError = $"Fahrschüler {_editDriver.FirstName} {_editDriver.LastName} konnte nicht bearbeitet werden!";
+            _modalError = $"Fahrschüler {_editStudent.FirstName} {_editStudent.LastName} konnte nicht bearbeitet werden!";
             return;
         }
         
-        var driverToUpdate = _drivers.FirstOrDefault(x => x.Id == _editDriver.Id);
-        if (driverToUpdate is null)
+        var studentToUpdate = _students.FirstOrDefault(x => x.Id == _editStudent.Id);
+        if (studentToUpdate is null)
         {
             _modalError = "Der zu bearbeitende Fahrschüler ist nicht bekannt!";
             return;
         }
         
-        driverToUpdate.FirstName = _editDriver.FirstName;
-        driverToUpdate.LastName = _editDriver.LastName;
-        driverToUpdate.Mail = _editDriver.Mail;
-        driverToUpdate.Phone = _editDriver.Phone;
-        driverToUpdate.DrivingSchoolId = _editDriver.DrivingSchoolId;
-        driverToUpdate.IsActive = _editDriver.IsActive;
+        studentToUpdate.FirstName = _editStudent.FirstName;
+        studentToUpdate.LastName = _editStudent.LastName;
+        studentToUpdate.Mail = _editStudent.Mail;
+        studentToUpdate.Phone = _editStudent.Phone;
+        studentToUpdate.DrivingSchoolId = _editStudent.DrivingSchoolId;
+        studentToUpdate.IsActive = _editStudent.IsActive;
         
         await OnHideModal(_editDialog);
         await _mudDataGrid.ReloadServerData();
-        _editDriver = null;
+        _editStudent = null;
     }
     
     // DELETE
-    private void OnShowDeleteModal(DriverModel driver)
+    private void OnShowDeleteModal(StudentModel student)
     {
         _modalError = string.Empty;
-        _deleteDriver = new(driver);
+        _deleteStudent = new(student);
         _ = OnShowModal(_deleteDialog);
     }
     
     private async Task OnRequestDeleteDriverAsync()
     {
-        if (_deleteDriver is null) return;
+        if (_deleteStudent is null) return;
         
-        var deleted = await DriverApiClient.DeleteDriverAsync(_deleteDriver.Id);
+        var deleted = await StudentApiClient.DeleteStudentAsync(_deleteStudent.Id);
         if (!deleted) return;
         
-        var remove = _drivers.FirstOrDefault(x => x.Id == _deleteDriver.Id);
+        var remove = _students.FirstOrDefault(x => x.Id == _deleteStudent.Id);
         if(remove is not null)
-            _drivers.Remove(remove);
+            _students.Remove(remove);
         
         await _mudDataGrid.ReloadServerData();
         await OnHideModal(_deleteDialog);
@@ -208,11 +208,11 @@
 }
 else
 {
-    <div class="@(_drivers.Count == 0 ? "d-none" : "")">
+    <div class="@(_students.Count == 0 ? "d-none" : "")">
         <MudPaper Class="mud-theme-dark pa-4 ma-4" Elevation="1">
             <MudDataGrid 
                 @ref="_mudDataGrid" 
-                Items="@_drivers" 
+                Items="@_students" 
                 Bordered="false"
                 Dense="true"
                 RowsPerPage="10"
@@ -273,7 +273,7 @@ else
         </MudPaper>
     </div>
     
-    @if (_drivers.Count == 0)
+    @if (_students.Count == 0)
     {
         <MudPaper Class="mud-theme-dark pa-4 ma-4" Elevation="1">
             <MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">Keine Daten vorhanden.</MudAlert>
@@ -287,13 +287,13 @@ else
     </TitleContent>
     <DialogContent>
         <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
-            <MudTextField AutoFocus="true" Class="mb-4" ShrinkLabel @bind-Value="_newDriver.FirstName" Label="Vorname" Variant="Variant.Text"/>
-            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_newDriver.LastName" Label="Nachname" Variant="Variant.Text"/>
-            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_newDriver.Mail" Label="E-Mail" Variant="Variant.Text"/>
-            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_newDriver.Phone" Label="Telefon" Variant="Variant.Text"/>
+            <MudTextField AutoFocus="true" Class="mb-4" ShrinkLabel @bind-Value="_newStudent.FirstName" Label="Vorname" Variant="Variant.Text"/>
+            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_newStudent.LastName" Label="Nachname" Variant="Variant.Text"/>
+            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_newStudent.Mail" Label="E-Mail" Variant="Variant.Text"/>
+            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_newStudent.Phone" Label="Telefon" Variant="Variant.Text"/>
             <MudSelect
                 Class="mb-4"
-                @bind-Value="_newDriver.IsActive"
+                @bind-Value="_newStudent.IsActive"
                 Variant="Variant.Text"
                 Label="Aktiv"
                 Placeholder="Aktiv-Status wählen">
@@ -302,7 +302,7 @@ else
             </MudSelect>
             <MudSelect
                 Class="mb-4"
-                @bind-Value="_newDriver.DrivingSchoolId"
+                @bind-Value="_newStudent.DrivingSchoolId"
                 Variant="Variant.Text"
                 Label="Fahrschule zuweisen"
                 Disabled="!_drivingSchools.Any()"
@@ -326,13 +326,13 @@ else
     </TitleContent>
     <DialogContent>
         <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
-            <MudTextField AutoFocus="true" Class="mb-4" ShrinkLabel @bind-Value="_editDriver!.FirstName" Label="Vorname" Variant="Variant.Text"/>
-            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_editDriver!.LastName" Label="Nachname" Variant="Variant.Text"/>
-            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_editDriver!.Mail" Label="E-Mail" Variant="Variant.Text"/>
-            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_editDriver!.Phone" Label="Telefon" Variant="Variant.Text"/>
+            <MudTextField AutoFocus="true" Class="mb-4" ShrinkLabel @bind-Value="_editStudent!.FirstName" Label="Vorname" Variant="Variant.Text"/>
+            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_editStudent!.LastName" Label="Nachname" Variant="Variant.Text"/>
+            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_editStudent!.Mail" Label="E-Mail" Variant="Variant.Text"/>
+            <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_editStudent!.Phone" Label="Telefon" Variant="Variant.Text"/>
             <MudSelect
                 Class="mb-4"
-                @bind-Value="_editDriver!.IsActive"
+                @bind-Value="_editStudent!.IsActive"
                 Variant="Variant.Text"
                 Label="Aktiv"
                 Placeholder="Aktiv-Status wählen">
@@ -341,7 +341,7 @@ else
             </MudSelect>
             <MudSelect
                 Class="mb-4"
-                @bind-Value="_editDriver!.DrivingSchoolId"
+                @bind-Value="_editStudent!.DrivingSchoolId"
                 Variant="Variant.Text"
                 Label="Fahrschule zuweisen"
                 Disabled="!_drivingSchools.Any()"
@@ -365,7 +365,7 @@ else
     </TitleContent>
     <DialogContent>
         <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
-            <MudText>Bist du sicher, dass du die Fahrschüler @_editDriver?.FullName löschen möchtest?</MudText>
+            <MudText>Bist du sicher, dass du die Fahrschüler @_editStudent?.FullName löschen möchtest?</MudText>
         </MudPaper>
     </DialogContent>
     <DialogActions>

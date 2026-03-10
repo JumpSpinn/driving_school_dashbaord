@@ -38,7 +38,7 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
         try
         {
             var drivingSchool = dbContext.DrivingSchools
-                .Include(d => d.Drivers)
+                .Include(d => d.Students)
                 .FirstOrDefault(x => 
                     x.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase) && !x.IsDeleted);
             
@@ -56,13 +56,13 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
     
     public DrivingSchoolModel? GetDrivingSchool(int id) 
         => dbContext.DrivingSchools
-            .Include(d => d.Drivers)
+            .Include(d => d.Students)
             .FirstOrDefault(x => x.Id == id && !x.IsDeleted);
 
     public List<DrivingSchoolModel> GetAllDrivingSchools()
     {
         var drivingSchools = dbContext.DrivingSchools
-            .Include(d => d.Drivers)
+            .Include(d => d.Students)
             .Where(x => !x.IsDeleted)
             .ToList();
         
@@ -105,26 +105,6 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
             var drivingSchool = GetDrivingSchool(id);
             if (drivingSchool is null || drivingSchool.IsDeleted) return false;
             
-            drivingSchool.IsDeleted = true;
-            await dbContext.SaveChangesAsync();
-            
-            return true;
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, "Error deleting driving school");
-        }
-
-        return false;
-    }
-
-    public async Task<bool> DeleteDrivingSchoolAsync(string name)
-    {
-        try
-        {
-            var drivingSchool = GetDrivingSchool(name);
-            if (drivingSchool is null || drivingSchool.IsDeleted) return false;
-
             drivingSchool.IsDeleted = true;
             await dbContext.SaveChangesAsync();
             

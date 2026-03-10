@@ -185,7 +185,7 @@ else
                     <PropertyColumn Property="x => x.Name" Title="Bezeichnung" />
                     <TemplateColumn Title="Fahrschüler">
                         <CellTemplate>
-                            <MudChip T="string" Size="Size.Medium" Variant="Variant.Text" Color="@(context.Item.Drivers.Count > 0 ? Color.Success : Color.Error)">@context.Item.Drivers.Count</MudChip>
+                            <MudChip T="string" Size="Size.Medium" Variant="Variant.Text" Color="@(context.Item.Students.Count > 0 ? Color.Success : Color.Error)">@context.Item.Students.Count</MudChip>
                         </CellTemplate>
                     </TemplateColumn>
                     <TemplateColumn>

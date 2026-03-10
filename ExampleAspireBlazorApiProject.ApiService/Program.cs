@@ -9,7 +9,7 @@ builder.Services.AddControllers().AddJsonOptions(opt =>
 });
 
 builder.Services.AddScoped<DrivingSchoolService>();
-builder.Services.AddScoped<DriverService>();
+builder.Services.AddScoped<StudentService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

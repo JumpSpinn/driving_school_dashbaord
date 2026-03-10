@@ -7,7 +7,7 @@ public sealed class DrivingSchoolModel
     
     [StringLength(100, MinimumLength = 3)]
     public string Name { get; set; } = string.Empty;
-    public List<DriverModel> Drivers { get; set; } = [];
+    public List<StudentModel> Students { get; set; } = [];
     public bool IsDeleted { get; set; }
 
     
@@ -16,8 +16,8 @@ public sealed class DrivingSchoolModel
     {
         Id = other.Id;
         Name = other.Name;
-        Drivers = other.Drivers
-            .Select(x => new DriverModel(x))
+        Students = other.Students
+            .Select(x => new StudentModel(x))
             .ToList();
         IsDeleted = other.IsDeleted;
     }
