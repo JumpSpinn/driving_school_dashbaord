@@ -19,6 +19,8 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
             dbContext.DrivingSchools.Add(drivingSchool);
             await dbContext.SaveChangesAsync();
             
+            await dbContext.Entry(drivingSchool).Reference(x => x.Owner).LoadAsync();
+            
             return drivingSchool;
         }
         catch (Exception e)
@@ -38,6 +40,7 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
         try
         {
             var drivingSchool = dbContext.DrivingSchools
+                .Include(d => d.Owner)
                 .Include(d => d.Students)
                 .FirstOrDefault(x => 
                     x.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase) && !x.IsDeleted);
@@ -56,12 +59,14 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
 
     private DrivingSchoolModel? GetDrivingSchool(int id) 
         => dbContext.DrivingSchools
+            .Include(d => d.Owner)
             .Include(d => d.Students)
             .FirstOrDefault(x => x.Id == id && !x.IsDeleted);
 
     public List<DrivingSchoolModel> GetAllDrivingSchools()
     {
         var drivingSchools = dbContext.DrivingSchools
+            .Include(d => d.Owner)
             .Include(d => d.Students)
             .Where(x => !x.IsDeleted)
             .ToList();

@@ -1,11 +1,13 @@
 ﻿@page "/drivingSchools"
 @rendermode InteractiveServer
 @inject DrivingSchoolApiClient DrivingSchoolApi
+@inject InstructorApiClient InstructorApi
 
 @code
 {
     private bool _dataLoading;
     private List<DrivingSchoolModel> _drivingSchools = [];
+    private List<InstructorModel> _instructors = []; // TODO: add dropdown on creation/editing to select instructor as owner
     private MudDataGrid<DrivingSchoolModel> _mudDataGrid = default!;
 
     private MudDialog _createDialog = default!;
@@ -29,6 +31,7 @@
         StateHasChanged();
         
         _drivingSchools = await DrivingSchoolApi.GetAllDrivingSchoolsAsync() ?? [];
+        _instructors = await InstructorApi.GetAllInstructorsAsync() ?? [];
         
         _dataLoading = false;
         StateHasChanged();
@@ -159,6 +162,7 @@ else
                 <Columns>
                     <PropertyColumn Property="x => x.Id" Title="ID" />
                     <PropertyColumn Property="x => x.Name" Title="Bezeichnung" />
+                    <PropertyColumn Property="x => x.Owner!.FullName" Title="Besitzer" />
                     <TemplateColumn Title="Fahrschüler">
                         <CellTemplate>
                             <MudChip T="string" Size="Size.Medium" Variant="Variant.Text" Color="@(context.Item.Students.Count > 0 ? Color.Success : Color.Error)">@context.Item.Students.Count</MudChip>

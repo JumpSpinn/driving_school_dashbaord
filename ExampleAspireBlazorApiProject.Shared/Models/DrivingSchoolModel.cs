@@ -12,6 +12,11 @@ public sealed class DrivingSchoolModel
     public ICollection<StudentModel> Students { get; set; } = [];
     
     public bool IsDeleted { get; set; }
+    
+    // Navigation Properties
+    public int? OwnerId { get; set; }
+    [ForeignKey(nameof(OwnerId))]
+    public InstructorModel? Owner { get; set; }
 
     
     public DrivingSchoolModel() { }
