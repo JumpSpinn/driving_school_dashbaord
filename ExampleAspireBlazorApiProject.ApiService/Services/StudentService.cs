@@ -5,10 +5,15 @@ public sealed class StudentService(ApplicationDbContext dbContext, ILogger<Stude
     #region GET
 
     public List<StudentModel> GetAllDrivers() 
-        => dbContext.Students.Where(x => !x.IsDeleted).ToList();
+        => dbContext.Students
+            .Where(x => !x.IsDeleted)
+            .Include(d => d.DrivingSchool)
+            .ToList();
 
     private StudentModel? GetStudent(int id) 
-        => dbContext.Students.FirstOrDefault(x => x.Id == id && !x.IsDeleted);
+        => dbContext.Students
+            .Include(d => d.DrivingSchool)
+            .FirstOrDefault(x => x.Id == id && !x.IsDeleted);
 
     #endregion
 
@@ -59,12 +64,12 @@ public sealed class StudentService(ApplicationDbContext dbContext, ILogger<Stude
 
     #region UPDATE
 
-    public async Task<bool> UpdateStudentAsync(StudentModel editStudent)
+    public async Task<StudentModel?> UpdateStudentAsync(StudentModel editStudent)
     {
         try
         {
             var student = GetStudent(editStudent.Id);
-            if (student is null) return false;
+            if (student is null) return null;
 
             student.FirstName = editStudent.FirstName;
             student.LastName = editStudent.LastName;
@@ -78,15 +83,16 @@ public sealed class StudentService(ApplicationDbContext dbContext, ILogger<Stude
             student.DrivingSchoolId = editStudent.DrivingSchoolId;
             
             await dbContext.SaveChangesAsync();
+            await dbContext.Entry(student).Reference(x => x.DrivingSchool).LoadAsync();
 
-            return true;
+            return student;
         }
         catch (Exception e)
         {
             logger.LogError(e, "Error updating student #1");
         }
 
-        return false;
+        return null;
     }
 
     #endregion

@@ -3,7 +3,7 @@
 public sealed class DrivingSchoolModel
 {
     [Key]
-    public int Id { get; init; }
+    public int Id { get; set; }
     
     [Required(ErrorMessage = "Bezeichnung ist Pflicht")]
     [StringLength(50, MinimumLength = 3, ErrorMessage = "Bezeichnung muss zwischen 3 und 50 Zeichen lang sein")]

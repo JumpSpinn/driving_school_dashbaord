@@ -44,7 +44,7 @@ public sealed class InstructorService(ApplicationDbContext dbContext, ILogger<In
             
             await dbContext.Entry(newInstructor).Collection(x => x.TheoryLessons).LoadAsync();
             
-            return instructor;
+            return newInstructor;
         }
         catch (Exception e)
         {

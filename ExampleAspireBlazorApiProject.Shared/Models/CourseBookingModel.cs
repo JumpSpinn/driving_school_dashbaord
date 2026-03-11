@@ -18,4 +18,14 @@ public sealed class CourseBookingModel
     public StudentModel? Student { get; set; }
     [ForeignKey(nameof(TheoryLessonId))]
     public TheoryLessonModel? TheoryLesson { get; set; }
+
+    public CourseBookingModel() { }
+
+    public CourseBookingModel(CourseBookingModel other)
+    {
+        Id = other.Id;
+        StudentId = other.StudentId;
+        TheoryLessonId = other.TheoryLessonId;
+        BookingDate = other.BookingDate;
+    }
 }

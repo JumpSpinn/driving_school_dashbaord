@@ -35,10 +35,10 @@ public sealed class StudentController(StudentService studentService, ILogger<Stu
     [HttpPut]
     public async Task<IActionResult> UpdateStudentAsync(StudentModel editStudent)
     {
-        var updated = await studentService.UpdateStudentAsync(editStudent);
-        logger.LogDebug("Student #{Id} updated: {Result}", editStudent.Id, updated);
-        if (!updated)
+        var student = await studentService.UpdateStudentAsync(editStudent);
+        logger.LogDebug("Student #{Id} updated: {Result}", editStudent.Id, student);
+        if (student is null)
             return NotFound($"Fahrschüler mit der ID {editStudent.Id} konnte nicht aktualisiert werden!");
-        return NoContent();
+        return StatusCode(StatusCodes.Status201Created, student);
     }
 }

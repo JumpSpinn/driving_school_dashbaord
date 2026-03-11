@@ -96,6 +96,9 @@ public sealed class TheoryLessonService(ApplicationDbContext dbContext, ILogger<
             var lesson = GetTheoryLesson(id);
             if (lesson is null || lesson.IsDeleted) return false;
             
+            if(lesson.Instructor is not null)
+                lesson.Instructor.TheoryLessons.Remove(lesson);
+            
             lesson.IsDeleted = true;
             
             await dbContext.SaveChangesAsync();

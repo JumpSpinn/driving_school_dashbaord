@@ -3,7 +3,7 @@
 public sealed class InstructorModel
 {
     [Key] 
-    public int Id { get; init; }
+    public int Id { get; set; }
 
     [Required(ErrorMessage = "Vorname ist Pflicht")]
     [StringLength(50, MinimumLength = 3, ErrorMessage = "Vorname muss zwischen 3 und 50 Zeichen lang sein")]
@@ -36,8 +36,8 @@ public sealed class InstructorModel
         Mail = other.Mail;
         Phone = other.Phone;
         IsDeleted = other.IsDeleted;
-        
-        // Navigation Properties
-        TheoryLessons = other.TheoryLessons;
+        TheoryLessons = other.TheoryLessons
+            .Select(x => new TheoryLessonModel(x))
+            .ToList();
     }
 }

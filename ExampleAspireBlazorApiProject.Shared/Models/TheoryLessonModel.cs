@@ -3,7 +3,7 @@
 public sealed class TheoryLessonModel
 {
     [Key]
-    public int Id { get; init; }
+    public int Id { get; set; }
 
     [Required(ErrorMessage = "Kursname ist Pflicht")]
     [StringLength(50, MinimumLength = 3, ErrorMessage = "Kursname muss zwischen 3 und 50 Zeichen lang sein")]
@@ -47,6 +47,5 @@ public sealed class TheoryLessonModel
         
         // Navigator Properties
         InstructorId = other.InstructorId;
-        Instructor = other.Instructor;
     }
 }

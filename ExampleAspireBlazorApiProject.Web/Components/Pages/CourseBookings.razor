@@ -91,9 +91,31 @@ else
             >
                 <Columns>
                     <PropertyColumn Property="x => x.Id" Title="ID" />
-                    <PropertyColumn Property="x => x.Student!.FullName" Title="Fahrschüler" />
-                    <PropertyColumn Property="x => x.TheoryLesson!.Name" Title="Kursname" />
                     <PropertyColumn Property="x => x.BookingDate" Title="Buchungsdatum" />
+                    <TemplateColumn Title="Fahrschüler">
+                        <CellTemplate>
+                            @if (context.Item.Student != null)
+                            {
+                                <MudText Typo="Typo.body2">@context.Item.Student.FullName</MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.body2" Color="Color.Error"><i>Nicht zugewiesen</i></MudText>
+                            }
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn Title="Kurs">
+                        <CellTemplate>
+                            @if (context.Item.TheoryLesson != null)
+                            {
+                                <MudText Typo="Typo.body2">@context.Item.TheoryLesson.Name | @context.Item.TheoryLesson.Topic</MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.body2" Color="Color.Error"><i>Nicht zugewiesen</i></MudText>
+                            }
+                        </CellTemplate>
+                    </TemplateColumn>
                 </Columns>
                 <PagerContent>
                     <MudDataGridPager />

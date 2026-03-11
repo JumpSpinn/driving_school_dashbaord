@@ -33,10 +33,19 @@ public sealed class StudentApiClient(HttpClient client, ILogger<StudentApiClient
         return result.IsSuccessStatusCode;
     }
 
-    public async Task<bool> UpdateStudentAsync(StudentModel editStudent)
+    public async Task<StudentModel?> UpdateStudentAsync(StudentModel editStudent)
     {
         var result = await client.PutAsJsonAsync($"api/Student/", editStudent);
         logger.LogInformation($"Web API => student with id {editStudent.Id} updated! - Success: {result.IsSuccessStatusCode}");
-        return result.IsSuccessStatusCode;
+
+        if (result.IsSuccessStatusCode)
+        {
+            var updatedModel = await result.Content.ReadFromJsonAsync<StudentModel>();
+            return updatedModel;
+        }
+        
+        var errorDetails = await result.Content.ReadAsStringAsync();
+        logger.LogWarning($"Update fehlgeschlagen: {errorDetails}");
+        return null; 
     }
 }

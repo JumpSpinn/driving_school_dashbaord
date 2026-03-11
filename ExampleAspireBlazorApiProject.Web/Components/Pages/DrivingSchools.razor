@@ -7,12 +7,18 @@
 {
     private bool _dataLoading;
     private List<DrivingSchoolModel> _drivingSchools = [];
-    private List<InstructorModel> _instructors = []; // TODO: add dropdown on creation/editing to select instructor as owner
+    private List<InstructorModel> _instructors = [];
     private MudDataGrid<DrivingSchoolModel> _mudDataGrid = default!;
 
     private MudDialog _createDialog = default!;
     private MudDialog _deleteDialog = default!;
     private MudDialog _editDialog = default!;
+    
+    MudForm _createForm;
+    MudForm _editForm;
+    
+    bool _createFormSuccess;
+    bool _editFormSuccess;
     
     private DrivingSchoolModel? _editDrivingSchool;
     private DrivingSchoolModel? _deleteDrivingSchool;
@@ -52,9 +58,6 @@
     }
     
     // CREATE
-    MudForm _createForm;
-    bool _createFormSuccess;
-    
     private async Task HandleCreateDrivingSchoolAsync()
     {
         await _createForm.ValidateAsync();
@@ -70,13 +73,10 @@
     }
     
     // EDIT
-    MudForm _editForm;
-    bool _editFormSuccess;
-    
-    private void OnShowEditModal(DrivingSchoolModel drivingSchool)
+    private async Task OnShowEditModal(DrivingSchoolModel drivingSchool)
     {
         _editDrivingSchool = new(drivingSchool);
-        _ = OnShowModal(_editDialog);
+        await OnShowModal(_editDialog);
     }
     
     private async Task ConfirmEditDrivingSchoolAsync()
@@ -104,10 +104,10 @@
     }
 
     // DELETE
-    private void OnShowDeleteModal(DrivingSchoolModel drivingSchool)
+    private async Task OnShowDeleteModal(DrivingSchoolModel drivingSchool)
     {
         _deleteDrivingSchool = new(drivingSchool);
-        _ = OnShowModal(_deleteDialog);
+        await OnShowModal(_deleteDialog);
     }
     
     private async Task OnRequestDeleteDrivingSchoolAsync()
@@ -167,15 +167,33 @@ else
                 <Columns>
                     <PropertyColumn Property="x => x.Id" Title="ID" />
                     <PropertyColumn Property="x => x.Name" Title="Bezeichnung" />
-                    <PropertyColumn Property="x => x.Owner!.FullName" Title="Besitzer" />
+                    <TemplateColumn Title="Besitzer">
+                        <CellTemplate>
+                            @if (context.Item.Owner != null)
+                            {
+                                <MudText Typo="Typo.body2">@context.Item.Owner.FullName</MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.body2" Color="Color.Error"><i>Kein Besitzer</i></MudText>
+                            }
+                        </CellTemplate>
+                    </TemplateColumn>
                     <TemplateColumn Title="Fahrschüler">
                         <CellTemplate>
-                            <MudChip T="string"
-                                     Size="Size.Medium"
-                                     Variant="Variant.Text"
-                                     Color="@(context.Item.Students.Count > 0 ? Color.Success : Color.Error)">
-                                @context.Item.Students.Count
-                            </MudChip>
+                            @if (context.Item.Students.Count > 0)
+                            {
+                                <MudChip T="string"
+                                         Size="Size.Medium"
+                                         Variant="Variant.Text"
+                                         Color="Color.Success">
+                                    @context.Item.Students.Count
+                                </MudChip>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.body2" Color="Color.Error"><i>Keine Fahrschüler zugewiesen</i></MudText>
+                            }
                         </CellTemplate>
                     </TemplateColumn>
                     <TemplateColumn>
@@ -234,8 +252,7 @@ else
                     ShrinkLabel
                     Variant="Variant.Text"
                     Label="Besitzer (Fahrlehrer) zuweisen"
-                    Disabled="!_instructors.Any()"
-                    Placeholder="Besitzer (Fahrlehrer) zuweisen">
+                    Disabled="!_instructors.Any()">
                     @foreach (var instructor in _instructors)
                     {
                         <MudSelectItem Value="@((int?)instructor.Id)">@instructor.FullName</MudSelectItem>
@@ -250,24 +267,9 @@ else
     </DialogActions>
 </MudDialog>
 
-<MudDialog @ref="_deleteDialog">
-    <TitleContent>
-        <MudText Typo="Typo.h6">Fahrschule löschen</MudText>
-    </TitleContent>
-    <DialogContent>
-        <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
-            <MudText>Bist du sicher, dass du die Fahrschule @_deleteDrivingSchool?.Name löschen möchtest?</MudText>
-        </MudPaper>
-    </DialogContent>
-    <DialogActions>
-        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => OnHideModal(_deleteDialog)">Nein</MudButton>
-        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary" OnClick="OnRequestDeleteDrivingSchoolAsync">Ja</MudButton>
-    </DialogActions>
-</MudDialog>
-
 <MudDialog @ref="_editDialog">
     <TitleContent>
-        <MudText Typo="Typo.h6">Fahrschule bearbeiten</MudText>
+        <MudText Typo="Typo.h6">Fahrschule bearbeiten (ID: @_editDrivingSchool?.Id)</MudText>
     </TitleContent>
     <DialogContent>
         <MudForm @ref="_editForm" @bind-IsValid="@_editFormSuccess">
@@ -286,8 +288,7 @@ else
                     ShrinkLabel
                     Variant="Variant.Text"
                     Label="Besitzer (Fahrlehrer) zuweisen"
-                    Disabled="!_instructors.Any()"
-                    Placeholder="Besitzer (Fahrlehrer) zuweisen">
+                    Disabled="!_instructors.Any()">
                     @foreach (var instructor in _instructors)
                     {
                         <MudSelectItem Value="@((int?)instructor.Id)">@instructor.FullName</MudSelectItem>
@@ -299,5 +300,20 @@ else
     <DialogActions>
         <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => OnHideModal(_editDialog)">Abbrechen</MudButton>
         <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary" OnClick="ConfirmEditDrivingSchoolAsync">Änderungen speichern</MudButton>
+    </DialogActions>
+</MudDialog>
+
+<MudDialog @ref="_deleteDialog">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Fahrschule löschen (ID: @_deleteDrivingSchool?.Id)</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
+            <MudText>Bist du sicher, dass du die Fahrschule @_deleteDrivingSchool?.Name löschen möchtest?</MudText>
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => OnHideModal(_deleteDialog)">Nein</MudButton>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary" OnClick="OnRequestDeleteDrivingSchoolAsync">Ja</MudButton>
     </DialogActions>
 </MudDialog>

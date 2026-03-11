@@ -12,6 +12,12 @@
     private MudDialog _deleteDialog = default!;
     private MudDialog _editDialog = default!;
     
+    MudForm _createForm;
+    MudForm _editForm;
+    
+    bool _createFormSuccess;
+    bool _editFormSuccess;
+    
     private List<DrivingSchoolModel> _drivingSchools = [];
     private StudentModel? _editStudent;
     private StudentModel? _deleteStudent;
@@ -54,9 +60,6 @@
     }
     
     // CREATE
-    MudForm _createForm;
-    bool _createFormSuccess;
-    
     private async Task HandleCreateDriverAsync()
     {
         await _createForm.ValidateAsync();
@@ -72,13 +75,10 @@
     }
     
     // EDIT
-    MudForm _editForm;
-    bool _editFormSuccess;
-    
-    private void OnShowEditModal(StudentModel student)
+    private async Task OnShowEditModal(StudentModel student)
     {
         _editStudent = new(student);
-        _ = OnShowModal(_editDialog);
+        await OnShowModal(_editDialog);
     }
     
     private async Task ConfirmEditDrivingSchoolAsync()
@@ -89,21 +89,22 @@
         if (!_editForm.IsValid) return;
 
         var updated = await StudentApiClient.UpdateStudentAsync(_editStudent);
-        if (!updated) return;
+        if (updated is null) return;
         
-        var studentToUpdate = _students.FirstOrDefault(x => x.Id == _editStudent.Id);
+        var studentToUpdate = _students.FirstOrDefault(x => x.Id == updated.Id);
         if (studentToUpdate is null) return;
         
-        studentToUpdate.FirstName = _editStudent.FirstName;
-        studentToUpdate.LastName = _editStudent.LastName;
-        studentToUpdate.Mail = _editStudent.Mail;
-        studentToUpdate.Phone = _editStudent.Phone;
-        studentToUpdate.Birthday = _editStudent.Birthday;
-        studentToUpdate.License = _editStudent.License;
-        studentToUpdate.EnrollmentDate = _editStudent.EnrollmentDate;
-        studentToUpdate.ExamDate = _editStudent.ExamDate;
-        studentToUpdate.HasPassed = _editStudent.HasPassed;
-        studentToUpdate.DrivingSchoolId = _editStudent.DrivingSchoolId;
+        studentToUpdate.FirstName = updated.FirstName;
+        studentToUpdate.LastName = updated.LastName;
+        studentToUpdate.Mail = updated.Mail;
+        studentToUpdate.Phone = updated.Phone;
+        studentToUpdate.Birthday = updated.Birthday;
+        studentToUpdate.License = updated.License;
+        studentToUpdate.EnrollmentDate = updated.EnrollmentDate;
+        studentToUpdate.ExamDate = updated.ExamDate;
+        studentToUpdate.HasPassed = updated.HasPassed;
+        studentToUpdate.DrivingSchoolId = updated.DrivingSchoolId;
+        studentToUpdate.DrivingSchool = updated.DrivingSchool;
         
         await OnHideModal(_editDialog);
         await _mudDataGrid.ReloadServerData();
@@ -111,10 +112,10 @@
     }
     
     // DELETE
-    private void OnShowDeleteModal(StudentModel student)
+    private async Task OnShowDeleteModal(StudentModel student)
     {
         _deleteStudent = new(student);
-        _ = OnShowModal(_deleteDialog);
+        await OnShowModal(_deleteDialog);
     }
     
     private async Task OnRequestDeleteDriverAsync()
@@ -135,14 +136,6 @@
     // SCHOOL
     private DrivingSchoolModel? GetDrivingSchool(int id) 
         => _drivingSchools.FirstOrDefault(s => s.Id == id);
-    
-    private string GetDrivingSchoolName(int? schoolId)
-    {
-        if (schoolId is null or 0) return "Keine Zuweisung";
-
-        var school = GetDrivingSchool((int)schoolId);
-        return school?.Name ?? "Unbekannte Fahrschule";
-    }
 }
 
 <PageTitle>Fahrschüler</PageTitle>
@@ -188,26 +181,66 @@ else
                     <PropertyColumn Property="x => x.Id" Title="ID" />
                     <PropertyColumn Property="x => x.FullName" Title="Vor- Nachname" />
                     <PropertyColumn Property="x => x.Mail" Title="E-Mail" />
-                    <PropertyColumn Property="x => x.Phone" Title="Telefon" />
+                    
+                    <TemplateColumn Title="Telefon">
+                        <CellTemplate>
+                            @if (context.Item.Phone != null && !string.IsNullOrWhiteSpace(context.Item.Phone))
+                            {
+                                <MudText Typo="Typo.body2">@context.Item.Phone</MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.body2" Color="Color.Error"><i>keine Angabe</i></MudText>
+                            }
+                        </CellTemplate>
+                    </TemplateColumn>
+                    
                     <TemplateColumn Title="Geburtstag">
                         <CellTemplate>
-                            @context.Item.Birthday?.ToString("dd.MM.yyyy")
+                            @if (context.Item.Birthday != null)
+                            {
+                                <MudText Typo="Typo.body2">@context.Item.Birthday?.ToString("dd.MM.yyyy")</MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.body2" Color="Color.Error"><i>keine Angabe</i></MudText>
+                            }
                         </CellTemplate>
                     </TemplateColumn>
                     <TemplateColumn Title="Klasse">
                         <CellTemplate>
-                            @LicenseHelper.GetName(context.Item.License)
+                            @if (context.Item.License != null)
+                            {
+                                <MudText Typo="Typo.body2">@LicenseHelper.GetName(context.Item.License)</MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.body2" Color="Color.Error"><i>nicht festgelegt</i></MudText>
+                            }
                         </CellTemplate>
                     </TemplateColumn>
-                    
                     <TemplateColumn Title="Anmeldedatum">
                         <CellTemplate>
-                            @context.Item.EnrollmentDate?.ToString("dd.MM.yyyy")
+                            @if (context.Item.EnrollmentDate != null)
+                            {
+                                <MudText Typo="Typo.body2">@context.Item.EnrollmentDate?.ToString("dd.MM.yyyy")</MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.body2" Color="Color.Error"><i>nicht festgelegt</i></MudText>
+                            }
                         </CellTemplate>
                     </TemplateColumn>
                     <TemplateColumn Title="Prüfungsdatum">
                         <CellTemplate>
-                            @context.Item.ExamDate?.ToString("dd.MM.yyyy")
+                            @if (context.Item.ExamDate != null)
+                            {
+                                <MudText Typo="Typo.body2">@context.Item.ExamDate?.ToString("dd.MM.yyyy")</MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.body2" Color="Color.Error"><i>Termin ausstehend</i></MudText>
+                            }
                         </CellTemplate>
                     </TemplateColumn>
                     <TemplateColumn Title="Bestanden">
@@ -220,14 +253,22 @@ else
                             </MudChip>
                         </CellTemplate>
                     </TemplateColumn>
+                    
                     <TemplateColumn Title="Fahrschule">
                         <CellTemplate>
-                            <MudChip T="string"
-                                     Size="Size.Medium"
-                                     Variant="Variant.Text"
-                                     Color="@(context.Item.DrivingSchool != null ? Color.Info : Color.Error)">
-                                @(context.Item.DrivingSchool?.Name ?? "Keine Zuweisung")
-                            </MudChip>
+                            @if (context.Item.DrivingSchool != null)
+                            {
+                                <MudChip T="string"
+                                         Size="Size.Medium"
+                                         Variant="Variant.Text"
+                                         Color="Color.Info">
+                                    @(context.Item.DrivingSchool?.Name ?? "Unbekannte Fahrschule")
+                                </MudChip>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.body2" Color="Color.Error"><i>nicht festgelegt</i></MudText>
+                            }
                         </CellTemplate>
                     </TemplateColumn>
                     <TemplateColumn>
@@ -297,15 +338,18 @@ else
                               For="@(() => _newStudent.Mail)"
                               Immediate="true"/>
                 <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_newStudent.Phone" Label="Telefon" Variant="Variant.Text"/>
-                <MudDatePicker Class="mb-4" Label="Geburtstag" @bind-Date="_newStudent.Birthday"/>
+                <MudDatePicker Class="mb-4" 
+                               Variant="Variant.Text"
+                               ShrinkLabel 
+                               Label="Geburtstag" 
+                               @bind-Date="_newStudent!.Birthday" />
                 <MudSelect
                     Class="mb-4"
                     @bind-Value="_newStudent.DrivingSchoolId"
                     ShrinkLabel
                     Variant="Variant.Text"
                     Label="Fahrschule zuweisen"
-                    Disabled="!_drivingSchools.Any()"
-                    Placeholder="Fahrschule wählen">
+                    Disabled="!_drivingSchools.Any()">
                     @foreach (var school in _drivingSchools)
                     {
                         <MudSelectItem Value="@((int?)school.Id)">@school.Name</MudSelectItem>
@@ -316,8 +360,7 @@ else
                     @bind-Value="_newStudent.License"
                     ShrinkLabel
                     Variant="Variant.Text"
-                    Label="Fahrzeug-Klasse wählen"
-                    Placeholder="Fahrzeug-Klasse wählen">
+                    Label="Fahrzeug-Klasse wählen">
                     @foreach (var license in Enum.GetValues<LicenseClass>())
                     {
                         <MudSelectItem Value="@((LicenseClass?)license)">@LicenseHelper.GetName(license)</MudSelectItem>
@@ -339,7 +382,7 @@ else
 
 <MudDialog @ref="_editDialog">
     <TitleContent>
-        <MudText Typo="Typo.h6">Fahrschüler bearbeiten</MudText>
+        <MudText Typo="Typo.h6">Fahrschüler bearbeiten (ID: @_editStudent?.Id)</MudText>
     </TitleContent>
     <DialogContent>
         <MudForm @ref="_editForm" @bind-IsValid="@_editFormSuccess">
@@ -369,30 +412,34 @@ else
                               For="@(() => _editStudent!.Mail)"
                               Immediate="true"/>
                 <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_editStudent!.Phone" Label="Telefon" Variant="Variant.Text"/>
-                <MudDatePicker Class="mb-4" ShrinkLabel Label="Geburtstag" @bind-Date="_editStudent!.Birthday" />
+                <MudDatePicker Class="mb-4" 
+                               Variant="Variant.Text"
+                               ShrinkLabel 
+                               Label="Geburtstag" 
+                               @bind-Date="_editStudent!.Birthday" />
                 <MudSelect
+                    T="int?"
                     Class="mb-4"
                     @bind-Value="_editStudent!.DrivingSchoolId"
                     ShrinkLabel
                     Variant="Variant.Text"
                     Label="Fahrschule zuweisen"
-                    Disabled="!_drivingSchools.Any()"
-                    Placeholder="Fahrschule wählen">
+                    Disabled="!_drivingSchools.Any()">
                     @foreach (var school in _drivingSchools)
                     {
-                        <MudSelectItem Value="@((int?)school.Id)">@school.Name</MudSelectItem>
+                        <MudSelectItem T="int?" Value="@(school.Id)">@school.Name</MudSelectItem>
                     }
                 </MudSelect>
                 <MudSelect
+                    T="LicenseClass?"
                     Class="mb-4"
                     @bind-Value="_editStudent!.License"
                     ShrinkLabel
                     Variant="Variant.Text"
-                    Label="Fahrzeug-Klasse wählen"
-                    Placeholder="Fahrzeug-Klasse wählen">
+                    Label="Fahrzeug-Klasse wählen">
                     @foreach (var license in Enum.GetValues<LicenseClass>())
                     {
-                        <MudSelectItem Value="@license">@LicenseHelper.GetName(license)</MudSelectItem>
+                        <MudSelectItem T="LicenseClass?" Value="@license">@LicenseHelper.GetName(license)</MudSelectItem>
                     }
                 </MudSelect>
                 <MudDatePicker Class="mb-4" ShrinkLabel Label="Prüfungstermin" @bind-Date="_editStudent!.ExamDate" />
@@ -411,11 +458,11 @@ else
 
 <MudDialog @ref="_deleteDialog">
     <TitleContent>
-        <MudText Typo="Typo.h6">Fahrschüler löschen</MudText>
+        <MudText Typo="Typo.h6">Fahrschüler löschen (ID: @_deleteStudent?.Id)</MudText>
     </TitleContent>
     <DialogContent>
         <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
-            <MudText>Bist du sicher, dass du die Fahrschüler @_editStudent?.FullName löschen möchtest?</MudText>
+            <MudText>Bist du sicher, dass du die Fahrschüler @_deleteStudent?.FullName löschen möchtest?</MudText>
         </MudPaper>
     </DialogContent>
     <DialogActions>

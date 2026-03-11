@@ -69,10 +69,10 @@
     }
     
     // EDIT
-    private void OnShowEditModal(InstructorModel instructor)
+    private async Task OnShowEditModal(InstructorModel instructor)
     {
         _editInstructor = new(instructor);
-        _ = OnShowModal(_editDialog);
+        await OnShowModal(_editDialog);
     }
     
     private async Task ConfirmEditAsync()
@@ -99,10 +99,10 @@
     }
     
     // DELETE
-    private void OnShowDeleteModal(InstructorModel instructor)
+    private async Task OnShowDeleteModal(InstructorModel instructor)
     {
         _deleteInstructor = new(instructor);
-        _ = OnShowModal(_deleteDialog);
+        await OnShowModal(_deleteDialog);
     }
     
     private async Task OnRequestDeleteAsync()
@@ -163,15 +163,33 @@ else
                     <PropertyColumn Property="x => x.Id" Title="ID" />
                     <PropertyColumn Property="x => x.FullName" Title="Vor- Nachname" />
                     <PropertyColumn Property="x => x.Mail" Title="E-Mail" />
-                    <PropertyColumn Property="x => x.Phone" Title="Telefon" />
+                    <TemplateColumn Title="Telefon">
+                        <CellTemplate>
+                            @if (context.Item.Phone != null && !string.IsNullOrWhiteSpace(context.Item.Phone))
+                            {
+                                <MudText Typo="Typo.body2">@context.Item.Phone</MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.body2" Color="Color.Error"><i>keine Angabe</i></MudText>
+                            }
+                        </CellTemplate>
+                    </TemplateColumn>
                     <TemplateColumn Title="Zugewiesene Kurse">
                         <CellTemplate>
-                            <MudChip T="string" 
-                                     Size="Size.Medium" 
-                                     Variant="Variant.Text"
-                                     Color="@(context.Item.TheoryLessons.Count > 0 ? Color.Success : Color.Error)">
-                                @context.Item.TheoryLessons.Count
-                            </MudChip>
+                            @if (context.Item.TheoryLessons.Count > 0)
+                            {
+                                <MudChip T="string" 
+                                         Size="Size.Medium" 
+                                         Variant="Variant.Text"
+                                         Color="Color.Success">
+                                    @context.Item.TheoryLessons.Count
+                                </MudChip>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.body2" Color="Color.Error"><i>Keine</i></MudText>
+                            }
                         </CellTemplate>
                     </TemplateColumn>
                     <TemplateColumn>
@@ -252,7 +270,7 @@ else
 
 <MudDialog @ref="_editDialog">
     <TitleContent>
-        <MudText Typo="Typo.h6">Fahrlehrer bearbeiten</MudText>
+        <MudText Typo="Typo.h6">Fahrlehrer bearbeiten (ID: @_editInstructor?.Id)</MudText>
     </TitleContent>
     <DialogContent>
         <MudForm @ref="_editForm" @bind-IsValid="@_createFormSuccess">
@@ -293,7 +311,7 @@ else
 
 <MudDialog @ref="_deleteDialog">
     <TitleContent>
-        <MudText Typo="Typo.h6">Fahrlehrer löschen</MudText>
+        <MudText Typo="Typo.h6">Fahrlehrer löschen (ID: @_deleteInstructor?.Id)</MudText>
     </TitleContent>
     <DialogContent>
         <MudPaper Class="mud-theme-dark pa-4" Elevation="1">

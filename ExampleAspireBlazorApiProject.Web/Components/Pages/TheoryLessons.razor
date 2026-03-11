@@ -70,7 +70,7 @@
         
         var newLessons = await TheoryLessonApi.CreateLessonAsync(_newTheoryLesson);
         if (newLessons is not null)
-            _theoryLessons.Add(_newTheoryLesson);
+            _theoryLessons.Add(newLessons);
 
         _startTime = null;
         _newTheoryLesson = new();
@@ -79,10 +79,10 @@
     }
     
     // EDIT
-    private void OnShowEditModal(TheoryLessonModel lesson)
+    private async Task OnShowEditModal(TheoryLessonModel lesson)
     {
         _editTheoryLesson = new(lesson);
-        _ = OnShowModal(_editDialog);
+        await OnShowModal(_editDialog);
     }
     
     private async Task ConfirmEditAsync()
@@ -119,10 +119,10 @@
     }
     
     // DELETE
-    private void OnShowDeleteModal(TheoryLessonModel lesson)
+    private async Task OnShowDeleteModal(TheoryLessonModel lesson)
     {
         _deleteTheoryLesson = new(lesson);
-        _ = OnShowModal(_deleteDialog);
+        await OnShowModal(_deleteDialog);
     }
     
     private async Task OnRequestDeleteAsync()
@@ -283,8 +283,7 @@ else
                     ShrinkLabel
                     T="DayOfWeek"
                     Variant="Variant.Text"
-                    Label="Wochentag wählen"
-                    Placeholder="Wochentag wählen">
+                    Label="Wochentag wählen">
                     @foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
                     {
                         <MudSelectItem Value="@day">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(day)</MudSelectItem>
@@ -331,8 +330,7 @@ else
                     ShrinkLabel
                     Variant="Variant.Text"
                     Label="Fahrlehrer zuweisen"
-                    Disabled="!_instructors.Any()"
-                    Placeholder="Fahrlehrer zuweisen">
+                    Disabled="!_instructors.Any()">
                     @foreach (var instructor in _instructors)
                     {
                         <MudSelectItem Value="@((int?)instructor.Id)">@instructor.FullName</MudSelectItem>
@@ -354,7 +352,7 @@ else
 
 <MudDialog @ref="_editDialog">
     <TitleContent>
-        <MudText Typo="Typo.h6">Theorieunterricht bearbeiten</MudText>
+        <MudText Typo="Typo.h6">Theorieunterricht bearbeiten (ID: @_editTheoryLesson?.Id)</MudText>
     </TitleContent>
     <DialogContent>
         <MudForm @ref="_editForm" @bind-IsValid="@_editFormSuccess">
@@ -381,8 +379,7 @@ else
                     ShrinkLabel
                     T="DayOfWeek"
                     Variant="Variant.Text"
-                    Label="Wochentag wählen"
-                    Placeholder="Wochentag wählen">
+                    Label="Wochentag wählen">
                     @foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
                     {
                         <MudSelectItem Value="@day">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(day)</MudSelectItem>
@@ -429,8 +426,7 @@ else
                     ShrinkLabel
                     Variant="Variant.Text"
                     Label="Fahrlehrer zuweisen"
-                    Disabled="!_instructors.Any()"
-                    Placeholder="Fahrlehrer zuweisen">
+                    Disabled="!_instructors.Any()">
                     @foreach (var instructor in _instructors)
                     {
                         <MudSelectItem Value="@((int?)instructor.Id)">@instructor.FullName</MudSelectItem>
@@ -452,7 +448,7 @@ else
 
 <MudDialog @ref="_deleteDialog">
     <TitleContent>
-        <MudText Typo="Typo.h6">Theorieunterricht löschen</MudText>
+        <MudText Typo="Typo.h6">Theorieunterricht löschen (ID: @_deleteTheoryLesson?.Id)</MudText>
     </TitleContent>
     <DialogContent>
         <MudPaper Class="mud-theme-dark pa-4" Elevation="1">

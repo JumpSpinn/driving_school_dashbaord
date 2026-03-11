@@ -17,12 +17,12 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
                 OwnerId = drivingSchool.OwnerId,
             };
             
-            dbContext.DrivingSchools.Add(drivingSchool);
+            dbContext.DrivingSchools.Add(newDrivingSchool);
             await dbContext.SaveChangesAsync();
             
-            await dbContext.Entry(drivingSchool).Reference(x => x.Owner).LoadAsync();
+            await dbContext.Entry(newDrivingSchool).Reference(x => x.Owner).LoadAsync();
             
-            return drivingSchool;
+            return newDrivingSchool;
         }
         catch (Exception e)
         {
