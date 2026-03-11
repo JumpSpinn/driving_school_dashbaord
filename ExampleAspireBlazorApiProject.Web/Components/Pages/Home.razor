@@ -1,4 +1,42 @@
 ﻿@page "/"
+@rendermode InteractiveServer
+@inject CourseBookingApiClient CourseBookingApi
+@inject InstructorApiClient InstructorApi
+@inject StudentApiClient StudentApi
+@inject DrivingSchoolApiClient DrivingSchoolApi
+@inject TheoryLessonApiClient TheoryLessonApi
+
+@code{
+    private bool _dataLoading;
+    private List<CourseBookingModel> _courseBookings = [];
+    private List<InstructorModel> _instructors = [];
+    private List<StudentModel> _students = [];
+    private List<DrivingSchoolModel> _drivingSchools = [];
+    private List<TheoryLessonModel> _theoryLessons = [];
+    
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _ = LoadAllDataAsync();
+    }
+    
+    // LOAD
+    private async Task LoadAllDataAsync()
+    {
+        _dataLoading = true;
+        StateHasChanged();
+        
+        _courseBookings = await CourseBookingApi.GetAllCourseBookingsAsync() ?? [];
+        _instructors = await InstructorApi.GetAllInstructorsAsync() ?? [];
+        _students = await StudentApi.GetAllStudentsAsync() ?? [];
+        _drivingSchools = await DrivingSchoolApi.GetAllDrivingSchoolsAsync() ?? [];
+        _theoryLessons = await TheoryLessonApi.GetAllLessonsAsync() ?? [];
+        
+        _dataLoading = false;
+        StateHasChanged();
+    }
+
+}
 
 <PageTitle>Dashboard</PageTitle>
 
@@ -8,3 +46,16 @@
         <MudText Typo="Typo.body1">Hier sind alle wichtigen Details aufgelistet.</MudText>
     </MudPaper>
 </MudPaper>
+
+@if (_dataLoading)
+{
+    <MudPaper Class="mud-theme-dark pa-4 ma-4" Elevation="1">
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true"/>
+    </MudPaper>
+}
+else
+{
+    <MudPaper Class="mud-theme-dark pa-4 ma-4" Elevation="1">
+        coming soon..
+    </MudPaper>
+}
