@@ -1,15 +1,15 @@
 ﻿namespace ExampleAspireBlazorApiProject.ApiService.Services;
 
-public sealed class InstructorService(ApplicationDbContext dbContext, ILogger<InstructorService> logger)
+public sealed class InstructorService(ApplicationDbContext dbContext, ILogger<InstructorService> logger) : ControllerBase
 {
-    public async Task<List<InstructorModel>> GetInstructorsAsync()
+    public List<InstructorModel> GetInstructors()
     {
         try
         {
-            return await dbContext.Instructors
+            return dbContext.Instructors
                 .Include(d => d.TheoryLessons)
                 .Where(x => !x.IsDeleted)
-                .ToListAsync();
+                .ToList();
         }
         catch (Exception e)
         {

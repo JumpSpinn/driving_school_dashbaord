@@ -2,10 +2,43 @@
 
 [ApiController]
 [Route("api/[controller]")]
-public sealed class TheoryLessonController
+public sealed class TheoryLessonController(TheoryLessonService theoryLessonService, ILogger<TheoryLessonController> logger) : ControllerBase
 {
-    // TODO: http get
-    // TODO: http post
-    // TODO: http delete
-    // TODO: http put
+    [HttpGet]
+    public IActionResult GetAllLessons()
+    {
+        var allLessons = theoryLessonService.GetTheoryLessons();
+        logger.LogDebug("{c} Lessons loaded!", allLessons.Count);
+        return StatusCode(StatusCodes.Status200OK, allLessons);
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> CreateLessonAsync(TheoryLessonModel newLesson)
+    {
+        var lesson = await theoryLessonService.CreateTheoryLessonAsync(newLesson);
+        logger.LogDebug(lesson is null ? "Lesson creation failed!" : "Lesson #{Id} created!", lesson?.Id);
+        return lesson is null ?
+            BadRequest(StatusCodes.Status400BadRequest) : 
+            StatusCode(StatusCodes.Status201Created, lesson);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteLessonAsync(int id)
+    {
+        var deleted = await theoryLessonService.DeleteTheoryLessonAsync(id);
+        logger.LogDebug("Lesson #{Id} deleted: {Result}", id, deleted);
+        if (!deleted)
+            return NotFound($"Theorieunterricht mit der ID {id} ist nicht registriert!");
+        return NoContent();
+    }
+    
+    [HttpPut]
+    public async Task<IActionResult> UpdateLessonAsync(TheoryLessonModel editLesson)
+    {
+        var instructor = await theoryLessonService.UpdateTheoryLessonAsync(editLesson);
+        logger.LogDebug("Lesson #{Id} updated: {Result}", editLesson.Id, instructor is not null);
+        if (instructor is null)
+            return NotFound($"Theorieunterricht mit der ID {editLesson.Id} konnte nicht aktualisiert werden!");
+        return NoContent();
+    }
 }

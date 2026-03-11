@@ -2,14 +2,14 @@
 
 public sealed class TheoryLessonService(ApplicationDbContext dbContext, ILogger<TheoryLessonService> logger)
 {
-    public async Task<List<TheoryLessonModel>> GetTheoryLessonsAsync()
+    public List<TheoryLessonModel> GetTheoryLessons()
     {
         try
         {
-            return await dbContext.TheoryLessons
+            return dbContext.TheoryLessons
                 .Include(d => d.Instructor)
                 .Where(x => !x.IsDeleted)
-                .ToListAsync();
+                .ToList();
         }
         catch (Exception e)
         {

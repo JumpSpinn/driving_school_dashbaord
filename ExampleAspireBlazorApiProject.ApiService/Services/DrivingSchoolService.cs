@@ -32,8 +32,8 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
     #endregion
 
     #region GET
-    
-    public DrivingSchoolModel? GetDrivingSchool(string name)
+
+    private DrivingSchoolModel? GetDrivingSchool(string name)
     {
         try
         {
@@ -53,8 +53,8 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
 
         return null;
     }
-    
-    public DrivingSchoolModel? GetDrivingSchool(int id) 
+
+    private DrivingSchoolModel? GetDrivingSchool(int id) 
         => dbContext.DrivingSchools
             .Include(d => d.Students)
             .FirstOrDefault(x => x.Id == id && !x.IsDeleted);

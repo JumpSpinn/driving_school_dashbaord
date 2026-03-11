@@ -2,14 +2,14 @@
 
 public sealed class CourseBookingService(ApplicationDbContext dbContext, ILogger<CourseBookingService> logger)
 {
-    public async Task<List<CourseBookingModel>> GetCourseBookingsAsync()
+    public List<CourseBookingModel> GetCourseBookings()
     {
         try
         {
-            return await dbContext.CourseBookings
+            return dbContext.CourseBookings
                 .Include(d => d.Student)
                 .Include(d => d.TheoryLesson)
-                .ToListAsync();
+                .ToList();
         }
         catch (Exception e)
         {

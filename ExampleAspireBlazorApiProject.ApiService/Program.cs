@@ -8,6 +8,9 @@ builder.Services.AddControllers().AddJsonOptions(opt =>
 
 builder.Services.AddScoped<DrivingSchoolService>();
 builder.Services.AddScoped<StudentService>();
+builder.Services.AddScoped<CourseBookingService>();
+builder.Services.AddScoped<InstructorService>();
+builder.Services.AddScoped<TheoryLessonService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

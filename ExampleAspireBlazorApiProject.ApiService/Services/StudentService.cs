@@ -6,8 +6,8 @@ public sealed class StudentService(ApplicationDbContext dbContext, ILogger<Stude
 
     public List<StudentModel> GetAllDrivers() 
         => dbContext.Students.Where(x => !x.IsDeleted).ToList();
-    
-    public StudentModel? GetStudent(int id) 
+
+    private StudentModel? GetStudent(int id) 
         => dbContext.Students.FirstOrDefault(x => x.Id == id && !x.IsDeleted);
 
     #endregion
