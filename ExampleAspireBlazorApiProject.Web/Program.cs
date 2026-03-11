@@ -14,7 +14,23 @@ builder.Services.AddHttpClient<DrivingSchoolApiClient>(client =>
 {
     client.BaseAddress = new("https+http://apiservice");
 });
+
 builder.Services.AddHttpClient<StudentApiClient>(client =>
+{
+    client.BaseAddress = new("https+http://apiservice");
+});
+
+builder.Services.AddHttpClient<InstructorApiClient>(client =>
+{
+    client.BaseAddress = new("https+http://apiservice");
+});
+
+builder.Services.AddHttpClient<TheoryLessonApiClient>(client =>
+{
+    client.BaseAddress = new("https+http://apiservice");
+});
+
+builder.Services.AddHttpClient<CourseBookingApiClient>(client =>
 {
     client.BaseAddress = new("https+http://apiservice");
 });
