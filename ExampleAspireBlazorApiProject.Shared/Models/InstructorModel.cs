@@ -2,7 +2,8 @@
 
 public sealed class InstructorModel
 {
-    [Key] public int Id { get; init; }
+    [Key] 
+    public int Id { get; init; }
 
     [Required(ErrorMessage = "Vorname ist Pflicht")]
     [StringLength(50, MinimumLength = 3, ErrorMessage = "Vorname muss zwischen 3 und 50 Zeichen lang sein")]

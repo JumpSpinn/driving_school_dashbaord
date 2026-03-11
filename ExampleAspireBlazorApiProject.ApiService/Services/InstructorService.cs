@@ -42,7 +42,7 @@ public sealed class InstructorService(ApplicationDbContext dbContext, ILogger<In
             dbContext.Instructors.Add(newInstructor);
             await dbContext.SaveChangesAsync();
             
-            await dbContext.Entry(newInstructor).Reference(x => x.TheoryLessons).LoadAsync();
+            await dbContext.Entry(newInstructor).Collection(x => x.TheoryLessons).LoadAsync();
             
             return instructor;
         }
@@ -67,7 +67,7 @@ public sealed class InstructorService(ApplicationDbContext dbContext, ILogger<In
             instructor.Phone = toUpdate.Phone;
             
             await dbContext.SaveChangesAsync();
-            await dbContext.Entry(instructor).Reference(x => x.TheoryLessons).LoadAsync();
+            await dbContext.Entry(instructor).Collection(x => x.TheoryLessons).LoadAsync();
             
             return instructor;
         }

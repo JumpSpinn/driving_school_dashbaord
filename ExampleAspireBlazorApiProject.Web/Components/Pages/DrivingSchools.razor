@@ -40,6 +40,7 @@
     // MODALS
     private async Task OnShowModal(MudDialog? dialog)
     {
+        Console.WriteLine($"dialog show => null? {dialog is null}");
         if (dialog is null) return;
         await dialog.ShowAsync(options: DialogData.DialogDefaultOptions);
     }
