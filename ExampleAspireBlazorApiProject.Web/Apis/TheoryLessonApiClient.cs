@@ -32,11 +32,20 @@ public class TheoryLessonApiClient(HttpClient client, ILogger<TheoryLessonApiCli
         logger.LogInformation($"Web API => lesson with id {id} deleted! - Success: {result.IsSuccessStatusCode}");
         return result.IsSuccessStatusCode;
     }
-
-    public async Task<bool> UpdateLessonAsync(TheoryLessonModel editLesson)
+    
+    public async Task<TheoryLessonModel?> UpdateLessonAsync(TheoryLessonModel editLesson)
     {
         var result = await client.PutAsJsonAsync($"api/TheoryLesson/", editLesson);
         logger.LogInformation($"Web API => lesson with id {editLesson.Id} updated! - Success: {result.IsSuccessStatusCode}");
-        return result.IsSuccessStatusCode;
+
+        if (result.IsSuccessStatusCode)
+        {
+            var updatedModel = await result.Content.ReadFromJsonAsync<TheoryLessonModel>();
+            return updatedModel;
+        }
+        
+        var errorDetails = await result.Content.ReadAsStringAsync();
+        logger.LogWarning($"Update fehlgeschlagen: {errorDetails}");
+        return null; 
     }
 }

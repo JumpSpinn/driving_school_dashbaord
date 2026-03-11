@@ -12,6 +12,16 @@
     private MudDialog _createDialog = default!;
     private MudDialog _deleteDialog = default!;
     private MudDialog _editDialog = default!;
+
+    private MudForm _createForm;
+    private MudForm _editForm;
+    private MudForm _deleteForm;
+
+    private bool _createFormSuccess;
+    private bool _editFormSuccess;
+    
+    private TimeSpan? _startTime = new TimeSpan(18, 0, 0);
+    private readonly System.Globalization.CultureInfo _deCulture = System.Globalization.CultureInfo.GetCultureInfo("de-DE");
     
     private TheoryLessonModel? _editTheoryLesson;
     private TheoryLessonModel? _deleteTheoryLesson;
@@ -47,6 +57,87 @@
     {
         if (dialog is null) return;
         await dialog.CloseAsync();
+    }
+    
+    // CREATE
+    private async Task HandleCreateAsync()
+    {
+        await _createForm.ValidateAsync();
+        if (!_createForm.IsValid) return;
+        
+        if (_startTime.HasValue)
+            _newTheoryLesson.StartTime = TimeOnly.FromTimeSpan(_startTime.Value);
+        
+        var newLessons = await TheoryLessonApi.CreateLessonAsync(_newTheoryLesson);
+        if (newLessons is not null)
+            _theoryLessons.Add(_newTheoryLesson);
+
+        _startTime = null;
+        _newTheoryLesson = new();
+        await OnHideModal(_createDialog);
+        await _mudDataGrid.ReloadServerData();
+    }
+    
+    // EDIT
+    private void OnShowEditModal(TheoryLessonModel lesson)
+    {
+        _editTheoryLesson = new(lesson);
+        _ = OnShowModal(_editDialog);
+    }
+    
+    private async Task ConfirmEditAsync()
+    {
+        if (_editTheoryLesson is null) return;
+        
+        await _editForm.ValidateAsync();
+        if (!_editForm.IsValid) return;
+        
+        if (_startTime.HasValue)
+            _newTheoryLesson.StartTime = TimeOnly.FromTimeSpan(_startTime.Value);
+
+        var updated = await TheoryLessonApi.UpdateLessonAsync(_editTheoryLesson);
+        if (updated is null) return;
+        
+        var drivingSchoolToUpdate = _theoryLessons.FirstOrDefault(x => x.Id == _editTheoryLesson.Id);
+        if (drivingSchoolToUpdate is null) return;
+        
+        drivingSchoolToUpdate.Name = updated.Name;
+        drivingSchoolToUpdate.Topic = updated.Topic;
+        drivingSchoolToUpdate.DayOfWeek = updated.DayOfWeek;
+        drivingSchoolToUpdate.StartTime = updated.StartTime;
+        drivingSchoolToUpdate.DurationMinutes = updated.DurationMinutes;
+        drivingSchoolToUpdate.MaxStudents = updated.MaxStudents;
+        drivingSchoolToUpdate.Price = updated.Price;
+        drivingSchoolToUpdate.IsBasic = updated.IsBasic;
+        drivingSchoolToUpdate.InstructorId = updated.InstructorId;
+        drivingSchoolToUpdate.Instructor = updated.Instructor;
+
+        _startTime = null;
+        await OnHideModal(_editDialog);
+        await _mudDataGrid.ReloadServerData();
+        _editTheoryLesson = null;
+    }
+    
+    // DELETE
+    private void OnShowDeleteModal(TheoryLessonModel lesson)
+    {
+        _deleteTheoryLesson = new(lesson);
+        _ = OnShowModal(_deleteDialog);
+    }
+    
+    private async Task OnRequestDeleteAsync()
+    {
+        if (_deleteTheoryLesson is null) return;
+        
+        var deleted = await TheoryLessonApi.DeleteLessonAsync(_deleteTheoryLesson.Id);
+        if (!deleted) return;
+        
+        var remove = _theoryLessons.FirstOrDefault(x => x.Id == _deleteTheoryLesson.Id);
+        if(remove is not null)
+            _theoryLessons.Remove(remove);
+        
+        await OnHideModal(_deleteDialog);
+        await _mudDataGrid.ReloadServerData();
     }
 }
 
@@ -90,6 +181,63 @@ else
                 <Columns>
                     <PropertyColumn Property="x => x.Id" Title="ID" />
                     <PropertyColumn Property="x => x.Name" Title="Kursname" />
+                    <PropertyColumn Property="x => x.Topic" Title="Thema" />
+                    <TemplateColumn Title="Wochentag">
+                        <CellTemplate>
+                            @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(context.Item.DayOfWeek)
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <PropertyColumn Property="x => x.StartTime" Title="Startzeit" FormatString="HH:mm" />
+                    <TemplateColumn Title="Dauer">
+                        <CellTemplate>
+                            @($"{context.Item.DurationMinutes} Min.")
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <PropertyColumn Property="x => x.MaxStudents" Title="Max. Teilnehmer" />
+                    <PropertyColumn Property="x => x.Price" Title="Preis" Format="C2" />
+                    <TemplateColumn Title="Typ" Sortable="true">
+                        <CellTemplate>
+                            @if (context.Item.IsBasic)
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Info" Variant="Variant.Text">Basisstoff</MudChip>
+                            }
+                            else
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Secondary" Variant="Variant.Text">Spezialstoff</MudChip>
+                            }
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn Title="Fahrlehrer">
+                        <CellTemplate>
+                            @if (context.Item.Instructor != null)
+                            {
+                                <MudText Typo="Typo.body2">@context.Item.Instructor.FullName</MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.body2" Color="Color.Error"><i>Nicht zugewiesen</i></MudText>
+                            }
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn>
+                        <CellTemplate>
+                            <MudIconButton
+                                Variant="Variant.Outlined"
+                                Color="Color.Warning"
+                                Size="Size.Small"
+                                Icon="@Icons.Material.Filled.Edit"
+                                OnClick="() => OnShowEditModal(context.Item)"
+                                Class="mr-2"
+                                aria-label="Bearbeiten" />
+                            <MudIconButton
+                                Variant="Variant.Outlined"
+                                Color="Color.Error"
+                                Size="Size.Small"
+                                Icon="@Icons.Material.Filled.Delete"
+                                OnClick="() => OnShowDeleteModal(context.Item)"
+                                aria-label="Löschen" />
+                        </CellTemplate>
+                    </TemplateColumn>
                 </Columns>
                 <PagerContent>
                     <MudDataGridPager />
@@ -105,3 +253,214 @@ else
         </MudPaper>
     }
 }
+
+<MudDialog @ref="_createDialog">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Theorieunterricht eintragen</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="_createForm" @bind-IsValid="@_createFormSuccess">
+            <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
+                <MudTextField T="string"
+                              Class="mb-4"
+                              Variant="Variant.Text"
+                              @bind-Value="_newTheoryLesson.Name"
+                              ShrinkLabel
+                              Label="Kursname"
+                              For="@(() => _newTheoryLesson.Name)"
+                              Immediate="true"/>
+                <MudTextField T="string"
+                              Class="mb-4"
+                              Variant="Variant.Text"
+                              @bind-Value="_newTheoryLesson.Topic"
+                              ShrinkLabel
+                              Label="Thema"
+                              For="@(() => _newTheoryLesson.Topic)"
+                              Immediate="true"/>
+                <MudSelect
+                    Class="mb-4"
+                    @bind-Value="_newTheoryLesson.DayOfWeek"
+                    ShrinkLabel
+                    T="DayOfWeek"
+                    Variant="Variant.Text"
+                    Label="Wochentag wählen"
+                    Placeholder="Wochentag wählen">
+                    @foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+                    {
+                        <MudSelectItem Value="@day">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(day)</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudTimePicker 
+                    Class="mb-4"
+                    @bind-Time="_startTime"
+                    ShrinkLabel
+                    Label="Startzeit" 
+                    Editable="true" 
+                    Variant="Variant.Text" />
+                <MudNumericField 
+                    Class="mb-4"
+                    ShrinkLabel
+                    T="int" 
+                    Label="Dauer (Minuten)"
+                    @bind-Value="_newTheoryLesson.DurationMinutes"
+                    Min="45" 
+                    Step="15" 
+                    Variant="Variant.Text" />
+                <MudNumericField 
+                    Class="mb-4"
+                    ShrinkLabel
+                    T="int" 
+                    Label="Max. Teilnehmer"
+                    @bind-Value="_newTheoryLesson.MaxStudents"
+                    Min="1" 
+                    Variant="Variant.Text" />
+                <MudNumericField 
+                    Class="mb-4"
+                    ShrinkLabel
+                    T="decimal" 
+                    Label="Preis (€)"
+                    @bind-Value="_newTheoryLesson.Price"
+                    Min="1" 
+                    Format="N2"
+                    Culture="@_deCulture"
+                    Variant="Variant.Text" />
+                
+                <MudSelect
+                    Class="mb-4"
+                    @bind-Value="_newTheoryLesson.InstructorId"
+                    ShrinkLabel
+                    Variant="Variant.Text"
+                    Label="Fahrlehrer zuweisen"
+                    Disabled="!_instructors.Any()"
+                    Placeholder="Fahrlehrer zuweisen">
+                    @foreach (var instructor in _instructors)
+                    {
+                        <MudSelectItem Value="@((int?)instructor.Id)">@instructor.FullName</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudCheckBox 
+                    T="bool" 
+                    @bind-Value="_newTheoryLesson.IsBasic" 
+                    Color="Color.Primary" 
+                    Label="Basisstoff (Grundwissen)?" />
+            </MudPaper>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => OnHideModal(_createDialog)">Abbrechen</MudButton>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary" OnClick="HandleCreateAsync">Eintragen</MudButton>
+    </DialogActions>
+</MudDialog>
+
+<MudDialog @ref="_editDialog">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Theorieunterricht bearbeiten</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="_editForm" @bind-IsValid="@_editFormSuccess">
+            <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
+                <MudTextField T="string"
+                              Class="mb-4"
+                              Variant="Variant.Text"
+                              @bind-Value="_editTheoryLesson!.Name"
+                              ShrinkLabel
+                              Label="Kursname"
+                              For="@(() => _editTheoryLesson!.Name)"
+                              Immediate="true"/>
+                <MudTextField T="string"
+                              Class="mb-4"
+                              Variant="Variant.Text"
+                              @bind-Value="_editTheoryLesson!.Topic"
+                              ShrinkLabel
+                              Label="Thema"
+                              For="@(() => _editTheoryLesson!.Topic)"
+                              Immediate="true"/>
+                <MudSelect
+                    Class="mb-4"
+                    @bind-Value="_editTheoryLesson!.DayOfWeek"
+                    ShrinkLabel
+                    T="DayOfWeek"
+                    Variant="Variant.Text"
+                    Label="Wochentag wählen"
+                    Placeholder="Wochentag wählen">
+                    @foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+                    {
+                        <MudSelectItem Value="@day">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(day)</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudTimePicker 
+                    Class="mb-4"
+                    @bind-Time="_startTime"
+                    ShrinkLabel
+                    Label="Startzeit" 
+                    Editable="true" 
+                    Variant="Variant.Text" />
+                <MudNumericField 
+                    Class="mb-4"
+                    ShrinkLabel
+                    T="int" 
+                    Label="Dauer (Minuten)"
+                    @bind-Value="_editTheoryLesson!.DurationMinutes"
+                    Min="45" 
+                    Step="15" 
+                    Variant="Variant.Text" />
+                <MudNumericField 
+                    Class="mb-4"
+                    ShrinkLabel
+                    T="int" 
+                    Label="Max. Teilnehmer"
+                    @bind-Value="_editTheoryLesson!.MaxStudents"
+                    Min="1" 
+                    Variant="Variant.Text" />
+                <MudNumericField 
+                    Class="mb-4"
+                    ShrinkLabel
+                    T="decimal" 
+                    Label="Preis (€)"
+                    @bind-Value="_editTheoryLesson!.Price"
+                    Min="1" 
+                    Format="N2"
+                    Culture="@_deCulture"
+                    Variant="Variant.Text" />
+                
+                <MudSelect
+                    Class="mb-4"
+                    @bind-Value="_editTheoryLesson!.InstructorId"
+                    ShrinkLabel
+                    Variant="Variant.Text"
+                    Label="Fahrlehrer zuweisen"
+                    Disabled="!_instructors.Any()"
+                    Placeholder="Fahrlehrer zuweisen">
+                    @foreach (var instructor in _instructors)
+                    {
+                        <MudSelectItem Value="@((int?)instructor.Id)">@instructor.FullName</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudCheckBox 
+                    T="bool" 
+                    @bind-Value="_editTheoryLesson!.IsBasic" 
+                    Color="Color.Primary" 
+                    Label="Basisstoff (Grundwissen)?" />
+            </MudPaper>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => OnHideModal(_editDialog)">Abbrechen</MudButton>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary" OnClick="ConfirmEditAsync">Änderungen speichern</MudButton>
+    </DialogActions>
+</MudDialog>
+
+<MudDialog @ref="_deleteDialog">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Theorieunterricht löschen</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
+            <MudText>Bist du sicher, dass du den Theorieunterricht @_deleteTheoryLesson?.Name löschen möchtest?</MudText>
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => OnHideModal(_deleteDialog)">Nein</MudButton>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary" OnClick="OnRequestDeleteAsync">Ja</MudButton>
+    </DialogActions>
+</MudDialog>

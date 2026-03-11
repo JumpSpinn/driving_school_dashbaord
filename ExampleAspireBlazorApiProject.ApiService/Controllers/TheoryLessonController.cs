@@ -35,10 +35,10 @@ public sealed class TheoryLessonController(TheoryLessonService theoryLessonServi
     [HttpPut]
     public async Task<IActionResult> UpdateLessonAsync(TheoryLessonModel editLesson)
     {
-        var instructor = await theoryLessonService.UpdateTheoryLessonAsync(editLesson);
-        logger.LogDebug("Lesson #{Id} updated: {Result}", editLesson.Id, instructor is not null);
-        if (instructor is null)
+        var lesson = await theoryLessonService.UpdateTheoryLessonAsync(editLesson);
+        logger.LogDebug("Lesson #{Id} updated: {Result}", editLesson.Id, lesson is not null);
+        if (lesson is null)
             return NotFound($"Theorieunterricht mit der ID {editLesson.Id} konnte nicht aktualisiert werden!");
-        return NoContent();
+        return StatusCode(StatusCodes.Status201Created, lesson);
     }
 }
