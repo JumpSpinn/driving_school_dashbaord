@@ -12,9 +12,17 @@
     private MudDataGrid<CourseBookingModel> _mudDataGrid = default!;
 
     private MudDialog _createDialog = default!;
+    private MudDialog _editDialog = default!;
     private MudDialog _deleteDialog = default!;
+
+    private MudForm _createForm;
+    private MudForm _editForm;
+
+    private bool _createFormSuccess;
+    private bool _editFormSuccess;
     
     private CourseBookingModel? _deleteCourseBooking;
+    private CourseBookingModel? _editCourseBooking;
     private CourseBookingModel _newCourseBooking = new();
     
     protected override void OnInitialized()
@@ -48,6 +56,74 @@
     {
         if (dialog is null) return;
         await dialog.CloseAsync();
+    }
+    
+    // CREATE
+    private async Task HandleCreateAsync()
+    {
+        await _createForm.ValidateAsync();
+        if (!_createForm.IsValid) return;
+        
+        var courseBooking = await CourseBookingApi.CreateCourseBookingAsync(_newCourseBooking);
+        if (courseBooking is not null)
+            _courseBookings.Add(courseBooking);
+        
+        _newCourseBooking = new();
+        await OnHideModal(_createDialog);
+        await _mudDataGrid.ReloadServerData();
+    }
+    
+    // EDIT
+    private async Task OnShowEditModal(CourseBookingModel courseBooking)
+    {
+        _editCourseBooking = new(courseBooking);
+        await OnShowModal(_editDialog);
+    }
+    
+    private async Task ConfirmEditAsync()
+    {
+        if (_editCourseBooking is null) return;
+        
+        await _editForm.ValidateAsync();
+        if (!_editForm.IsValid) return;
+
+        var updated = await CourseBookingApi.UpdateCourseBookingAsync(_editCourseBooking);
+        if (updated is null) return;
+        
+        var drivingSchoolToUpdate = _courseBookings.FirstOrDefault(x => x.Id == _editCourseBooking.Id);
+        if (drivingSchoolToUpdate is null) return;
+        
+        drivingSchoolToUpdate.StudentId = updated.StudentId;
+        drivingSchoolToUpdate.TheoryLessonId = updated.TheoryLessonId;
+        drivingSchoolToUpdate.BookingDate = updated.BookingDate;
+        drivingSchoolToUpdate.Student = updated.Student;
+        drivingSchoolToUpdate.TheoryLesson = updated.TheoryLesson;
+
+        await OnHideModal(_editDialog);
+        await _mudDataGrid.ReloadServerData();
+        _editCourseBooking = null;
+    }
+    
+    // DELETE
+    private async Task OnShowDeleteModal(CourseBookingModel courseBooking)
+    {
+        _deleteCourseBooking = new(courseBooking);
+        await OnShowModal(_deleteDialog);
+    }
+    
+    private async Task OnRequestDeleteAsync()
+    {
+        if (_deleteCourseBooking is null) return;
+        
+        var deleted = await CourseBookingApi.DeleteCourseBookingAsync(_deleteCourseBooking.Id);
+        if (!deleted) return;
+        
+        var remove = _courseBookings.FirstOrDefault(x => x.Id == _deleteCourseBooking.Id);
+        if(remove is not null)
+            _courseBookings.Remove(remove);
+        
+        await OnHideModal(_deleteDialog);
+        await _mudDataGrid.ReloadServerData();
     }
 }
 
@@ -91,7 +167,7 @@ else
             >
                 <Columns>
                     <PropertyColumn Property="x => x.Id" Title="ID" />
-                    <PropertyColumn Property="x => x.BookingDate" Title="Buchungsdatum" />
+                    <PropertyColumn Property="x => x.BookingDate" Title="Buchungsdatum" Format="dd.MM.yyyy" />
                     <TemplateColumn Title="Fahrschüler">
                         <CellTemplate>
                             @if (context.Item.Student != null)
@@ -116,6 +192,25 @@ else
                             }
                         </CellTemplate>
                     </TemplateColumn>
+                    <TemplateColumn>
+                        <CellTemplate>
+                            <MudIconButton
+                                Variant="Variant.Outlined"
+                                Color="Color.Warning"
+                                Size="Size.Small"
+                                Icon="@Icons.Material.Filled.Edit"
+                                OnClick="() => OnShowEditModal(context.Item)"
+                                Class="mr-2"
+                                aria-label="Bearbeiten" />
+                            <MudIconButton
+                                Variant="Variant.Outlined"
+                                Color="Color.Error"
+                                Size="Size.Small"
+                                Icon="@Icons.Material.Filled.Delete"
+                                OnClick="() => OnShowDeleteModal(context.Item)"
+                                aria-label="Löschen" />
+                        </CellTemplate>
+                    </TemplateColumn>
                 </Columns>
                 <PagerContent>
                     <MudDataGridPager />
@@ -131,3 +226,115 @@ else
         </MudPaper>
     }
 }
+
+<MudDialog @ref="_createDialog">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Kursbuchung eintragen</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="_createForm" @bind-IsValid="@_createFormSuccess">
+            <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
+                <MudSelect
+                    Class="mb-4"
+                    T="int?"
+                    @bind-Value="_newCourseBooking.StudentId"
+                    ShrinkLabel
+                    Variant="Variant.Text"
+                    Label="Fahrschüler zuweisen"
+                    For="@(() => _newCourseBooking.StudentId)"
+                    Immediate="true"
+                    Disabled="!_students.Any()">
+                    @foreach (var student in _students)
+                    {
+                        <MudSelectItem T="int?" Value="@(student.Id)">@student.FullName</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudSelect
+                    Class="mb-4"
+                    T="int?"
+                    @bind-Value="_newCourseBooking.TheoryLessonId"
+                    ShrinkLabel
+                    Variant="Variant.Text"
+                    Label="Kurs zuweisen"
+                    For="@(() => _newCourseBooking.TheoryLessonId)"
+                    Immediate="true"
+                    Disabled="!_lessons.Any()">
+                    @foreach (var lesson in _lessons)
+                    {
+                        <MudSelectItem T="int?" Value="@(lesson.Id)">@lesson.Name | @lesson.Topic</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudPaper>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => OnHideModal(_createDialog)">Abbrechen</MudButton>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary" OnClick="HandleCreateAsync">Eintragen</MudButton>
+    </DialogActions>
+</MudDialog>
+
+<MudDialog @ref="_editDialog">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Kursbuchung bearbeiten</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="_editForm" @bind-IsValid="@_editFormSuccess">
+            <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
+                <MudDatePicker Class="mb-4" 
+                               Variant="Variant.Text"
+                               ShrinkLabel 
+                               Label="Buchungsdatum" 
+                               @bind-Date="_editCourseBooking!.BookingDate" />
+                <MudSelect
+                    Class="mb-4"
+                    T="int?"
+                    @bind-Value="_editCourseBooking!.StudentId"
+                    ShrinkLabel
+                    Variant="Variant.Text"
+                    Label="Fahrschüler zuweisen"
+                    For="@(() => _editCourseBooking!.TheoryLessonId)"
+                    Immediate="true"
+                    Disabled="!_students.Any()">
+                    @foreach (var student in _students)
+                    {
+                        <MudSelectItem T="int?" Value="@(student.Id)">@student.FullName</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudSelect
+                    Class="mb-4"
+                    T="int?"
+                    @bind-Value="_editCourseBooking!.TheoryLessonId"
+                    ShrinkLabel
+                    Variant="Variant.Text"
+                    Label="Kurs zuweisen"
+                    For="@(() => _editCourseBooking!.TheoryLessonId)"
+                    Immediate="true"
+                    Disabled="!_lessons.Any()">
+                    @foreach (var lesson in _lessons)
+                    {
+                        <MudSelectItem T="int?" Value="@(lesson.Id)">@lesson.Name | @lesson.Topic</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudPaper>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => OnHideModal(_editDialog)">Abbrechen</MudButton>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary" OnClick="ConfirmEditAsync">Änderungen speichern</MudButton>
+    </DialogActions>
+</MudDialog>
+
+<MudDialog @ref="_deleteDialog">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Kursbuchung löschen</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
+            <MudText>Bist du sicher, dass du diese Kursbuchung löschen möchtest?</MudText>
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => OnHideModal(_deleteDialog)">Nein</MudButton>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary" OnClick="OnRequestDeleteAsync">Ja</MudButton>
+    </DialogActions>
+</MudDialog>

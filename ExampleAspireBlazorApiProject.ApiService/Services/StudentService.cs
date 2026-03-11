@@ -8,11 +8,13 @@ public sealed class StudentService(ApplicationDbContext dbContext, ILogger<Stude
         => dbContext.Students
             .Where(x => !x.IsDeleted)
             .Include(d => d.DrivingSchool)
+            .Include(d => d.CourseBookings)
             .ToList();
 
     private StudentModel? GetStudent(int id) 
         => dbContext.Students
             .Include(d => d.DrivingSchool)
+            .Include(d => d.CourseBookings)
             .FirstOrDefault(x => x.Id == id && !x.IsDeleted);
 
     #endregion
@@ -26,6 +28,7 @@ public sealed class StudentService(ApplicationDbContext dbContext, ILogger<Stude
             dbContext.Students.Add(newStudent);
             await dbContext.SaveChangesAsync();
             await dbContext.Entry(newStudent).Reference(x => x.DrivingSchool).LoadAsync();
+            await dbContext.Entry(newStudent).Collection(x => x.CourseBookings).LoadAsync();
             return newStudent;
         }
         catch (Exception e)
@@ -84,6 +87,7 @@ public sealed class StudentService(ApplicationDbContext dbContext, ILogger<Stude
             
             await dbContext.SaveChangesAsync();
             await dbContext.Entry(student).Reference(x => x.DrivingSchool).LoadAsync();
+            await dbContext.Entry(student).Collection(x => x.CourseBookings).LoadAsync();
 
             return student;
         }

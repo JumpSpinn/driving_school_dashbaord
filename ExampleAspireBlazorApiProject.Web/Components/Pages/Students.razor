@@ -11,6 +11,7 @@
     private MudDialog _createDialog = default!;
     private MudDialog _deleteDialog = default!;
     private MudDialog _editDialog = default!;
+    private MudDialog _infoDialog = default!;
     
     MudForm _createForm;
     MudForm _editForm;
@@ -21,6 +22,7 @@
     private List<DrivingSchoolModel> _drivingSchools = [];
     private StudentModel? _editStudent;
     private StudentModel? _deleteStudent;
+    private StudentModel? _inspectStudent;
     private StudentModel _newStudent = new();
     
     protected override void OnInitialized()
@@ -37,6 +39,16 @@
 
         _students = await StudentApiClient.GetAllStudentsAsync() ?? [];
         _drivingSchools = await DrivingSchoolApiClient.GetAllDrivingSchoolsAsync() ?? [];
+        
+        Console.WriteLine($"Students Bookings:");
+        foreach (var student in _students)
+        {
+            Console.WriteLine($"Student: {student.FullName}");
+            foreach (var courseBooking in student.CourseBookings)
+            {
+                Console.WriteLine($"Student: {student.FullName} | BookingDate: {courseBooking.BookingDate}, Id: {courseBooking.Id}");
+            }
+        }
         
         _dataLoading = false;
         StateHasChanged();
@@ -105,6 +117,7 @@
         studentToUpdate.HasPassed = updated.HasPassed;
         studentToUpdate.DrivingSchoolId = updated.DrivingSchoolId;
         studentToUpdate.DrivingSchool = updated.DrivingSchool;
+        studentToUpdate.CourseBookings = updated.CourseBookings;
         
         await OnHideModal(_editDialog);
         await _mudDataGrid.ReloadServerData();
@@ -131,6 +144,13 @@
         
         await _mudDataGrid.ReloadServerData();
         await OnHideModal(_deleteDialog);
+    }
+    
+    // INFO
+    private async Task OnShowInfoModal(StudentModel student)
+    {
+        _inspectStudent = new(student);
+        await OnShowModal(_infoDialog);
     }
     
     // SCHOOL
@@ -173,7 +193,7 @@ else
                 Bordered="false"
                 Dense="true"
                 RowsPerPage="10"
-                SortMode="SortMode.Multiple"
+                SortMode="SortMode.Single"
                 Hover="true"
                 Loading="@_dataLoading"
             >
@@ -194,36 +214,11 @@ else
                             }
                         </CellTemplate>
                     </TemplateColumn>
-                    
-                    <TemplateColumn Title="Geburtstag">
-                        <CellTemplate>
-                            @if (context.Item.Birthday != null)
-                            {
-                                <MudText Typo="Typo.body2">@context.Item.Birthday?.ToString("dd.MM.yyyy")</MudText>
-                            }
-                            else
-                            {
-                                <MudText Typo="Typo.body2" Color="Color.Error"><i>keine Angabe</i></MudText>
-                            }
-                        </CellTemplate>
-                    </TemplateColumn>
                     <TemplateColumn Title="Klasse">
                         <CellTemplate>
                             @if (context.Item.License != null)
                             {
                                 <MudText Typo="Typo.body2">@LicenseHelper.GetName(context.Item.License)</MudText>
-                            }
-                            else
-                            {
-                                <MudText Typo="Typo.body2" Color="Color.Error"><i>nicht festgelegt</i></MudText>
-                            }
-                        </CellTemplate>
-                    </TemplateColumn>
-                    <TemplateColumn Title="Anmeldedatum">
-                        <CellTemplate>
-                            @if (context.Item.EnrollmentDate != null)
-                            {
-                                <MudText Typo="Typo.body2">@context.Item.EnrollmentDate?.ToString("dd.MM.yyyy")</MudText>
                             }
                             else
                             {
@@ -275,19 +270,27 @@ else
                         <CellTemplate>
                             <MudIconButton
                                 Variant="Variant.Outlined"
+                                Color="Color.Info"
+                                Size="Size.Small"
+                                Icon="@Icons.Material.Filled.Info"
+                                OnClick="() => OnShowInfoModal(context.Item)"
+                                Class="mr-2"
+                                aria-label="Ansehen" />
+                            <MudIconButton
+                                Variant="Variant.Outlined"
                                 Color="Color.Warning"
                                 Size="Size.Small"
                                 Icon="@Icons.Material.Filled.Edit"
                                 OnClick="() => OnShowEditModal(context.Item)"
                                 Class="mr-2"
-                                aria-label="Bearbeiten" />
+                                aria-label="Bearbeiten"/>
                             <MudIconButton
                                 Variant="Variant.Outlined"
                                 Color="Color.Error"
                                 Size="Size.Small"
                                 Icon="@Icons.Material.Filled.Delete"
                                 OnClick="() => OnShowDeleteModal(context.Item)"
-                                aria-label="Löschen" />
+                                aria-label="Löschen"/>
                         </CellTemplate>
                     </TemplateColumn>
                 </Columns>
@@ -382,7 +385,7 @@ else
 
 <MudDialog @ref="_editDialog">
     <TitleContent>
-        <MudText Typo="Typo.h6">Fahrschüler bearbeiten (ID: @_editStudent?.Id)</MudText>
+        <MudText Typo="Typo.h6">Fahrschüler bearbeiten</MudText>
     </TitleContent>
     <DialogContent>
         <MudForm @ref="_editForm" @bind-IsValid="@_editFormSuccess">
@@ -458,7 +461,7 @@ else
 
 <MudDialog @ref="_deleteDialog">
     <TitleContent>
-        <MudText Typo="Typo.h6">Fahrschüler löschen (ID: @_deleteStudent?.Id)</MudText>
+        <MudText Typo="Typo.h6">Fahrschüler löschen</MudText>
     </TitleContent>
     <DialogContent>
         <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
@@ -468,5 +471,26 @@ else
     <DialogActions>
         <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => OnHideModal(_deleteDialog)">Nein</MudButton>
         <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary" OnClick="OnRequestDeleteDriverAsync">Ja</MudButton>
+    </DialogActions>
+</MudDialog>
+
+<MudDialog @ref="_infoDialog">
+    <TitleContent>
+        <MudText Typo="Typo.h6">@_inspectStudent!.FullName | Informationen</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
+            <MudText>Kurse gebucht: @_inspectStudent!.CourseBookings.Count</MudText>
+            @foreach (var booking in _inspectStudent!.CourseBookings)
+            {
+                <MudText>@booking.BookingDate | @booking.Student?.FullName, @booking.TheoryLesson?.Name (@booking.TheoryLesson?.Topic)</MudText>
+            }
+            <MudText>Geburtstag: @_inspectStudent!.Birthday</MudText>
+            <MudText>Anmeldedatum: @_inspectStudent!.EnrollmentDate</MudText>
+            
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Info" OnClick="() => OnHideModal(_infoDialog)">Ok</MudButton>
     </DialogActions>
 </MudDialog>

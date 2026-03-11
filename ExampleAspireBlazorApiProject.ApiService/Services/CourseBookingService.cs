@@ -35,7 +35,9 @@ public sealed class CourseBookingService(ApplicationDbContext dbContext, ILogger
     {
         try
         {
-            var exist = GetCourseBooking(booking.StudentId, booking.TheoryLessonId);
+            if (booking.StudentId is null && booking.TheoryLessonId is null) return null;
+            
+            var exist = GetCourseBooking((int)booking.StudentId!, (int)booking.TheoryLessonId!);
             if (exist is not null) return exist;
 
             var courseBooking = new CourseBookingModel
@@ -67,9 +69,6 @@ public sealed class CourseBookingService(ApplicationDbContext dbContext, ILogger
         {
             var courseBooking = GetCourseBooking(toUpdate.Id);
             if (courseBooking is null) return null;
-            if (courseBooking.StudentId == toUpdate.StudentId &&
-                courseBooking.TheoryLessonId == toUpdate.TheoryLessonId) return courseBooking;
-            
             
             courseBooking.StudentId = toUpdate.StudentId;
             courseBooking.TheoryLessonId = toUpdate.TheoryLessonId;

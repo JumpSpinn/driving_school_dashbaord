@@ -12,6 +12,7 @@
     private MudDialog _createDialog = default!;
     private MudDialog _deleteDialog = default!;
     private MudDialog _editDialog = default!;
+    private MudDialog _infoDialog = default!;
 
     private MudForm _createForm;
     private MudForm _editForm;
@@ -25,6 +26,7 @@
     
     private TheoryLessonModel? _editTheoryLesson;
     private TheoryLessonModel? _deleteTheoryLesson;
+    private TheoryLessonModel? _inspectTheoryLesson;
     private TheoryLessonModel _newTheoryLesson = new();
     
     protected override void OnInitialized()
@@ -93,7 +95,7 @@
         if (!_editForm.IsValid) return;
         
         if (_startTime.HasValue)
-            _newTheoryLesson.StartTime = TimeOnly.FromTimeSpan(_startTime.Value);
+            _editTheoryLesson.StartTime = TimeOnly.FromTimeSpan(_startTime.Value);
 
         var updated = await TheoryLessonApi.UpdateLessonAsync(_editTheoryLesson);
         if (updated is null) return;
@@ -139,13 +141,20 @@
         await OnHideModal(_deleteDialog);
         await _mudDataGrid.ReloadServerData();
     }
+    
+    // INFO
+    private async Task OnShowInfoModal(TheoryLessonModel lesson)
+    {
+        _inspectTheoryLesson = new(lesson);
+        await OnShowModal(_infoDialog);
+    }
 }
 
-<PageTitle>Theorieunterricht</PageTitle>
+<PageTitle>Kurse</PageTitle>
 
 <MudPaper Class="d-flex flex-row align-center mud-theme-dark pa-4 ma-4" Elevation="1">
     <MudPaper Class="d-flex flex-column mud-theme-dark" Elevation="0">
-        <MudText Typo="Typo.h5" Color="Color.Secondary">Theorieunterricht</MudText>
+        <MudText Typo="Typo.h5" Color="Color.Secondary">Kurse</MudText>
     </MudPaper>
     <MudSpacer/>
     <MudButton
@@ -188,13 +197,6 @@ else
                         </CellTemplate>
                     </TemplateColumn>
                     <PropertyColumn Property="x => x.StartTime" Title="Startzeit" FormatString="HH:mm" />
-                    <TemplateColumn Title="Dauer">
-                        <CellTemplate>
-                            @($"{context.Item.DurationMinutes} Min.")
-                        </CellTemplate>
-                    </TemplateColumn>
-                    <PropertyColumn Property="x => x.MaxStudents" Title="Max. Teilnehmer" />
-                    <PropertyColumn Property="x => x.Price" Title="Preis" Format="C2" />
                     <TemplateColumn Title="Typ" Sortable="true">
                         <CellTemplate>
                             @if (context.Item.IsBasic)
@@ -221,6 +223,14 @@ else
                     </TemplateColumn>
                     <TemplateColumn>
                         <CellTemplate>
+                            <MudIconButton
+                                Variant="Variant.Outlined"
+                                Color="Color.Info"
+                                Size="Size.Small"
+                                Icon="@Icons.Material.Filled.Info"
+                                OnClick="() => OnShowInfoModal(context.Item)"
+                                Class="mr-2"
+                                aria-label="Ansehen" />
                             <MudIconButton
                                 Variant="Variant.Outlined"
                                 Color="Color.Warning"
@@ -256,7 +266,7 @@ else
 
 <MudDialog @ref="_createDialog">
     <TitleContent>
-        <MudText Typo="Typo.h6">Theorieunterricht eintragen</MudText>
+        <MudText Typo="Typo.h6">Kurs eintragen</MudText>
     </TitleContent>
     <DialogContent>
         <MudForm @ref="_createForm" @bind-IsValid="@_createFormSuccess">
@@ -352,7 +362,7 @@ else
 
 <MudDialog @ref="_editDialog">
     <TitleContent>
-        <MudText Typo="Typo.h6">Theorieunterricht bearbeiten (ID: @_editTheoryLesson?.Id)</MudText>
+        <MudText Typo="Typo.h6">Kurs bearbeiten</MudText>
     </TitleContent>
     <DialogContent>
         <MudForm @ref="_editForm" @bind-IsValid="@_editFormSuccess">
@@ -448,15 +458,31 @@ else
 
 <MudDialog @ref="_deleteDialog">
     <TitleContent>
-        <MudText Typo="Typo.h6">Theorieunterricht löschen (ID: @_deleteTheoryLesson?.Id)</MudText>
+        <MudText Typo="Typo.h6">Kurs löschen</MudText>
     </TitleContent>
     <DialogContent>
         <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
-            <MudText>Bist du sicher, dass du den Theorieunterricht @_deleteTheoryLesson?.Name löschen möchtest?</MudText>
+            <MudText>Bist du sicher, dass du den Kurs @_deleteTheoryLesson?.Name löschen möchtest?</MudText>
         </MudPaper>
     </DialogContent>
     <DialogActions>
         <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => OnHideModal(_deleteDialog)">Nein</MudButton>
         <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary" OnClick="OnRequestDeleteAsync">Ja</MudButton>
+    </DialogActions>
+</MudDialog>
+
+<MudDialog @ref="_infoDialog">
+    <TitleContent>
+        <MudText Typo="Typo.h6">@_inspectTheoryLesson!.Name | Informationen</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
+            <MudText>Dauer: @_inspectTheoryLesson!.DurationMinutes</MudText>
+            <MudText>Max. Teilnehmer: @_inspectTheoryLesson!.MaxStudents</MudText>
+            <MudText>Preis: @_inspectTheoryLesson!.Price</MudText>
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Info" OnClick="() => OnHideModal(_infoDialog)">Ok</MudButton>
     </DialogActions>
 </MudDialog>

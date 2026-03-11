@@ -9,6 +9,7 @@
 
     private MudDialog _createDialog = default!;
     private MudDialog _editDialog = default!;
+    private MudDialog _infoDialog = default!;
     private MudDialog _deleteDialog = default!;
 
     private MudForm _createForm;
@@ -20,6 +21,7 @@
     
     private InstructorModel? _editInstructor;
     private InstructorModel? _deleteInstructor;
+    private InstructorModel? _inspectInstructor;
     private InstructorModel _newInstructor = new();
     
     protected override void OnInitialized()
@@ -119,6 +121,13 @@
         await OnHideModal(_deleteDialog);
         await _mudDataGrid.ReloadServerData();
     }
+    
+    // INFO
+    private async Task OnShowInfoModal(InstructorModel instructor)
+    {
+        _inspectInstructor = new(instructor);
+        await OnShowModal(_infoDialog);
+    }
 }
 
 <PageTitle>Fahrlehrer</PageTitle>
@@ -196,19 +205,27 @@ else
                         <CellTemplate>
                             <MudIconButton
                                 Variant="Variant.Outlined"
+                                Color="Color.Info"
+                                Size="Size.Small"
+                                Icon="@Icons.Material.Filled.Info"
+                                OnClick="() => OnShowInfoModal(context.Item)"
+                                Class="mr-2"
+                                aria-label="Ansehen" />
+                            <MudIconButton
+                                Variant="Variant.Outlined"
                                 Color="Color.Warning"
                                 Size="Size.Small"
                                 Icon="@Icons.Material.Filled.Edit"
                                 OnClick="() => OnShowEditModal(context.Item)"
                                 Class="mr-2"
-                                aria-label="Bearbeiten" />
+                                aria-label="Bearbeiten"/>
                             <MudIconButton
                                 Variant="Variant.Outlined"
                                 Color="Color.Error"
                                 Size="Size.Small"
                                 Icon="@Icons.Material.Filled.Delete"
                                 OnClick="() => OnShowDeleteModal(context.Item)"
-                                aria-label="Löschen" />
+                                aria-label="Löschen"/>
                         </CellTemplate>
                     </TemplateColumn>
                 </Columns>
@@ -270,7 +287,7 @@ else
 
 <MudDialog @ref="_editDialog">
     <TitleContent>
-        <MudText Typo="Typo.h6">Fahrlehrer bearbeiten (ID: @_editInstructor?.Id)</MudText>
+        <MudText Typo="Typo.h6">Fahrlehrer bearbeiten</MudText>
     </TitleContent>
     <DialogContent>
         <MudForm @ref="_editForm" @bind-IsValid="@_createFormSuccess">
@@ -311,7 +328,7 @@ else
 
 <MudDialog @ref="_deleteDialog">
     <TitleContent>
-        <MudText Typo="Typo.h6">Fahrlehrer löschen (ID: @_deleteInstructor?.Id)</MudText>
+        <MudText Typo="Typo.h6">Fahrlehrer löschen</MudText>
     </TitleContent>
     <DialogContent>
         <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
@@ -321,5 +338,23 @@ else
     <DialogActions>
         <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => OnHideModal(_deleteDialog)">Nein</MudButton>
         <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Secondary" OnClick="OnRequestDeleteAsync">Ja</MudButton>
+    </DialogActions>
+</MudDialog>
+
+<MudDialog @ref="_infoDialog">
+    <TitleContent>
+        <MudText Typo="Typo.h6">@_inspectInstructor!.FullName | Informationen</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
+            <MudText>Zugewiesene Kurse:@_inspectInstructor!.TheoryLessons.Count</MudText>
+            @foreach (var lesson in _inspectInstructor!.TheoryLessons)
+            {
+                <MudText>Kurs:@lesson.Name | @lesson.Topic</MudText>
+            }
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Info" OnClick="() => OnHideModal(_infoDialog)">Ok</MudButton>
     </DialogActions>
 </MudDialog>

@@ -4,14 +4,13 @@ public sealed class CourseBookingModel
 {
     [Key]
     public int Id { get; set; }
-
-    [Required]
-    public int StudentId { get; set; }
-
-    [Required]
-    public int TheoryLessonId { get; set; }
     
-    public DateTime BookingDate { get; set; } = DateTime.Now;
+    [Required(ErrorMessage = "Student ist Pflicht")]
+    public int? StudentId { get; set; }
+    
+    [Required(ErrorMessage = "Kurs ist Pflicht")]
+    public int? TheoryLessonId { get; set; }
+    public DateTime? BookingDate { get; set; } = DateTime.Now;
 
     // Navigation Properties
     [ForeignKey(nameof(StudentId))]

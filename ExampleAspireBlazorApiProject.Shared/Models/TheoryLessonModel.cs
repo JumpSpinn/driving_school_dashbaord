@@ -47,5 +47,6 @@ public sealed class TheoryLessonModel
         
         // Navigator Properties
         InstructorId = other.InstructorId;
+        Instructor = other.Instructor;
     }
 }

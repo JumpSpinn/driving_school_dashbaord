@@ -48,6 +48,14 @@ public static class DataSeeder
             Price = 45.00m
         };
         dbContext.TheoryLessons.Add(lesson);
+
+        var courseBooking = new CourseBookingModel()
+        {
+            StudentId = student.Id,
+            TheoryLessonId = lesson.Id,
+            BookingDate = DateTime.Now
+        };
+        dbContext.CourseBookings.Add(courseBooking);
         
         await dbContext.SaveChangesAsync();
     }

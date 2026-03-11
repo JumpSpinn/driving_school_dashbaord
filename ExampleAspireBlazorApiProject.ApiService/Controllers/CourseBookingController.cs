@@ -39,6 +39,6 @@ public sealed class CourseBookingController(CourseBookingService courseBookingSe
         logger.LogDebug("Course booking #{Id} updated: {Result}", editCourseBooking.Id, courseBooking is not null);
         if (courseBooking is null)
             return NotFound($"Kursbuchung mit der ID {editCourseBooking.Id} konnte nicht aktualisiert werden!");
-        return NoContent();
+        return StatusCode(StatusCodes.Status201Created, courseBooking);
     }
 }

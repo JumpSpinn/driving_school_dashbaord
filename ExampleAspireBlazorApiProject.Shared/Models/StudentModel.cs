@@ -33,6 +33,8 @@ public sealed class StudentModel
     [ForeignKey(nameof(DrivingSchoolId))]
     public DrivingSchoolModel? DrivingSchool { get; set; }
     
+    public ICollection<CourseBookingModel> CourseBookings { get; set; } = [];
+    
     public StudentModel() { }
     public StudentModel(StudentModel other)
     {
@@ -51,5 +53,7 @@ public sealed class StudentModel
         
         // Navigator Properties
         DrivingSchoolId = other.DrivingSchoolId;
+        DrivingSchool = other.DrivingSchool;
+        CourseBookings = other.CourseBookings;
     }
 }

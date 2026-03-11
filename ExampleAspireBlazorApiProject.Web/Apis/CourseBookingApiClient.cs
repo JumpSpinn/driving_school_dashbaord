@@ -32,11 +32,20 @@ public class CourseBookingApiClient(HttpClient client, ILogger<CourseBookingApiC
         logger.LogInformation($"Web API => course booking with id {id} deleted! - Success: {result.IsSuccessStatusCode}");
         return result.IsSuccessStatusCode;
     }
-
-    public async Task<bool> UpdateCourseBookingAsync(CourseBookingModel editCourseBooking)
+    
+    public async Task<CourseBookingModel?> UpdateCourseBookingAsync(CourseBookingModel editCourseBooking)
     {
         var result = await client.PutAsJsonAsync($"api/CourseBooking/", editCourseBooking);
-        logger.LogInformation($"Web API => course booking with id {editCourseBooking.Id} updated! - Success: {result.IsSuccessStatusCode}");
-        return result.IsSuccessStatusCode;
+        logger.LogInformation($"Web API => student with id {editCourseBooking.Id} updated! - Success: {result.IsSuccessStatusCode}");
+
+        if (result.IsSuccessStatusCode)
+        {
+            var updatedModel = await result.Content.ReadFromJsonAsync<CourseBookingModel>();
+            return updatedModel;
+        }
+        
+        var errorDetails = await result.Content.ReadAsStringAsync();
+        logger.LogWarning($"Update fehlgeschlagen: {errorDetails}");
+        return null; 
     }
 }
