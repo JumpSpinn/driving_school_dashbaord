@@ -14,6 +14,23 @@
     private List<DrivingSchoolModel> _drivingSchools = [];
     private List<TheoryLessonModel> _theoryLessons = [];
     
+    // CHARTS
+    private List<ChartSeries<double>> _series = new();
+    private string[] _xAxisLabels = new[]
+    {
+        "Mo",
+        "Di",
+        "Mi",
+        "Do",
+        "Fr",
+        "Sa",
+        "So",
+    };
+
+    private string[] _donutLabels = ["in Ausbildung", "Bestanden"];
+    private double[] _donutData = [0, 0];
+    
+    
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -31,9 +48,34 @@
         _students = await StudentApi.GetAllStudentsAsync() ?? [];
         _drivingSchools = await DrivingSchoolApi.GetAllDrivingSchoolsAsync() ?? [];
         _theoryLessons = await TheoryLessonApi.GetAllLessonsAsync() ?? [];
+
+        PrepareCharts();
         
         _dataLoading = false;
         StateHasChanged();
+    }
+
+    private void PrepareCharts()
+    {
+        _donutData = [_students.Count(x => x.HasPassed), _students.Count(x => !x.HasPassed)];
+
+        var bookingByDays = new double[7];
+        foreach (var courseBooking in _courseBookings)
+        {
+            if(courseBooking.BookingDate is null) continue;
+
+            var dayIdx = (int)(courseBooking.BookingDate.Value.DayOfWeek + 6) % 7;
+            bookingByDays[dayIdx]++;
+        }
+
+        _series = new List<ChartSeries<double>>()
+        {
+            new()
+            {
+                Name = "Anzahl Buchungen",
+                Data = bookingByDays
+            }
+        };
     }
 
 }
@@ -56,6 +98,97 @@
 else
 {
     <MudPaper Class="mud-theme-dark pa-4 ma-4" Elevation="1">
-        coming soon..
+        <MudGrid Class="pa-4">
+            <MudItem xs="12" sm="12" Style="flex: 0 0 20%; max-width: 20%;">
+                <MudPaper Class="pa-4 mud-theme-primary" Elevation="2">
+                    <MudText>Fahrschulen</MudText>
+                    <div class="d-flex align-center justify-space-between ">
+                        <MudText Typo="Typo.h3">@_drivingSchools.Count</MudText>
+                        <MudIcon Icon="@Icons.Material.Filled.Business" Size="Size.Large" Class="mr-3"/>
+                    </div>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="12" Style="flex: 0 0 20%; max-width: 20%;">
+                <MudPaper Class="pa-4 mud-theme-primary" Elevation="2">
+                    <MudText>Fahrlehrer</MudText>
+                    <div class="d-flex align-center justify-space-between ">
+                        <MudText Typo="Typo.h3">@_instructors.Count</MudText>
+                        <MudIcon Icon="@Icons.Material.Filled.Boy" Size="Size.Large" Class="mr-3"/>
+                    </div>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="12" Style="flex: 0 0 20%; max-width: 20%;">
+                <MudPaper Class="pa-4 mud-theme-primary" Elevation="2">
+                    <MudText>Fahrschüler</MudText>
+                    <div class="d-flex align-center justify-space-between ">
+                        <MudText Typo="Typo.h3">@_students.Count</MudText>
+                        <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large" Class="mr-3"/>
+                    </div>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="12" Style="flex: 0 0 20%; max-width: 20%;">
+                <MudPaper Class="pa-4 mud-theme-primary" Elevation="2">
+                    <MudText>Kurse</MudText>
+                    <div class="d-flex align-center justify-space-between ">
+                        <MudText Typo="Typo.h3">@_theoryLessons.Count</MudText>
+                        <MudIcon Icon="@Icons.Material.Filled.Bookmark" Size="Size.Large" Class="mr-3"/>
+                    </div>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="12" Style="flex: 0 0 20%; max-width: 20%;">
+                <MudPaper Class="pa-4 mud-theme-primary" Elevation="2">
+                    <MudText>Kurs-Buchungen</MudText>
+                    <div class="d-flex align-center justify-space-between ">
+                        <MudText Typo="Typo.h3">@_courseBookings.Count</MudText>
+                        <MudIcon Icon="@Icons.Material.Filled.CalendarMonth" Size="Size.Large" Class="mr-3"/>
+                    </div>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+        
+        <MudGrid Class="pa-4">
+            <MudItem xs="6">
+                <MudPaper Class="pa-4" Elevation="1">
+                    <MudText Class="mb-4" Typo="Typo.h6">Buchungs-Übersicht</MudText>
+                    <MudChart ChartType="ChartType.Bar"
+                              ChartSeries="@_series"
+                              ChartLabels="@_xAxisLabels"
+                              Width="100%" Height="300px"/>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="6">
+                <MudPaper Class="pa-4" Elevation="1">
+                    <MudText Class="mb-4" Typo="Typo.h6">Prüfungs-Quote</MudText>
+                    <MudChart ChartType="ChartType.Donut"
+                              ChartSeries="@_donutData.AsChartDataSet()"
+                              ChartLabels="@_donutLabels"
+                              Width="100%" Height="300px"/>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+        
+        <MudGrid Class="pa-4" xs="12">
+            <MudItem xs="12">
+                <MudTable T="CourseBookingModel"
+                          Items="@_courseBookings.Take(5)"
+                          Hover="true"
+                          Elevation="1">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Neueste Kurs-Buchungen</MudText>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh>Datum</MudTh>
+                        <MudTh>Fahrschüler</MudTh>
+                        <MudTh>Kurs</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Datum">@context.BookingDate</MudTd>
+                        <MudTd DataLabel="Fahrschüler">@context.Student?.FullName</MudTd>
+                        <MudTd DataLabel="Kurs">@context.TheoryLesson?.Name | @context.TheoryLesson?.Topic</MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudItem>
+        </MudGrid>
+        
     </MudPaper>
 }
