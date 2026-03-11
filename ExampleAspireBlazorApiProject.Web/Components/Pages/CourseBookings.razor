@@ -38,6 +38,7 @@
         StateHasChanged();
         
         _courseBookings = await CourseBookingApi.GetAllCourseBookingsAsync() ?? [];
+        _courseBookings.Sort((a,b) => b.BookingDate!.Value.CompareTo(a.BookingDate));
         _students = await StudentApi.GetAllStudentsAsync() ?? [];
         _lessons = await TheoryLessonApi.GetAllLessonsAsync() ?? [];
         

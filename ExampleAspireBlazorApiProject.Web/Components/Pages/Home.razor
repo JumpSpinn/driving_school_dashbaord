@@ -16,20 +16,20 @@
     
     // CHARTS
     private List<ChartSeries<double>> _series = new();
-    private string[] _xAxisLabels = new[]
-    {
-        "Mo",
-        "Di",
-        "Mi",
-        "Do",
-        "Fr",
-        "Sa",
-        "So",
-    };
-
-    private string[] _donutLabels = ["in Ausbildung", "Bestanden"];
+    private string[] _xAxisLabels = new[] { "Mo", "Di", "Mi", "Do", "Fr", "Sa", "So", };
+    private string[] _donutLabels = ["Bestanden", "in Ausbildung"];
     private double[] _donutData = [0, 0];
-    
+    private readonly BarChartOptions _barChartOptions = new()
+    {
+        ShowLegend = false,
+        YAxisSuggestedMax = null,
+    };
+    private readonly DonutChartOptions _donutChartOptions = new()
+    {
+        ShowLegend = false,
+        ShowValues = true,
+        ShowAsPercentage = true
+    };
     
     protected override void OnInitialized()
     {
@@ -57,6 +57,7 @@
 
     private void PrepareCharts()
     {
+        _courseBookings.Sort((a,b) => b.BookingDate!.Value.CompareTo(a.BookingDate));
         _donutData = [_students.Count(x => x.HasPassed), _students.Count(x => !x.HasPassed)];
 
         var bookingByDays = new double[7];
@@ -68,6 +69,10 @@
             bookingByDays[dayIdx]++;
         }
 
+        // var max = (int)(bookingByDays.Max() + 1);
+        // barChartOptions.YAxisSuggestedMax = max;
+        // barChartOptions.MaxNumYAxisTicks = max;
+        
         _series = new List<ChartSeries<double>>()
         {
             new()
@@ -81,13 +86,6 @@
 }
 
 <PageTitle>Dashboard</PageTitle>
-
-<MudPaper Class="d-flex flex-row align-center mud-theme-dark pa-4 ma-4" Elevation="1">
-    <MudPaper Class="d-flex flex-column mud-theme-dark" Elevation="0">
-        <MudText Typo="Typo.h5" Color="Color.Secondary">Dashboard</MudText>
-        <MudText Typo="Typo.body1">Hier sind alle wichtigen Details aufgelistet.</MudText>
-    </MudPaper>
-</MudPaper>
 
 @if (_dataLoading)
 {
@@ -151,18 +149,20 @@ else
                 <MudPaper Class="pa-4" Elevation="1">
                     <MudText Class="mb-4" Typo="Typo.h6">Buchungs-Übersicht</MudText>
                     <MudChart ChartType="ChartType.Bar"
+                              ChartOptions="@_barChartOptions"
                               ChartSeries="@_series"
                               ChartLabels="@_xAxisLabels"
-                              Width="100%" Height="300px"/>
+                              Width="100%" Height="275px"/>
                 </MudPaper>
             </MudItem>
             <MudItem xs="6">
                 <MudPaper Class="pa-4" Elevation="1">
                     <MudText Class="mb-4" Typo="Typo.h6">Prüfungs-Quote</MudText>
                     <MudChart ChartType="ChartType.Donut"
+                              ChartOptions="@_donutChartOptions"
                               ChartSeries="@_donutData.AsChartDataSet()"
                               ChartLabels="@_donutLabels"
-                              Width="100%" Height="300px"/>
+                              Width="100%" Height="275px"/>
                 </MudPaper>
             </MudItem>
         </MudGrid>
@@ -172,6 +172,7 @@ else
                 <MudTable T="CourseBookingModel"
                           Items="@_courseBookings.Take(5)"
                           Hover="true"
+                          Dense="true"
                           Elevation="1">
                     <ToolBarContent>
                         <MudText Typo="Typo.h6">Neueste Kurs-Buchungen</MudText>
