@@ -1,9 +1,112 @@
 ﻿namespace ExampleAspireBlazorApiProject.ApiService.Services;
 
-public sealed class TheoryLessonService
+public sealed class TheoryLessonService(ApplicationDbContext dbContext, ILogger<TheoryLessonService> logger)
 {
-    // TODO: get
-    // TODO: create
-    // TODO: update
-    // TODO: delete
+    public async Task<List<TheoryLessonModel>> GetTheoryLessonsAsync()
+    {
+        try
+        {
+            return await dbContext.TheoryLessons
+                .Include(d => d.Instructor)
+                .Where(x => !x.IsDeleted)
+                .ToListAsync();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error getting lessons");
+        }
+
+        return [];
+    }
+    
+    private TheoryLessonModel? GetTheoryLesson(int id) 
+        => dbContext.TheoryLessons
+            .Include(d => d.Instructor)
+            .FirstOrDefault(x => x.Id == id && !x.IsDeleted);
+    
+    public async Task<TheoryLessonModel?> CreateTheoryLessonAsync(TheoryLessonModel lesson)
+    {
+        try
+        {
+            var exist = GetTheoryLesson(lesson.Id);
+            if (exist is not null) return exist;
+
+            var newLesson = new TheoryLessonModel
+            {
+                Name = lesson.Name,
+                Topic = lesson.Topic,
+                DayOfWeek = lesson.DayOfWeek,
+                StartTime = lesson.StartTime,
+                DurationMinutes = lesson.DurationMinutes,
+                MaxStudents = lesson.MaxStudents,
+                Price = lesson.Price,
+                IsBasic = lesson.IsBasic,
+                InstructorId = lesson.InstructorId
+            };
+            
+            dbContext.TheoryLessons.Add(newLesson);
+            await dbContext.SaveChangesAsync();
+            
+            await dbContext.Entry(newLesson).Reference(x => x.Instructor).LoadAsync();
+            
+            return newLesson;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error creating lesson");
+        }
+
+        return null;
+    }
+    
+    public async Task<TheoryLessonModel?> UpdateTheoryLessonAsync(TheoryLessonModel toUpdate)
+    {
+        try
+        {
+            var lesson = GetTheoryLesson(toUpdate.Id);
+            if (lesson is null) return null;
+            
+            lesson.Name = toUpdate.Name;
+            lesson.Topic = toUpdate.Topic;
+            lesson.DayOfWeek = toUpdate.DayOfWeek;
+            lesson.StartTime = toUpdate.StartTime;
+            lesson.DurationMinutes = toUpdate.DurationMinutes;
+            lesson.MaxStudents = toUpdate.MaxStudents;
+            lesson.Price = toUpdate.Price;
+            lesson.IsBasic = toUpdate.IsBasic;
+            lesson.InstructorId = toUpdate.InstructorId;
+            
+            await dbContext.SaveChangesAsync();
+            await dbContext.Entry(lesson).Reference(x => x.Instructor).LoadAsync();
+            
+            return lesson;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error updating lesson");
+        }
+
+        return null;
+    }
+    
+    public async Task<bool> DeleteTheoryLessonAsync(int id)
+    {
+        try
+        {
+            var lesson = GetTheoryLesson(id);
+            if (lesson is null || lesson.IsDeleted) return false;
+            
+            lesson.IsDeleted = true;
+            
+            await dbContext.SaveChangesAsync();
+            
+            return true;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error deleting lesson");
+        }
+
+        return false;
+    }
 }

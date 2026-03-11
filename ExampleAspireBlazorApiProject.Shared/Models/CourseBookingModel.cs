@@ -10,8 +10,7 @@ public sealed class CourseBookingModel
 
     [Required]
     public int TheoryLessonId { get; set; }
-
-    [Required]
+    
     public DateTime BookingDate { get; set; } = DateTime.Now;
 
     // Navigation Properties

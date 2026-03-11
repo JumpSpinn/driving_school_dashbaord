@@ -23,7 +23,7 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            logger.LogError(e, "Error creating driving school");
         }
 
         return null;
