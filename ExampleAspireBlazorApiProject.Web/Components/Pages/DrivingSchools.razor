@@ -87,12 +87,16 @@
         if (!_editForm.IsValid) return;
 
         var updated = await DrivingSchoolApi.UpdateDrivingSchoolAsync(_editDrivingSchool);
-        if (!updated) return;
+        if (updated is null) return;
         
-        var drivingSchoolToUpdate = _drivingSchools.FirstOrDefault(x => x.Id == _editDrivingSchool.Id);
+        var drivingSchoolToUpdate = _drivingSchools.FirstOrDefault(x => x.Id == updated.Id);
         if (drivingSchoolToUpdate is null) return;
         
-        drivingSchoolToUpdate.Name = _editDrivingSchool.Name;
+        drivingSchoolToUpdate.Name = updated.Name;
+        drivingSchoolToUpdate.OwnerId = updated.OwnerId;
+        drivingSchoolToUpdate.Owner = updated.Owner;
+        
+        Console.WriteLine("UPDATED SCHOOL");
 
         await OnHideModal(_editDialog);
         await _mudDataGrid.ReloadServerData();
@@ -166,7 +170,12 @@ else
                     <PropertyColumn Property="x => x.Owner!.FullName" Title="Besitzer" />
                     <TemplateColumn Title="Fahrschüler">
                         <CellTemplate>
-                            <MudChip T="string" Size="Size.Medium" Variant="Variant.Text" Color="@(context.Item.Students.Count > 0 ? Color.Success : Color.Error)">@context.Item.Students.Count</MudChip>
+                            <MudChip T="string"
+                                     Size="Size.Medium"
+                                     Variant="Variant.Text"
+                                     Color="@(context.Item.Students.Count > 0 ? Color.Success : Color.Error)">
+                                @context.Item.Students.Count
+                            </MudChip>
                         </CellTemplate>
                     </TemplateColumn>
                     <TemplateColumn>
@@ -214,11 +223,24 @@ else
                 <MudTextField T="string"
                               Class="mb-4"
                               Variant="Variant.Text"
-                              @bind-Value="_newDrivingSchool!.Name"
+                              @bind-Value="_newDrivingSchool.Name"
                               ShrinkLabel
                               Label="Bezeichnung"
-                              For="@(() => _newDrivingSchool!.Name)"
+                              For="@(() => _newDrivingSchool.Name)"
                               Immediate="true"/>
+                <MudSelect
+                    Class="mb-4"
+                    @bind-Value="_newDrivingSchool.OwnerId"
+                    ShrinkLabel
+                    Variant="Variant.Text"
+                    Label="Besitzer (Fahrlehrer) zuweisen"
+                    Disabled="!_instructors.Any()"
+                    Placeholder="Besitzer (Fahrlehrer) zuweisen">
+                    @foreach (var instructor in _instructors)
+                    {
+                        <MudSelectItem Value="@((int?)instructor.Id)">@instructor.FullName</MudSelectItem>
+                    }
+                </MudSelect>
             </MudPaper>
         </MudForm>
     </DialogContent>
@@ -258,6 +280,19 @@ else
                               Label="Bezeichnung"
                               For="@(() => _editDrivingSchool!.Name)"
                               Immediate="true"/>
+                <MudSelect
+                    Class="mb-4"
+                    @bind-Value="_editDrivingSchool!.OwnerId"
+                    ShrinkLabel
+                    Variant="Variant.Text"
+                    Label="Besitzer (Fahrlehrer) zuweisen"
+                    Disabled="!_instructors.Any()"
+                    Placeholder="Besitzer (Fahrlehrer) zuweisen">
+                    @foreach (var instructor in _instructors)
+                    {
+                        <MudSelectItem Value="@((int?)instructor.Id)">@instructor.FullName</MudSelectItem>
+                    }
+                </MudSelect>
             </MudPaper>
         </MudForm>
     </DialogContent>

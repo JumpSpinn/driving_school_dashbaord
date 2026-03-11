@@ -4,16 +4,17 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
 {
     #region CREATE
 
-    public async Task<DrivingSchoolModel?> CreateDrivingSchoolAsync(string name)
+    public async Task<DrivingSchoolModel?> CreateDrivingSchoolAsync(DrivingSchoolModel drivingSchool)
     {
         try
         {
-            var exist = GetDrivingSchool(name);
+            var exist = GetDrivingSchool(drivingSchool.Name);
             if (exist is not null) return exist;
 
-            var drivingSchool = new DrivingSchoolModel
+            var newDrivingSchool = new DrivingSchoolModel
             {
-                Name = name
+                Name = drivingSchool.Name,
+                OwnerId = drivingSchool.OwnerId,
             };
             
             dbContext.DrivingSchools.Add(drivingSchool);
@@ -84,10 +85,12 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
         {
             var drivingSchool = GetDrivingSchool(toUpdate.Id);
             if (drivingSchool is null) return null;
-            if (Equals(drivingSchool.Name, toUpdate.Name)) return drivingSchool;
             
             drivingSchool.Name = toUpdate.Name;
+            drivingSchool.OwnerId = toUpdate.OwnerId;
+            
             await dbContext.SaveChangesAsync();
+            await dbContext.Entry(drivingSchool).Reference(x => x.Owner).LoadAsync();
             
             return drivingSchool;
         }

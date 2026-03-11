@@ -15,7 +15,7 @@ public sealed class DrivingSchoolController(DrivingSchoolService drivingSchoolSe
     [HttpPost]
     public async Task<IActionResult> CreateDrivingSchool(DrivingSchoolModel newDrivingSchool)
     {
-        var drivingSchool = await drivingSchoolService.CreateDrivingSchoolAsync(newDrivingSchool.Name);
+        var drivingSchool = await drivingSchoolService.CreateDrivingSchoolAsync(newDrivingSchool);
         logger.LogDebug(drivingSchool is null ? "Driving School creation failed!" : "Driving School #{Id} created!", drivingSchool?.Id);
         return drivingSchool is null ?
             BadRequest(StatusCodes.Status400BadRequest) : 
@@ -39,6 +39,6 @@ public sealed class DrivingSchoolController(DrivingSchoolService drivingSchoolSe
         logger.LogDebug("Driving School #{Id} updated: {Result}", editDrivingSchool.Id, updated);
         if (updated is null)
             return NotFound($"Fahrschule mit der ID {editDrivingSchool.Id} konnte nicht aktualisiert werden!");
-        return NoContent();
+        return StatusCode(StatusCodes.Status201Created, updated);
     }
 }

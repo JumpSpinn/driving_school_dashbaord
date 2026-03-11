@@ -33,10 +33,19 @@ public sealed class DrivingSchoolApiClient(HttpClient client, ILogger<DrivingSch
         return result.IsSuccessStatusCode;
     }
 
-    public async Task<bool> UpdateDrivingSchoolAsync(DrivingSchoolModel editDrivingSchool)
+    public async Task<DrivingSchoolModel?> UpdateDrivingSchoolAsync(DrivingSchoolModel editDrivingSchool)
     {
         var result = await client.PutAsJsonAsync($"api/DrivingSchool/", editDrivingSchool);
         logger.LogInformation($"Web API => driving school with id {editDrivingSchool.Id} updated! - Success: {result.IsSuccessStatusCode}");
-        return result.IsSuccessStatusCode;
+
+        if (result.IsSuccessStatusCode)
+        {
+            var updatedModel = await result.Content.ReadFromJsonAsync<DrivingSchoolModel>();
+            return updatedModel;
+        }
+        
+        var errorDetails = await result.Content.ReadAsStringAsync();
+        logger.LogWarning($"Update fehlgeschlagen: {errorDetails}");
+        return null; 
     }
 }

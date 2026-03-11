@@ -24,6 +24,8 @@ public sealed class DrivingSchoolModel
     {
         Id = other.Id;
         Name = other.Name;
+        OwnerId = other.OwnerId;
+        Owner = other.Owner;
         Students = other.Students
             .Select(x => new StudentModel(x))
             .ToList();
