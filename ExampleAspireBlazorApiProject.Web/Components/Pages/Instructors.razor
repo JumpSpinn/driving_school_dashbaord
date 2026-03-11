@@ -1,4 +1,5 @@
 ﻿@page "/instructors"
+@inject InstructorApiClient InstructorApi
 @rendermode InteractiveServer
 
 @code{
@@ -26,7 +27,7 @@
         _dataLoading = true;
         StateHasChanged();
         
-        //_drivingSchools = await DrivingSchoolApi.GetAllDrivingSchoolsAsync() ?? [];
+        _instructors = await InstructorApi.GetAllInstructorsAsync() ?? [];
         
         _dataLoading = false;
         StateHasChanged();

@@ -1,9 +1,12 @@
 ﻿@page "/lessons"
+@inject TheoryLessonApiClient TheoryLessonApi
+@inject InstructorApiClient InstructorApi
 @rendermode InteractiveServer
 
 @code{
     private bool _dataLoading;
     private List<TheoryLessonModel> _theoryLessons = [];
+    private List<InstructorModel> _instructors = [];
     private MudDataGrid<TheoryLessonModel> _mudDataGrid = default!;
 
     private MudDialog _createDialog = default!;
@@ -26,7 +29,8 @@
         _dataLoading = true;
         StateHasChanged();
         
-        //_drivingSchools = await DrivingSchoolApi.GetAllDrivingSchoolsAsync() ?? [];
+        _theoryLessons = await TheoryLessonApi.GetAllLessonsAsync() ?? [];
+        _instructors = await InstructorApi.GetAllInstructorsAsync() ?? [];
         
         _dataLoading = false;
         StateHasChanged();

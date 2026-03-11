@@ -1,9 +1,14 @@
 ﻿@page "/bookings"
+@inject CourseBookingApiClient CourseBookingApi
+@inject StudentApiClient StudentApi
+@inject TheoryLessonApiClient TheoryLessonApi
 @rendermode InteractiveServer
 
 @code{
     private bool _dataLoading;
     private List<CourseBookingModel> _courseBookings = [];
+    private List<StudentModel> _students = [];
+    private List<TheoryLessonModel> _lessons = [];
     private MudDataGrid<CourseBookingModel> _mudDataGrid = default!;
 
     private MudDialog _createDialog = default!;
@@ -26,7 +31,9 @@
         _dataLoading = true;
         StateHasChanged();
         
-        //_drivingSchools = await DrivingSchoolApi.GetAllDrivingSchoolsAsync() ?? [];
+        _courseBookings = await CourseBookingApi.GetAllCourseBookingsAsync() ?? [];
+        _students = await StudentApi.GetAllStudentsAsync() ?? [];
+        _lessons = await TheoryLessonApi.GetAllLessonsAsync() ?? [];
         
         _dataLoading = false;
         StateHasChanged();
