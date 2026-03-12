@@ -1,10 +1,10 @@
 ﻿@page "/"
 @rendermode InteractiveServer
-@inject CourseBookingApiClient CourseBookingApi
-@inject InstructorApiClient InstructorApi
-@inject StudentApiClient StudentApi
-@inject DrivingSchoolApiClient DrivingSchoolApi
-@inject TheoryLessonApiClient TheoryLessonApi
+@inject ICourseBookingApiClient CourseBookingApi
+@inject IInstructorApiClient InstructorApi
+@inject IStudentApiClient StudentApi
+@inject IDrivingSchoolApiClient DrivingSchoolApi
+@inject ITheoryLessonApiClient TheoryLessonApi
 
 @code{
     private bool _dataLoading;
