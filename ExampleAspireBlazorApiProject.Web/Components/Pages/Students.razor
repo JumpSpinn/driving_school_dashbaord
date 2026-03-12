@@ -325,7 +325,8 @@ else
                               @bind-Value="_newStudent.FirstName"
                               Label="Vorname"
                               For="@(() => _newStudent.FirstName)"
-                              Immediate="true"/>
+                              Required="true"
+                              Immediate="false"/>
                 <MudTextField T="string"
                               Class="mb-4"
                               ShrinkLabel
@@ -333,7 +334,8 @@ else
                               @bind-Value="_newStudent.LastName"
                               Label="Nachname"
                               For="@(() => _newStudent.LastName)"
-                              Immediate="true"/>
+                              Required="true"
+                              Immediate="false"/>
                 <MudTextField T="string"
                               Class="mb-4"
                               ShrinkLabel
@@ -341,7 +343,8 @@ else
                               @bind-Value="_newStudent.Mail"
                               Label="E-Mail"
                               For="@(() => _newStudent.Mail)"
-                              Immediate="true"/>
+                              Required="true"
+                              Immediate="false"/>
                 <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_newStudent.Phone" Label="Telefon" Variant="Variant.Text"/>
                 <MudDatePicker Class="mb-4" 
                                Variant="Variant.Text"
@@ -399,7 +402,8 @@ else
                               ShrinkLabel
                               Label="Vorname"
                               For="@(() => _editStudent!.FirstName)"
-                              Immediate="true"/>
+                              Required="true"
+                              Immediate="false"/>
                 <MudTextField T="string"
                               Class="mb-4"
                               Variant="Variant.Text"
@@ -407,7 +411,8 @@ else
                               ShrinkLabel
                               Label="Nachname"
                               For="@(() => _editStudent!.LastName)"
-                              Immediate="true"/>
+                              Required="true"
+                              Immediate="false"/>
                 <MudTextField T="string"
                               Class="mb-4"
                               Variant="Variant.Text"
@@ -415,7 +420,8 @@ else
                               ShrinkLabel
                               Label="E-Mail"
                               For="@(() => _editStudent!.Mail)"
-                              Immediate="true"/>
+                              Required="true"
+                              Immediate="false"/>
                 <MudTextField Class="mb-4" ShrinkLabel @bind-Value="_editStudent!.Phone" Label="Telefon" Variant="Variant.Text"/>
                 <MudDatePicker Class="mb-4" 
                                Variant="Variant.Text"

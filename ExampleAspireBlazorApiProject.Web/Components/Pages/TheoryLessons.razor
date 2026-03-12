@@ -284,7 +284,8 @@ else
                               ShrinkLabel
                               Label="Kursname"
                               For="@(() => _newTheoryLesson.Name)"
-                              Immediate="true"/>
+                              Required="true"
+                              Immediate="false"/>
                 <MudTextField T="string"
                               Class="mb-4"
                               Variant="Variant.Text"
@@ -292,7 +293,8 @@ else
                               ShrinkLabel
                               Label="Thema"
                               For="@(() => _newTheoryLesson.Topic)"
-                              Immediate="true"/>
+                              Required="true"
+                              Immediate="false"/>
                 <MudSelect
                     Class="mb-4"
                     @bind-Value="_newTheoryLesson.DayOfWeek"
@@ -380,7 +382,8 @@ else
                               ShrinkLabel
                               Label="Kursname"
                               For="@(() => _editTheoryLesson!.Name)"
-                              Immediate="true"/>
+                              Required="true"
+                              Immediate="false"/>
                 <MudTextField T="string"
                               Class="mb-4"
                               Variant="Variant.Text"
@@ -388,7 +391,8 @@ else
                               ShrinkLabel
                               Label="Thema"
                               For="@(() => _editTheoryLesson!.Topic)"
-                              Immediate="true"/>
+                              Required="true"
+                              Immediate="false"/>
                 <MudSelect
                     Class="mb-4"
                     @bind-Value="_editTheoryLesson!.DayOfWeek"

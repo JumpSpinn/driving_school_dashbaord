@@ -247,7 +247,8 @@ else
                     Variant="Variant.Text"
                     Label="Fahrschüler zuweisen"
                     For="@(() => _newCourseBooking.StudentId)"
-                    Immediate="true"
+                    Required="true"
+                    Immediate="false"
                     Disabled="!_students.Any()">
                     @foreach (var student in _students)
                     {
@@ -262,7 +263,8 @@ else
                     Variant="Variant.Text"
                     Label="Kurs zuweisen"
                     For="@(() => _newCourseBooking.TheoryLessonId)"
-                    Immediate="true"
+                    Required="true"
+                    Immediate="false"
                     Disabled="!_lessons.Any()">
                     @foreach (var lesson in _lessons)
                     {
@@ -298,7 +300,8 @@ else
                     Variant="Variant.Text"
                     Label="Fahrschüler zuweisen"
                     For="@(() => _editCourseBooking!.TheoryLessonId)"
-                    Immediate="true"
+                    Required="true"
+                    Immediate="false"
                     Disabled="!_students.Any()">
                     @foreach (var student in _students)
                     {
@@ -313,7 +316,8 @@ else
                     Variant="Variant.Text"
                     Label="Kurs zuweisen"
                     For="@(() => _editCourseBooking!.TheoryLessonId)"
-                    Immediate="true"
+                    Required="true"
+                    Immediate="false"
                     Disabled="!_lessons.Any()">
                     @foreach (var lesson in _lessons)
                     {

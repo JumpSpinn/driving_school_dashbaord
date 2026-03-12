@@ -265,7 +265,8 @@ else
                               ShrinkLabel
                               Label="Bezeichnung"
                               For="@(() => _newDrivingSchool.Name)"
-                              Immediate="true"/>
+                              Required="true"
+                              Immediate="false"/>
                 <MudSelect
                     Class="mb-4"
                     @bind-Value="_newDrivingSchool.OwnerId"
@@ -301,7 +302,8 @@ else
                               ShrinkLabel
                               Label="Bezeichnung"
                               For="@(() => _editDrivingSchool!.Name)"
-                              Immediate="true"/>
+                              Required="true"
+                              Immediate="false"/>
                 <MudSelect
                     Class="mb-4"
                     @bind-Value="_editDrivingSchool!.OwnerId"
