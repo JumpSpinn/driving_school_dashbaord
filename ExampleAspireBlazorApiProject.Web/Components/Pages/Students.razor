@@ -214,7 +214,9 @@ else
                         <CellTemplate>
                             @if (context.Item.License != null)
                             {
-                                <MudText Typo="Typo.body2">@LicenseHelper.GetName(context.Item.License)</MudText>
+                                <MudTooltip Text="@LicenseHelper.GetDescription(context.Item.License)">
+                                    <MudText Typo="Typo.body2">@LicenseHelper.GetName(context.Item.License)</MudText>
+                                </MudTooltip>
                             }
                             else
                             {
@@ -371,7 +373,7 @@ else
                     Label="Fahrzeug-Klasse wählen">
                     @foreach (var license in Enum.GetValues<LicenseClass>())
                     {
-                        <MudSelectItem Value="@((LicenseClass?)license)">@LicenseHelper.GetName(license)</MudSelectItem>
+                        <MudSelectItem Value="@((LicenseClass?)license)">@LicenseHelper.GetName(license) (@LicenseHelper.GetDescription(license))</MudSelectItem>
                     }
                 </MudSelect>
                 <MudDatePicker 
@@ -450,7 +452,7 @@ else
                     Label="Fahrzeug-Klasse wählen">
                     @foreach (var license in Enum.GetValues<LicenseClass>())
                     {
-                        <MudSelectItem T="LicenseClass?" Value="@license">@LicenseHelper.GetName(license)</MudSelectItem>
+                        <MudSelectItem T="LicenseClass?" Value="@license">@LicenseHelper.GetName(license) (@LicenseHelper.GetDescription(license))</MudSelectItem>
                     }
                 </MudSelect>
                 <MudDatePicker Class="mb-4" ShrinkLabel Label="Prüfungstermin" @bind-Date="_editStudent!.ExamDate" />
