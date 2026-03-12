@@ -14,6 +14,7 @@ builder.Services.AddScoped<TheoryLessonService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddOpenApi();
 
 // Add services to the container.22
 builder.Services.AddProblemDetails();
@@ -34,6 +35,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     app.MapOpenApi();
+    app.MapScalarApiReference();
     
     using (var scope = app.Services.CreateScope())
     {

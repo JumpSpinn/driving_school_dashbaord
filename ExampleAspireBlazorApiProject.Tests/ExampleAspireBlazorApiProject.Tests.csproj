@@ -20,6 +20,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\ExampleAspireBlazorApiProject.AppHost\ExampleAspireBlazorApiProject.AppHost.csproj"/>
+		<ProjectReference Include="..\ExampleAspireBlazorApiProject.Web\ExampleAspireBlazorApiProject.Web.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
