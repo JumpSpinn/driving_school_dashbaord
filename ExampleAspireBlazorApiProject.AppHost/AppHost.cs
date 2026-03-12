@@ -1,5 +1,5 @@
 var builder = DistributedApplication.CreateBuilder(args);
-var vue = true;
+var vue = false;
 
 var apiService = builder.AddProject<Projects.ExampleAspireBlazorApiProject_ApiService>("apiservice")
     .WithHttpHealthCheck("/health");
