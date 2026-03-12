@@ -1,7 +1,7 @@
-﻿namespace ExampleAspireBlazorApiProject.Tests;
+﻿namespace ExampleAspireBlazorApiProject.Tests.Apis;
 
 [TestFixture]
-public class CourseBookingApiClientTests
+public sealed class CourseBookingApiClientTests
 {
     // ---------------------------------------------------------------------------
     // Helpers

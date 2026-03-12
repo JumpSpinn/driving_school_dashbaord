@@ -1,6 +1,6 @@
 ﻿namespace ExampleAspireBlazorApiProject.Web.Apis;
 
-public class InstructorApiClient(HttpClient client, ILogger<InstructorApiClient> logger)
+public class InstructorApiClient(HttpClient client, ILogger<InstructorApiClient> logger) :IInstructorApiClient
 {
     public async Task<List<InstructorModel>?> GetAllInstructorsAsync()
     {

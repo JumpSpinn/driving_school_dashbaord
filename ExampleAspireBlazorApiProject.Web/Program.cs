@@ -10,27 +10,27 @@ builder.Services.AddOutputCache();
 builder.Services.AddMudServices();
 
 // add https clients
-builder.Services.AddHttpClient<DrivingSchoolApiClient>(client =>
+builder.Services.AddHttpClient<IDrivingSchoolApiClient ,DrivingSchoolApiClient>(client =>
 {
     client.BaseAddress = new("https+http://apiservice");
 });
 
-builder.Services.AddHttpClient<StudentApiClient>(client =>
+builder.Services.AddHttpClient<IStudentApiClient ,StudentApiClient>(client =>
 {
     client.BaseAddress = new("https+http://apiservice");
 });
 
-builder.Services.AddHttpClient<InstructorApiClient>(client =>
+builder.Services.AddHttpClient<IInstructorApiClient ,InstructorApiClient>(client =>
 {
     client.BaseAddress = new("https+http://apiservice");
 });
 
-builder.Services.AddHttpClient<TheoryLessonApiClient>(client =>
+builder.Services.AddHttpClient<ITheoryLessonApiClient, TheoryLessonApiClient>(client =>
 {
     client.BaseAddress = new("https+http://apiservice");
 });
 
-builder.Services.AddHttpClient<CourseBookingApiClient>(client =>
+builder.Services.AddHttpClient<ICourseBookingApiClient, CourseBookingApiClient>(client =>
 {
     client.BaseAddress = new("https+http://apiservice");
 });

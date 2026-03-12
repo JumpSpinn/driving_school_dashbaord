@@ -14,3 +14,4 @@ global using System.Threading.Tasks;
 global using ExampleAspireBlazorApiProject.Shared.Models;
 global using Microsoft.Extensions.Logging;
 global using ExampleAspireBlazorApiProject.Shared.Enums;
+global using ExampleAspireBlazorApiProject.Web.Interfaces;

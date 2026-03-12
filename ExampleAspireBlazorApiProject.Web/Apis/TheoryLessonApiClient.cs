@@ -1,6 +1,6 @@
 ﻿namespace ExampleAspireBlazorApiProject.Web.Apis;
 
-public class TheoryLessonApiClient(HttpClient client, ILogger<TheoryLessonApiClient> logger)
+public class TheoryLessonApiClient(HttpClient client, ILogger<TheoryLessonApiClient> logger) : ITheoryLessonApiClient
 {
     public async Task<List<TheoryLessonModel>?> GetAllLessonsAsync()
     {

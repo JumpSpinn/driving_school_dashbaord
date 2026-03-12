@@ -1,16 +1,17 @@
-﻿namespace ExampleAspireBlazorApiProject.Tests;
+﻿namespace ExampleAspireBlazorApiProject.Tests.Apis;
 
 [TestFixture]
-public class DrivingSchoolApiClientTests
+public sealed class InstructorApiClientTests
 {
     // ---------------------------------------------------------------------------
     // Helpers
     // ---------------------------------------------------------------------------
 
-    private static DrivingSchoolModel SampleDrivingSchool(int id = 1) => new()
+    private static InstructorModel SampleInstructor(int id = 1) => new()
     {
         Id = id,
-        Name = "Test Driving School",
+        FirstName = "Jane",
+        LastName = "Smith"
     };
 
     /// <summary>
@@ -22,35 +23,35 @@ public class DrivingSchoolApiClientTests
         return new HttpClient(handler) { BaseAddress = new Uri("http://test/") };
     }
 
-    private static DrivingSchoolApiClient BuildApiClient(HttpResponseMessage response)
+    private static InstructorApiClient BuildApiClient(HttpResponseMessage response)
     {
         var httpClient = BuildClient(response);
-        var logger = NullLogger<DrivingSchoolApiClient>.Instance;
-        return new DrivingSchoolApiClient(httpClient, logger);
+        var logger = NullLogger<InstructorApiClient>.Instance;
+        return new InstructorApiClient(httpClient, logger);
     }
 
     // ---------------------------------------------------------------------------
-    // GetAllDrivingSchoolsAsync
+    // GetAllInstructorsAsync
     // ---------------------------------------------------------------------------
 
     [Test]
-    public async Task GetAllDrivingSchoolsAsync_ReturnsListOnSuccess()
+    public async Task GetAllInstructorsAsync_ReturnsListOnSuccess()
     {
-        var schools = new List<DrivingSchoolModel> { SampleDrivingSchool(1), SampleDrivingSchool(2) };
+        var instructors = new List<InstructorModel> { SampleInstructor(1), SampleInstructor(2) };
         var response = new HttpResponseMessage(HttpStatusCode.OK)
         {
-            Content = JsonContent.Create(schools)
+            Content = JsonContent.Create(instructors)
         };
 
         var client = BuildApiClient(response);
-        var result = await client.GetAllDrivingSchoolsAsync();
+        var result = await client.GetAllInstructorsAsync();
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.Count, Is.EqualTo(2));
     }
 
     [Test]
-    public async Task GetAllDrivingSchoolsAsync_ReturnsNullWhenResponseIsNull()
+    public async Task GetAllInstructorsAsync_ReturnsNullWhenResponseIsNull()
     {
         // Endpoint returns JSON null → deserialized as null list
         var response = new HttpResponseMessage(HttpStatusCode.OK)
@@ -59,33 +60,33 @@ public class DrivingSchoolApiClientTests
         };
 
         var client = BuildApiClient(response);
-        var result = await client.GetAllDrivingSchoolsAsync();
+        var result = await client.GetAllInstructorsAsync();
 
         Assert.That(result, Is.Null);
     }
 
     // ---------------------------------------------------------------------------
-    // CreateDrivingSchoolAsync
+    // CreateInstructorAsync
     // ---------------------------------------------------------------------------
 
     [Test]
-    public async Task CreateDrivingSchoolAsync_ReturnsCreatedSchoolOnSuccess()
+    public async Task CreateInstructorAsync_ReturnsCreatedInstructorOnSuccess()
     {
-        var school = SampleDrivingSchool();
+        var instructor = SampleInstructor();
         var response = new HttpResponseMessage(HttpStatusCode.Created)
         {
-            Content = JsonContent.Create(school)
+            Content = JsonContent.Create(instructor)
         };
 
         var client = BuildApiClient(response);
-        var result = await client.CreateDrivingSchoolAsync(school);
+        var result = await client.CreateInstructorAsync(instructor);
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Id, Is.EqualTo(school.Id));
+        Assert.That(result!.Id, Is.EqualTo(instructor.Id));
     }
 
     [Test]
-    public async Task CreateDrivingSchoolAsync_ReturnsNullWhenResponseBodyIsNull()
+    public async Task CreateInstructorAsync_ReturnsNullWhenResponseBodyIsNull()
     {
         var response = new HttpResponseMessage(HttpStatusCode.OK)
         {
@@ -93,69 +94,65 @@ public class DrivingSchoolApiClientTests
         };
 
         var client = BuildApiClient(response);
-        var result = await client.CreateDrivingSchoolAsync(SampleDrivingSchool());
+        var result = await client.CreateInstructorAsync(SampleInstructor());
 
         Assert.That(result, Is.Null);
     }
 
     // ---------------------------------------------------------------------------
-    // DeleteDrivingSchoolAsync
+    // DeleteInstructorAsync
     // ---------------------------------------------------------------------------
 
     [Test]
-    public async Task DeleteDrivingSchoolAsync_ReturnsTrueOnSuccess()
+    public async Task DeleteInstructorAsync_ReturnsTrueOnSuccess()
     {
         var response = new HttpResponseMessage(HttpStatusCode.NoContent);
 
         var client = BuildApiClient(response);
-        var result = await client.DeleteDrivingSchoolAsync(1);
+        var result = await client.DeleteInstructorAsync(1);
 
         Assert.That(result, Is.True);
     }
 
     [Test]
-    public async Task DeleteDrivingSchoolAsync_ReturnsFalseOnFailure()
+    public async Task DeleteInstructorAsync_ReturnsFalseOnFailure()
     {
         var response = new HttpResponseMessage(HttpStatusCode.NotFound);
 
         var client = BuildApiClient(response);
-        var result = await client.DeleteDrivingSchoolAsync(99);
+        var result = await client.DeleteInstructorAsync(99);
 
         Assert.That(result, Is.False);
     }
 
     // ---------------------------------------------------------------------------
-    // UpdateDrivingSchoolAsync
+    // UpdateInstructorAsync
     // ---------------------------------------------------------------------------
 
     [Test]
-    public async Task UpdateDrivingSchoolAsync_ReturnsUpdatedSchoolOnSuccess()
+    public async Task UpdateInstructorAsync_ReturnsTrueOnSuccess()
     {
-        var school = SampleDrivingSchool();
-        var response = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = JsonContent.Create(school)
-        };
+        var instructor = SampleInstructor();
+        var response = new HttpResponseMessage(HttpStatusCode.OK);
 
         var client = BuildApiClient(response);
-        var result = await client.UpdateDrivingSchoolAsync(school);
+        var result = await client.UpdateInstructorAsync(instructor);
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Id, Is.EqualTo(school.Id));
+        Assert.That(result, Is.True);
     }
 
     [Test]
-    public async Task UpdateDrivingSchoolAsync_ReturnsNullOnFailure()
+    public async Task UpdateInstructorAsync_ReturnsFalseOnFailure()
     {
         var response = new HttpResponseMessage(HttpStatusCode.BadRequest)
         {
-            Content = new StringContent("Invalid school data")
+            Content = new StringContent("Invalid instructor data")
         };
 
         var client = BuildApiClient(response);
-        var result = await client.UpdateDrivingSchoolAsync(SampleDrivingSchool());
+        var result = await client.UpdateInstructorAsync(SampleInstructor());
 
-        Assert.That(result, Is.Null);
+        Assert.That(result, Is.False);
     }
 
     // ---------------------------------------------------------------------------

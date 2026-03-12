@@ -1,5 +1,8 @@
-﻿namespace ExampleAspireBlazorApiProject.ApiService.Database;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace ExampleAspireBlazorApiProject.ApiService.Database;
+
+[ExcludeFromCodeCoverage]
 public static class DataSeeder
 {
     public static async Task SeedDataAsync(ApplicationDbContext dbContext)

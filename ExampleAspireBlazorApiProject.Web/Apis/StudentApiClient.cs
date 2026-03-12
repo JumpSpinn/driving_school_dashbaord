@@ -1,6 +1,6 @@
 ﻿namespace ExampleAspireBlazorApiProject.Web.Apis;
 
-public sealed class StudentApiClient(HttpClient client, ILogger<StudentApiClient> logger)
+public sealed class StudentApiClient(HttpClient client, ILogger<StudentApiClient> logger) : IStudentApiClient
 {
     public async Task<List<StudentModel>?> GetAllStudentsAsync()
     {

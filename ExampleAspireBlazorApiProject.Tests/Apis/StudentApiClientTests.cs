@@ -1,17 +1,17 @@
-﻿namespace ExampleAspireBlazorApiProject.Tests;
+﻿namespace ExampleAspireBlazorApiProject.Tests.Apis;
 
 [TestFixture]
-public class TheoryLessonApiClientTests
+public sealed class StudentApiClientTests
 {
     // ---------------------------------------------------------------------------
     // Helpers
     // ---------------------------------------------------------------------------
 
-    private static TheoryLessonModel SampleLesson(int id = 1) => new()
+    private static StudentModel SampleStudent(int id = 1) => new()
     {
         Id = id,
-        InstructorId = 5,
-        MaxStudents = 20
+        FirstName = "John",
+        LastName = "Doe"
     };
 
     /// <summary>
@@ -23,35 +23,35 @@ public class TheoryLessonApiClientTests
         return new HttpClient(handler) { BaseAddress = new Uri("http://test/") };
     }
 
-    private static TheoryLessonApiClient BuildApiClient(HttpResponseMessage response)
+    private static StudentApiClient BuildApiClient(HttpResponseMessage response)
     {
         var httpClient = BuildClient(response);
-        var logger = NullLogger<TheoryLessonApiClient>.Instance;
-        return new TheoryLessonApiClient(httpClient, logger);
+        var logger = NullLogger<StudentApiClient>.Instance;
+        return new StudentApiClient(httpClient, logger);
     }
 
     // ---------------------------------------------------------------------------
-    // GetAllLessonsAsync
+    // GetAllStudentsAsync
     // ---------------------------------------------------------------------------
 
     [Test]
-    public async Task GetAllLessonsAsync_ReturnsListOnSuccess()
+    public async Task GetAllStudentsAsync_ReturnsListOnSuccess()
     {
-        var lessons = new List<TheoryLessonModel> { SampleLesson(1), SampleLesson(2) };
+        var students = new List<StudentModel> { SampleStudent(1), SampleStudent(2) };
         var response = new HttpResponseMessage(HttpStatusCode.OK)
         {
-            Content = JsonContent.Create(lessons)
+            Content = JsonContent.Create(students)
         };
 
         var client = BuildApiClient(response);
-        var result = await client.GetAllLessonsAsync();
+        var result = await client.GetAllStudentsAsync();
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.Count, Is.EqualTo(2));
     }
 
     [Test]
-    public async Task GetAllLessonsAsync_ReturnsNullWhenResponseIsNull()
+    public async Task GetAllStudentsAsync_ReturnsNullWhenResponseIsNull()
     {
         // Endpoint returns JSON null → deserialized as null list
         var response = new HttpResponseMessage(HttpStatusCode.OK)
@@ -60,33 +60,33 @@ public class TheoryLessonApiClientTests
         };
 
         var client = BuildApiClient(response);
-        var result = await client.GetAllLessonsAsync();
+        var result = await client.GetAllStudentsAsync();
 
         Assert.That(result, Is.Null);
     }
 
     // ---------------------------------------------------------------------------
-    // CreateLessonAsync
+    // CreateStudentAsync
     // ---------------------------------------------------------------------------
 
     [Test]
-    public async Task CreateLessonAsync_ReturnsCreatedLessonOnSuccess()
+    public async Task CreateStudentAsync_ReturnsCreatedStudentOnSuccess()
     {
-        var lesson = SampleLesson();
+        var student = SampleStudent();
         var response = new HttpResponseMessage(HttpStatusCode.Created)
         {
-            Content = JsonContent.Create(lesson)
+            Content = JsonContent.Create(student)
         };
 
         var client = BuildApiClient(response);
-        var result = await client.CreateLessonAsync(lesson);
+        var result = await client.CreateStudentAsync(student);
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Id, Is.EqualTo(lesson.Id));
+        Assert.That(result!.Id, Is.EqualTo(student.Id));
     }
 
     [Test]
-    public async Task CreateLessonAsync_ReturnsNullWhenResponseBodyIsNull()
+    public async Task CreateStudentAsync_ReturnsNullWhenResponseBodyIsNull()
     {
         var response = new HttpResponseMessage(HttpStatusCode.OK)
         {
@@ -94,67 +94,67 @@ public class TheoryLessonApiClientTests
         };
 
         var client = BuildApiClient(response);
-        var result = await client.CreateLessonAsync(SampleLesson());
+        var result = await client.CreateStudentAsync(SampleStudent());
 
         Assert.That(result, Is.Null);
     }
 
     // ---------------------------------------------------------------------------
-    // DeleteLessonAsync
+    // DeleteStudentAsync
     // ---------------------------------------------------------------------------
 
     [Test]
-    public async Task DeleteLessonAsync_ReturnsTrueOnSuccess()
+    public async Task DeleteStudentAsync_ReturnsTrueOnSuccess()
     {
         var response = new HttpResponseMessage(HttpStatusCode.NoContent);
 
         var client = BuildApiClient(response);
-        var result = await client.DeleteLessonAsync(1);
+        var result = await client.DeleteStudentAsync(1);
 
         Assert.That(result, Is.True);
     }
 
     [Test]
-    public async Task DeleteLessonAsync_ReturnsFalseOnFailure()
+    public async Task DeleteStudentAsync_ReturnsFalseOnFailure()
     {
         var response = new HttpResponseMessage(HttpStatusCode.NotFound);
 
         var client = BuildApiClient(response);
-        var result = await client.DeleteLessonAsync(99);
+        var result = await client.DeleteStudentAsync(99);
 
         Assert.That(result, Is.False);
     }
 
     // ---------------------------------------------------------------------------
-    // UpdateLessonAsync
+    // UpdateStudentAsync
     // ---------------------------------------------------------------------------
 
     [Test]
-    public async Task UpdateLessonAsync_ReturnsUpdatedLessonOnSuccess()
+    public async Task UpdateStudentAsync_ReturnsUpdatedStudentOnSuccess()
     {
-        var lesson = SampleLesson();
+        var student = SampleStudent();
         var response = new HttpResponseMessage(HttpStatusCode.OK)
         {
-            Content = JsonContent.Create(lesson)
+            Content = JsonContent.Create(student)
         };
 
         var client = BuildApiClient(response);
-        var result = await client.UpdateLessonAsync(lesson);
+        var result = await client.UpdateStudentAsync(student);
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Id, Is.EqualTo(lesson.Id));
+        Assert.That(result!.Id, Is.EqualTo(student.Id));
     }
 
     [Test]
-    public async Task UpdateLessonAsync_ReturnsNullOnFailure()
+    public async Task UpdateStudentAsync_ReturnsNullOnFailure()
     {
         var response = new HttpResponseMessage(HttpStatusCode.BadRequest)
         {
-            Content = new StringContent("Invalid lesson data")
+            Content = new StringContent("Invalid student data")
         };
 
         var client = BuildApiClient(response);
-        var result = await client.UpdateLessonAsync(SampleLesson());
+        var result = await client.UpdateStudentAsync(SampleStudent());
 
         Assert.That(result, Is.Null);
     }
