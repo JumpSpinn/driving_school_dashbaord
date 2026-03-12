@@ -195,21 +195,25 @@ else
                     </TemplateColumn>
                     <TemplateColumn>
                         <CellTemplate>
-                            <MudIconButton
-                                Variant="Variant.Outlined"
-                                Color="Color.Warning"
-                                Size="Size.Small"
-                                Icon="@Icons.Material.Filled.Edit"
-                                OnClick="() => OnShowEditModal(context.Item)"
-                                Class="mr-2"
-                                aria-label="Bearbeiten" />
-                            <MudIconButton
-                                Variant="Variant.Outlined"
-                                Color="Color.Error"
-                                Size="Size.Small"
-                                Icon="@Icons.Material.Filled.Delete"
-                                OnClick="() => OnShowDeleteModal(context.Item)"
-                                aria-label="Löschen" />
+                            <MudTooltip Text="Bearbeiten">
+                                <MudIconButton
+                                    Variant="Variant.Outlined"
+                                    Color="Color.Warning"
+                                    Size="Size.Small"
+                                    Icon="@Icons.Material.Filled.Edit"
+                                    OnClick="() => OnShowEditModal(context.Item)"
+                                    Class="mr-2"
+                                    aria-label="Bearbeiten"/>
+                            </MudTooltip>
+                            <MudTooltip Text="Löschen">
+                                <MudIconButton
+                                    Variant="Variant.Outlined"
+                                    Color="Color.Error"
+                                    Size="Size.Small"
+                                    Icon="@Icons.Material.Filled.Delete"
+                                    OnClick="() => OnShowDeleteModal(context.Item)"
+                                    aria-label="Löschen"/>
+                            </MudTooltip>
                         </CellTemplate>
                     </TemplateColumn>
                 </Columns>

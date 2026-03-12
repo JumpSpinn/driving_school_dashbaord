@@ -1,4 +1,7 @@
 ﻿@page "/students"
+@using System.Globalization
+@using ExampleAspireBlazorApiProject.Shared.Helpers
+@using MudBlazor.Extensions
 @inject StudentApiClient StudentApiClient
 @inject DrivingSchoolApiClient DrivingSchoolApiClient
 @rendermode InteractiveServer
@@ -40,16 +43,6 @@
         _students = await StudentApiClient.GetAllStudentsAsync() ?? [];
         _drivingSchools = await DrivingSchoolApiClient.GetAllDrivingSchoolsAsync() ?? [];
         
-        Console.WriteLine($"Students Bookings:");
-        foreach (var student in _students)
-        {
-            Console.WriteLine($"Student: {student.FullName}");
-            foreach (var courseBooking in student.CourseBookings)
-            {
-                Console.WriteLine($"Student: {student.FullName} | BookingDate: {courseBooking.BookingDate}, Id: {courseBooking.Id}");
-            }
-        }
-        
         _dataLoading = false;
         StateHasChanged();
     }
@@ -62,7 +55,7 @@
         if(dialog == _createDialog)
             _newStudent = new();
         
-        await dialog.ShowAsync(options: DialogData.DialogDefaultOptions);
+        await dialog.ShowAsync(options: dialog == _infoDialog ? DialogData.DialogInfoOptions : DialogData.DialogDefaultOptions);
     }
     
     private async Task OnHideModal(MudDialog? dialog)
@@ -152,10 +145,13 @@
         _inspectStudent = new(student);
         await OnShowModal(_infoDialog);
     }
-    
-    // SCHOOL
-    private DrivingSchoolModel? GetDrivingSchool(int id) 
-        => _drivingSchools.FirstOrDefault(s => s.Id == id);
+
+    private string GetCourseBookingString(CourseBookingModel courseBooking) 
+        => courseBooking.TheoryLesson is null ? "Kurs nicht gefunden!" : $"{courseBooking.TheoryLesson.Name} ({courseBooking.TheoryLesson.Topic})";
+
+    private string GetCourseBookingDate(DateTime? date) 
+        => date is null ? "Datum nicht festgelegt!" : DateTimeHelper.ConvertToIsoString((DateTime)date);
+
 }
 
 <PageTitle>Fahrschüler</PageTitle>
@@ -268,29 +264,35 @@ else
                     </TemplateColumn>
                     <TemplateColumn>
                         <CellTemplate>
-                            <MudIconButton
-                                Variant="Variant.Outlined"
-                                Color="Color.Info"
-                                Size="Size.Small"
-                                Icon="@Icons.Material.Filled.Info"
-                                OnClick="() => OnShowInfoModal(context.Item)"
-                                Class="mr-2"
-                                aria-label="Ansehen" />
-                            <MudIconButton
-                                Variant="Variant.Outlined"
-                                Color="Color.Warning"
-                                Size="Size.Small"
-                                Icon="@Icons.Material.Filled.Edit"
-                                OnClick="() => OnShowEditModal(context.Item)"
-                                Class="mr-2"
-                                aria-label="Bearbeiten"/>
-                            <MudIconButton
-                                Variant="Variant.Outlined"
-                                Color="Color.Error"
-                                Size="Size.Small"
-                                Icon="@Icons.Material.Filled.Delete"
-                                OnClick="() => OnShowDeleteModal(context.Item)"
-                                aria-label="Löschen"/>
+                            <MudTooltip Text="Ansehen">
+                                <MudIconButton
+                                    Variant="Variant.Outlined"
+                                    Color="Color.Info"
+                                    Size="Size.Small"
+                                    Icon="@Icons.Material.Filled.Info"
+                                    OnClick="() => OnShowInfoModal(context.Item)"
+                                    Class="mr-2"
+                                    aria-label="Ansehen"/>
+                            </MudTooltip>
+                            <MudTooltip Text="Bearbeiten">
+                                <MudIconButton
+                                    Variant="Variant.Outlined"
+                                    Color="Color.Warning"
+                                    Size="Size.Small"
+                                    Icon="@Icons.Material.Filled.Edit"
+                                    OnClick="() => OnShowEditModal(context.Item)"
+                                    Class="mr-2"
+                                    aria-label="Bearbeiten"/>
+                            </MudTooltip>
+                            <MudTooltip Text="Löschen">
+                                <MudIconButton
+                                    Variant="Variant.Outlined"
+                                    Color="Color.Error"
+                                    Size="Size.Small"
+                                    Icon="@Icons.Material.Filled.Delete"
+                                    OnClick="() => OnShowDeleteModal(context.Item)"
+                                    aria-label="Löschen"/>
+                            </MudTooltip>
                         </CellTemplate>
                     </TemplateColumn>
                 </Columns>
@@ -479,15 +481,54 @@ else
         <MudText Typo="Typo.h6">@_inspectStudent!.FullName | Informationen</MudText>
     </TitleContent>
     <DialogContent>
+        <MudGrid Class="mb-4">
+            <MudItem xs="6" sm="6" Style="flex: 0 0 50%; max-width: 50%;">
+                <MudPaper Class="pa-4 mud-theme-dark" Elevation="2">
+                    <MudText Typo="Typo.body2" Color="Color.Primary">Geburtstag:</MudText>
+                    @if (_inspectStudent!.Birthday != null)
+                    {
+                        <MudText Typo="Typo.body1">@GetCourseBookingDate(_inspectStudent!.Birthday)</MudText>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.body2" Style="@($"color:{Colors.Gray.Darken1};")"><i>Keine Angabe</i></MudText>
+                    }
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="6" sm="6" Style="flex: 0 0 50%; max-width: 50%;">
+                <MudPaper Class="pa-4 mud-theme-dark" Elevation="2">
+                    <MudText Typo="Typo.body2" Color="Color.Primary">Anmeldedatum:</MudText>
+                    @if (_inspectStudent!.EnrollmentDate != null)
+                    {
+                        <MudText Typo="Typo.body1">@GetCourseBookingDate(_inspectStudent!.EnrollmentDate)</MudText>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.body2" Style="@($"color:{Colors.Gray.Darken1};")"><i>Keine Angabe</i></MudText>
+                    }
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
         <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
-            <MudText>Kurse gebucht: @_inspectStudent!.CourseBookings.Count</MudText>
-            @foreach (var booking in _inspectStudent!.CourseBookings)
+            <MudListSubheader>
+                Gebuchte Kurse:
+            </MudListSubheader>
+            @if (_inspectStudent!.CourseBookings.Any())
             {
-                <MudText>@booking.BookingDate | @booking.Student?.FullName, @booking.TheoryLesson?.Name (@booking.TheoryLesson?.Topic)</MudText>
+                foreach (var courseBooking in _inspectStudent.CourseBookings)
+                {
+                    <MudList T="string" ReadOnly="true">
+                        <MudListItem T="string"
+                                     Dense="true"
+                                     Text="@GetCourseBookingDate(courseBooking.BookingDate)"
+                                     SecondaryText="@GetCourseBookingString(courseBooking)"/>
+                    </MudList>
+                }
             }
-            <MudText>Geburtstag: @_inspectStudent!.Birthday</MudText>
-            <MudText>Anmeldedatum: @_inspectStudent!.EnrollmentDate</MudText>
-            
+            else
+            {
+                <MudText Typo="Typo.body2" Class="pl-4" Style="@($"color:{Colors.Gray.Darken1};")"><i>Hat noch keine Kurse gebucht.</i></MudText>
+            }
         </MudPaper>
     </DialogContent>
     <DialogActions>

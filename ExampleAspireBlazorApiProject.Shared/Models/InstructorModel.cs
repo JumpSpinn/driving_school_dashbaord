@@ -10,7 +10,7 @@ public sealed class InstructorModel
     public string FirstName { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Nachname ist Pflicht")]
-    [StringLength(50, MinimumLength = 3, ErrorMessage = "Nachname muss zwischen 3 und 50 Zeichen lang sein")]
+    [StringLength(50, MinimumLength = 3, ErrorMessage = "Nachname muss zwischen 3 und 50 Zeichen lang sein")]//
     public string LastName { get; set; } = string.Empty;
 
     public string FullName => $"{FirstName} {LastName}";

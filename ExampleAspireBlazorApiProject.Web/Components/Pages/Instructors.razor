@@ -46,7 +46,7 @@
     private async Task OnShowModal(MudDialog? dialog)
     {
         if (dialog is null) return;
-        await dialog.ShowAsync(options: DialogData.DialogDefaultOptions);
+        await dialog.ShowAsync(options: dialog == _infoDialog ? DialogData.DialogInfoOptions : DialogData.DialogDefaultOptions);
     }
     
     private async Task OnHideModal(MudDialog? dialog)
@@ -203,29 +203,35 @@ else
                     </TemplateColumn>
                     <TemplateColumn>
                         <CellTemplate>
-                            <MudIconButton
-                                Variant="Variant.Outlined"
-                                Color="Color.Info"
-                                Size="Size.Small"
-                                Icon="@Icons.Material.Filled.Info"
-                                OnClick="() => OnShowInfoModal(context.Item)"
-                                Class="mr-2"
-                                aria-label="Ansehen" />
-                            <MudIconButton
-                                Variant="Variant.Outlined"
-                                Color="Color.Warning"
-                                Size="Size.Small"
-                                Icon="@Icons.Material.Filled.Edit"
-                                OnClick="() => OnShowEditModal(context.Item)"
-                                Class="mr-2"
-                                aria-label="Bearbeiten"/>
-                            <MudIconButton
-                                Variant="Variant.Outlined"
-                                Color="Color.Error"
-                                Size="Size.Small"
-                                Icon="@Icons.Material.Filled.Delete"
-                                OnClick="() => OnShowDeleteModal(context.Item)"
-                                aria-label="Löschen"/>
+                            <MudTooltip Text="Ansehen">
+                                <MudIconButton
+                                    Variant="Variant.Outlined"
+                                    Color="Color.Info"
+                                    Size="Size.Small"
+                                    Icon="@Icons.Material.Filled.Info"
+                                    OnClick="() => OnShowInfoModal(context.Item)"
+                                    Class="mr-2"
+                                    aria-label="Ansehen"/>
+                            </MudTooltip>
+                            <MudTooltip Text="Bearbeiten">
+                                <MudIconButton
+                                    Variant="Variant.Outlined"
+                                    Color="Color.Warning"
+                                    Size="Size.Small"
+                                    Icon="@Icons.Material.Filled.Edit"
+                                    OnClick="() => OnShowEditModal(context.Item)"
+                                    Class="mr-2"
+                                    aria-label="Bearbeiten"/>
+                            </MudTooltip>
+                            <MudTooltip Text="Löschen">
+                                <MudIconButton
+                                    Variant="Variant.Outlined"
+                                    Color="Color.Error"
+                                    Size="Size.Small"
+                                    Icon="@Icons.Material.Filled.Delete"
+                                    OnClick="() => OnShowDeleteModal(context.Item)"
+                                    aria-label="Löschen"/>
+                            </MudTooltip>
                         </CellTemplate>
                     </TemplateColumn>
                 </Columns>
@@ -347,10 +353,24 @@ else
     </TitleContent>
     <DialogContent>
         <MudPaper Class="mud-theme-dark pa-4" Elevation="1">
-            <MudText>Zugewiesene Kurse:@_inspectInstructor!.TheoryLessons.Count</MudText>
-            @foreach (var lesson in _inspectInstructor!.TheoryLessons)
+            <MudListSubheader>
+                Zugewiesene Kurse:
+            </MudListSubheader>
+            @if (_inspectInstructor!.TheoryLessons.Any())
             {
-                <MudText>Kurs:@lesson.Name | @lesson.Topic</MudText>
+                foreach (var lesson in _inspectInstructor.TheoryLessons)
+                {
+                    <MudList T="string" ReadOnly="true">
+                        <MudListItem T="string"
+                                     Dense="true"
+                                     Text="@lesson.Name"
+                                     SecondaryText="@lesson.Topic"/>
+                    </MudList>
+                }
+            }
+            else
+            {
+                <MudText Typo="Typo.body2" Style="@($"color:{Colors.Gray.Darken1};")"><i>Unterrichtet zurzeit keinerlei Kurse.</i></MudText>
             }
         </MudPaper>
     </DialogContent>

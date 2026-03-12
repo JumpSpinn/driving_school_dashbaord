@@ -68,10 +68,6 @@
             var dayIdx = (int)(courseBooking.BookingDate.Value.DayOfWeek + 6) % 7;
             bookingByDays[dayIdx]++;
         }
-
-        // var max = (int)(bookingByDays.Max() + 1);
-        // barChartOptions.YAxisSuggestedMax = max;
-        // barChartOptions.MaxNumYAxisTicks = max;
         
         _series = new List<ChartSeries<double>>()
         {

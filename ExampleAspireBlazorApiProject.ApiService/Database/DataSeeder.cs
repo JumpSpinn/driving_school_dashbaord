@@ -1,6 +1,4 @@
-﻿using ExampleAspireBlazorApiProject.Shared.Enums;
-
-namespace ExampleAspireBlazorApiProject.ApiService.Database;
+﻿namespace ExampleAspireBlazorApiProject.ApiService.Database;
 
 public static class DataSeeder
 {
@@ -26,33 +24,43 @@ public static class DataSeeder
         // Students
         var students = new List<StudentModel>
         {
-            new() { FirstName = "Lisa",     LastName = "Schmidt",   Mail = "lisa@schmidt.de",     Phone = "0123456789", License = LicenseClass.A, HasPassed = false},
-            new() { FirstName = "Tom",      LastName = "Müller",    Mail = "tom@mueller.de",      Phone = "0176123456", License = LicenseClass.B, HasPassed = false},
-            new() { FirstName = "Anna",     LastName = "Fischer",   Mail = "anna@fischer.de",     Phone = "0151987654", License = LicenseClass.B, HasPassed = false},
-            new() { FirstName = "Jonas",    LastName = "Weber",     Mail = "jonas@weber.de",      Phone = "0162345678", License = LicenseClass.C, HasPassed = true},
-            new() { FirstName = "Marie",    LastName = "Wagner",    Mail = "marie@wagner.de",     Phone = "0172456789", License = LicenseClass.A, HasPassed = true},
-            new() { FirstName = "Felix",    LastName = "Becker",    Mail = "felix@becker.de",     Phone = "0163567890", License = LicenseClass.B, HasPassed = true},
-            new() { FirstName = "Sophie",   LastName = "Hoffmann",  Mail = "sophie@hoffmann.de",  Phone = "0174678901", License = LicenseClass.B, HasPassed = false},
-            new() { FirstName = "Lukas",    LastName = "Schäfer",   Mail = "lukas@schaefer.de",   Phone = "0155789012", License = LicenseClass.A, HasPassed = true},
-            new() { FirstName = "Emma",     LastName = "Koch",      Mail = "emma@koch.de",        Phone = "0166890123", License = LicenseClass.C, HasPassed = true},
-            new() { FirstName = "Noah",     LastName = "Bauer",     Mail = "noah@bauer.de",       Phone = "0177901234", License = LicenseClass.B, HasPassed = true},
-            new() { FirstName = "Mia",      LastName = "Richter",   Mail = "mia@richter.de",      Phone = "0158012345", License = LicenseClass.B, HasPassed = false},
-            new() { FirstName = "Leon",     LastName = "Klein",     Mail = "leon@klein.de",       Phone = "0169123456", License = LicenseClass.A, HasPassed = true},
+            new() { FirstName = "Lisa",     LastName = "Schmidt",   Mail = "lisa@schmidt.de",     Phone = "0123456789", License = LicenseClass.A, HasPassed = false, Birthday = DateTimeHelper.RandomBirthday()},
+            new() { FirstName = "Tom",      LastName = "Müller",    Mail = "tom@mueller.de",      Phone = "0176123456", License = LicenseClass.B, HasPassed = false, Birthday = DateTimeHelper.RandomBirthday()},
+            new() { FirstName = "Anna",     LastName = "Fischer",   Mail = "anna@fischer.de",     Phone = "0151987654", License = LicenseClass.B, HasPassed = false, Birthday = DateTimeHelper.RandomBirthday()},
+            new() { FirstName = "Jonas",    LastName = "Weber",     Mail = "jonas@weber.de",      Phone = "0162345678", License = LicenseClass.C, HasPassed = true, Birthday = DateTimeHelper.RandomBirthday()},
+            new() { FirstName = "Marie",    LastName = "Wagner",    Mail = "marie@wagner.de",     Phone = "0172456789", License = LicenseClass.A, HasPassed = true, Birthday = DateTimeHelper.RandomBirthday()},
+            new() { FirstName = "Felix",    LastName = "Becker",    Mail = "felix@becker.de",     Phone = "0163567890", License = LicenseClass.B, HasPassed = true, Birthday = DateTimeHelper.RandomBirthday()},
+            new() { FirstName = "Sophie",   LastName = "Hoffmann",  Mail = "sophie@hoffmann.de",  Phone = "0174678901", License = LicenseClass.B, HasPassed = false, Birthday = DateTimeHelper.RandomBirthday()},
+            new() { FirstName = "Lukas",    LastName = "Schäfer",   Mail = "lukas@schaefer.de",   Phone = "0155789012", License = LicenseClass.A, HasPassed = true, Birthday = DateTimeHelper.RandomBirthday()},
+            new() { FirstName = "Emma",     LastName = "Koch",      Mail = "emma@koch.de",        Phone = "0166890123", License = LicenseClass.C, HasPassed = true, Birthday = DateTimeHelper.RandomBirthday()},
+            new() { FirstName = "Noah",     LastName = "Bauer",     Mail = "noah@bauer.de",       Phone = "0177901234", License = LicenseClass.B, HasPassed = true, Birthday = DateTimeHelper.RandomBirthday()},
+            new() { FirstName = "Mia",      LastName = "Richter",   Mail = "mia@richter.de",      Phone = "0158012345", License = LicenseClass.B, HasPassed = false, Birthday = DateTimeHelper.RandomBirthday()},
+            new() { FirstName = "Leon",     LastName = "Klein",     Mail = "leon@klein.de",       Phone = "0169123456", License = LicenseClass.A, HasPassed = true, Birthday = DateTimeHelper.RandomBirthday()},
         };
 
         dbContext.Students.AddRange(students);
+        
+        // Assign driving schools to students
+        var studentsWithDrivingSchool = students.Take(5);
+        foreach (var student in studentsWithDrivingSchool)
+        {
+            List<DrivingSchoolModel> schools = [school1, school2, school3];
+            var rndIdx = new Random().Next(0, 3);
+            var randomSchool = schools[rndIdx];
+            student.DrivingSchool =randomSchool;
+        }
 
         // Theory Lessons
         var lessons = new List<TheoryLessonModel>
         {
-            new() { Name = "Grundstoff 1", Topic = "Vorfahrt & Verkehrszeichen",       DayOfWeek = DayOfWeek.Monday,    StartTime = new TimeOnly(18, 30), Instructor = instructor1, Price = 45.00m },
-            new() { Name = "Grundstoff 2", Topic = "Geschwindigkeit & Abstand",        DayOfWeek = DayOfWeek.Tuesday,   StartTime = new TimeOnly(19, 00), Instructor = instructor2, Price = 45.00m },
-            new() { Name = "Grundstoff 3", Topic = "Überholen & Fahrstreifenwechsel",  DayOfWeek = DayOfWeek.Wednesday, StartTime = new TimeOnly(18, 00), Instructor = instructor1, Price = 45.00m },
-            new() { Name = "Grundstoff 4", Topic = "Beleuchtung & Sicht",              DayOfWeek = DayOfWeek.Thursday,  StartTime = new TimeOnly(17, 30), Instructor = instructor3, Price = 45.00m },
-            new() { Name = "Grundstoff 5", Topic = "Umwelt & Energie",                 DayOfWeek = DayOfWeek.Friday,    StartTime = new TimeOnly(18, 30), Instructor = instructor4, Price = 40.00m },
-            new() { Name = "Zusatzstoff A", Topic = "Motorrad & Zweiräder",            DayOfWeek = DayOfWeek.Saturday,  StartTime = new TimeOnly(10, 00), Instructor = instructor2, Price = 50.00m },
-            new() { Name = "Zusatzstoff B", Topic = "Autobahn & Schnellstraßen",       DayOfWeek = DayOfWeek.Monday,    StartTime = new TimeOnly(20, 00), Instructor = instructor3, Price = 50.00m },
-            new() { Name = "Zusatzstoff C", Topic = "Gefahrgut & Schwertransport",     DayOfWeek = DayOfWeek.Wednesday, StartTime = new TimeOnly(19, 30), Instructor = instructor4, Price = 55.00m },
+            new() { Name = "Grundstoff 1",  Topic = "Vorfahrt & Verkehrszeichen",      DayOfWeek = DayOfWeek.Monday,    StartTime = new TimeOnly(18, 30), Instructor = instructor1, Price = 45.00m, DurationMinutes = 90,  MaxStudents = 12},
+            new() { Name = "Grundstoff 2",  Topic = "Geschwindigkeit & Abstand",       DayOfWeek = DayOfWeek.Tuesday,   StartTime = new TimeOnly(19, 00), Instructor = instructor2, Price = 45.00m, DurationMinutes = 75,  MaxStudents = 8 },
+            new() { Name = "Grundstoff 3",  Topic = "Überholen & Fahrstreifenwechsel", DayOfWeek = DayOfWeek.Wednesday, StartTime = new TimeOnly(18, 00), Instructor = instructor1, Price = 45.00m, DurationMinutes = 120, MaxStudents = 15},
+            new() { Name = "Grundstoff 4",  Topic = "Beleuchtung & Sicht",             DayOfWeek = DayOfWeek.Thursday,  StartTime = new TimeOnly(17, 30), Instructor = instructor3, Price = 45.00m, DurationMinutes = 60,  MaxStudents = 10},
+            new() { Name = "Grundstoff 5",  Topic = "Umwelt & Energie",                DayOfWeek = DayOfWeek.Friday,    StartTime = new TimeOnly(18, 30), Instructor = instructor4, Price = 40.00m, DurationMinutes = 90,  MaxStudents = 6 },
+            new() { Name = "Zusatzstoff A", Topic = "Motorrad & Zweiräder",            DayOfWeek = DayOfWeek.Saturday,  StartTime = new TimeOnly(10, 00), Instructor = instructor2, Price = 50.00m, DurationMinutes = 105, MaxStudents = 20},
+            new() { Name = "Zusatzstoff B", Topic = "Autobahn & Schnellstraßen",       DayOfWeek = DayOfWeek.Monday,    StartTime = new TimeOnly(20, 00), Instructor = instructor3, Price = 50.00m, DurationMinutes = 75,  MaxStudents = 9 },
+            new() { Name = "Zusatzstoff C", Topic = "Gefahrgut & Schwertransport",     DayOfWeek = DayOfWeek.Wednesday, StartTime = new TimeOnly(19, 30), Instructor = instructor4, Price = 55.00m, DurationMinutes = 120, MaxStudents = 5 },
         };
 
         dbContext.TheoryLessons.AddRange(lessons);
