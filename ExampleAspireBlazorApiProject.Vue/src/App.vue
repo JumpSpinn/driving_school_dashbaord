@@ -1,6 +1,21 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
+import {onMounted} from "vue";
+import {courseBookingApiClient} from "@/apis/CourseBookingApiClient.ts";
+import {drivingSchoolApiClient} from "@/apis/DrivingSchoolApiClient.ts";
+import {instructorApiClient} from "@/apis/InstructorApiClient.ts";
+import {studentApiClient} from "@/apis/StudentApiClient.ts";
+import {theoryLessonApiClient} from "@/apis/TheoryLessonApiClient.ts";
+
+onMounted(async () => {
+  await courseBookingApiClient.getAll();
+  await drivingSchoolApiClient.getAll();
+  await instructorApiClient.getAll();
+  await studentApiClient.getAll();
+  await theoryLessonApiClient.getAll();
+});
+
 </script>
 
 <template>
