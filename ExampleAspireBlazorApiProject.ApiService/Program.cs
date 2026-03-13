@@ -1,6 +1,17 @@
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy("VueCorspolicy", policy =>
+    {
+        policy.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
 builder.Services.AddControllers().AddJsonOptions(opt =>
 {
     opt.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
@@ -15,8 +26,6 @@ builder.Services.AddScoped<TheoryLessonService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddOpenApi();
-
-// Add services to the container.22
 builder.Services.AddProblemDetails();
 
 builder.Services.AddDbContext<ApplicationDbContext>(opt =>
@@ -41,6 +50,7 @@ if (app.Environment.IsDevelopment())
     }
 }
 
+app.UseCors("VueCorspolicy");
 app.MapDefaultEndpoints();
 app.MapControllers();
 
