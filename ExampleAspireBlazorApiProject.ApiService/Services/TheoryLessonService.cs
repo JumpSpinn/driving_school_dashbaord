@@ -3,20 +3,11 @@
 public sealed class TheoryLessonService(ApplicationDbContext dbContext, ILogger<TheoryLessonService> l)
     : BaseService<TheoryLessonService>(l)
 {
-    public List<TheoryLessonModel> GetTheoryLessons()
-    {
-        try
-        {
-            return dbContext.TheoryLessons
-                .Include(d => d.Instructor)
-                .Where(x => !x.IsDeleted)
-                .ToList();
-        }
-        catch (Exception e)
-        {
-            return HandleError<List<TheoryLessonModel>>(e, "Error getting lessons")!;
-        }
-    }
+    public List<TheoryLessonModel> GetTheoryLessons() 
+        => dbContext.TheoryLessons
+            .Include(d => d.Instructor)
+            .Where(x => !x.IsDeleted)
+            .ToList();
     
     private TheoryLessonModel? GetTheoryLesson(int id) 
         => dbContext.TheoryLessons
@@ -25,7 +16,7 @@ public sealed class TheoryLessonService(ApplicationDbContext dbContext, ILogger<
     
     public async Task<TheoryLessonModel?> CreateTheoryLessonAsync(TheoryLessonModel lesson)
     {
-        try
+        return await ExecuteAsync(async () =>
         {
             var exist = GetTheoryLesson(lesson.Id);
             if (exist is not null) return exist;
@@ -49,16 +40,12 @@ public sealed class TheoryLessonService(ApplicationDbContext dbContext, ILogger<
             await dbContext.Entry(newLesson).Reference(x => x.Instructor).LoadAsync();
             
             return newLesson;
-        }
-        catch (Exception e)
-        {
-            return HandleError<TheoryLessonModel>(e, "Error creating lesson");
-        }
+        }, "Error creating lesson");
     }
     
     public async Task<TheoryLessonModel?> UpdateTheoryLessonAsync(TheoryLessonModel toUpdate)
     {
-        try
+        return await ExecuteAsync(async () =>
         {
             var lesson = GetTheoryLesson(toUpdate.Id);
             if (lesson is null) return null;
@@ -77,16 +64,12 @@ public sealed class TheoryLessonService(ApplicationDbContext dbContext, ILogger<
             await dbContext.Entry(lesson).Reference(x => x.Instructor).LoadAsync();
             
             return lesson;
-        }
-        catch (Exception e)
-        {
-            return HandleError<TheoryLessonModel>(e, "Error updating lesson");
-        }
+        }, "Error updating lesson");
     }
     
     public async Task<bool> DeleteTheoryLessonAsync(int id)
     {
-        try
+        return await ExecuteBoolAsync(async () =>
         {
             var lesson = GetTheoryLesson(id);
             if (lesson is null || lesson.IsDeleted) return false;
@@ -99,10 +82,6 @@ public sealed class TheoryLessonService(ApplicationDbContext dbContext, ILogger<
             await dbContext.SaveChangesAsync();
             
             return true;
-        }
-        catch (Exception e)
-        {
-            return HandleErrorBool(e, "Error deleting lesson");
-        }
+        }, "Error deleting lesson");
     }
 }

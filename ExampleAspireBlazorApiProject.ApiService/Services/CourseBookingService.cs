@@ -3,20 +3,11 @@
 public sealed class CourseBookingService(ApplicationDbContext dbContext, ILogger<CourseBookingService> l)
     : BaseService<CourseBookingService>(l)
 {
-    public List<CourseBookingModel> GetCourseBookings()
-    {
-        try
-        {
-            return dbContext.CourseBookings
-                .Include(d => d.Student)
-                .Include(d => d.TheoryLesson)
-                .ToList();
-        }
-        catch (Exception e)
-        {
-            return HandleError<List<CourseBookingModel>>(e, "Error getting course bookings")!;
-        }
-    }
+    public List<CourseBookingModel> GetCourseBookings() 
+        => dbContext.CourseBookings
+            .Include(d => d.Student)
+            .Include(d => d.TheoryLesson)
+            .ToList();
     
     private CourseBookingModel? GetCourseBooking(int studentId, int theoryLessonId) 
         => dbContext.CourseBookings
@@ -32,7 +23,7 @@ public sealed class CourseBookingService(ApplicationDbContext dbContext, ILogger
     
     public async Task<CourseBookingModel?> CreateCourseBookingAsync(CourseBookingModel booking)
     {
-        try
+        return await ExecuteAsync(async () =>
         {
             if (booking.StudentId is null && booking.TheoryLessonId is null) return null;
             
@@ -53,16 +44,12 @@ public sealed class CourseBookingService(ApplicationDbContext dbContext, ILogger
             await dbContext.Entry(courseBooking).Reference(x => x.TheoryLesson).LoadAsync();
             
             return courseBooking;
-        }
-        catch (Exception e)
-        {
-            return HandleError<CourseBookingModel>(e, "Error creating course bookings");
-        }
+        }, "Error creating course bookings");
     }
     
     public async Task<CourseBookingModel?> UpdateCourseBookingAsync(CourseBookingModel toUpdate)
     {
-        try
+        return await ExecuteAsync(async () =>
         {
             var courseBooking = GetCourseBooking(toUpdate.Id);
             if (courseBooking is null) return null;
@@ -77,16 +64,12 @@ public sealed class CourseBookingService(ApplicationDbContext dbContext, ILogger
             await dbContext.Entry(courseBooking).Reference(x => x.TheoryLesson).LoadAsync();
             
             return courseBooking;
-        }
-        catch (Exception e)
-        {
-            return HandleError<CourseBookingModel>(e, "Error updating course bookings");
-        }
+        }, "Error updating course bookings");
     }
     
     public async Task<bool> DeleteCourseBookingAsync(int id)
     {
-        try
+        return await ExecuteBoolAsync(async () =>
         {
             var courseBooking = GetCourseBooking(id);
             if (courseBooking is null) return false;
@@ -95,10 +78,6 @@ public sealed class CourseBookingService(ApplicationDbContext dbContext, ILogger
             await dbContext.SaveChangesAsync();
             
             return true;
-        }
-        catch (Exception e)
-        {
-            return HandleErrorBool(e, "Error deleting course bookings");
-        }
+        }, "Error deleting course bookings");
     }
 }

@@ -7,7 +7,7 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
 
     public async Task<DrivingSchoolModel?> CreateDrivingSchoolAsync(DrivingSchoolModel drivingSchool)
     {
-        try
+        return await ExecuteAsync(async () =>
         {
             var exist = GetDrivingSchool(drivingSchool.Name);
             if (exist is not null) return exist;
@@ -24,37 +24,20 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
             await dbContext.Entry(newDrivingSchool).Reference(x => x.Owner).LoadAsync();
             
             return newDrivingSchool;
-        }
-        catch (Exception e)
-        {
-            return HandleError<DrivingSchoolModel>(e, "Error creating driving school");
-        }
+        }, "Error creating driving school");
     }
 
     #endregion
 
     #region GET
 
-    private DrivingSchoolModel? GetDrivingSchool(string name)
-    {
-        try
-        {
-            var drivingSchool = dbContext.DrivingSchools
-                .Include(d => d.Owner)
-                .Include(d => d.Students)
-                .FirstOrDefault(x => 
-                    x.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase) && !x.IsDeleted);
-            
-            if(drivingSchool is null || drivingSchool.IsDeleted) return null;
-
-            return drivingSchool;
-        }
-        catch (Exception e)
-        {
-            return HandleError<DrivingSchoolModel>(e, "Error getting driving school");
-        }
-    }
-
+    private DrivingSchoolModel? GetDrivingSchool(string name) 
+        => dbContext.DrivingSchools
+            .Include(d => d.Owner)
+            .Include(d => d.Students)
+            .FirstOrDefault(x => 
+                x.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase) && !x.IsDeleted);
+    
     private DrivingSchoolModel? GetDrivingSchool(int id) 
         => dbContext.DrivingSchools
             .Include(d => d.Owner)
@@ -78,7 +61,7 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
 
     public async Task<DrivingSchoolModel?> UpdateDrivingSchoolAsync(DrivingSchoolModel toUpdate)
     {
-        try
+        return await ExecuteAsync(async () =>
         {
             var drivingSchool = GetDrivingSchool(toUpdate.Id);
             if (drivingSchool is null) return null;
@@ -90,11 +73,7 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
             await dbContext.Entry(drivingSchool).Reference(x => x.Owner).LoadAsync();
             
             return drivingSchool;
-        }
-        catch (Exception e)
-        {
-            return HandleError<DrivingSchoolModel>(e, "Error updating driving school");
-        }
+        }, "Error updating driving school");
     }
 
     #endregion
@@ -103,7 +82,7 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
     
     public async Task<bool> DeleteDrivingSchoolAsync(int id)
     {
-        try
+        return await ExecuteBoolAsync(async () =>
         {
             var drivingSchool = GetDrivingSchool(id);
             if (drivingSchool is null || drivingSchool.IsDeleted) return false;
@@ -116,11 +95,7 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
             await dbContext.SaveChangesAsync();
             
             return true;
-        }
-        catch (Exception e)
-        {
-            return HandleErrorBool(e, "Error deleting driving school");
-        }
+        }, "Error deleting driving school");
     }
 
     #endregion

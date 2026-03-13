@@ -3,20 +3,11 @@
 public sealed class InstructorService(ApplicationDbContext dbContext, ILogger<InstructorService> l)
     : BaseService<InstructorService>(l)
 {
-    public List<InstructorModel> GetInstructors()
-    {
-        try
-        {
-            return dbContext.Instructors
-                .Include(d => d.TheoryLessons)
-                .Where(x => !x.IsDeleted)
-                .ToList();
-        }
-        catch (Exception e)
-        {
-            return HandleError<List<InstructorModel>>(e, "Error getting instructors")!;
-        }
-    }
+    public List<InstructorModel> GetInstructors() 
+        => dbContext.Instructors
+            .Include(d => d.TheoryLessons)
+            .Where(x => !x.IsDeleted)
+            .ToList();
     
     private InstructorModel? GetInstructor(int id) 
         => dbContext.Instructors
@@ -25,7 +16,7 @@ public sealed class InstructorService(ApplicationDbContext dbContext, ILogger<In
     
     public async Task<InstructorModel?> CreateInstructorAsync(InstructorModel instructor)
     {
-        try
+        return await ExecuteAsync(async () =>
         {
             var exist = GetInstructor(instructor.Id);
             if (exist is not null) return exist;
@@ -44,16 +35,12 @@ public sealed class InstructorService(ApplicationDbContext dbContext, ILogger<In
             await dbContext.Entry(newInstructor).Collection(x => x.TheoryLessons).LoadAsync();
             
             return newInstructor;
-        }
-        catch (Exception e)
-        {
-            return HandleError<InstructorModel>(e, "Error creating instructor");
-        }
+        }, "Error creating instructor");
     }
     
     public async Task<InstructorModel?> UpdateInstructorAsync(InstructorModel toUpdate)
     {
-        try
+        return await ExecuteAsync(async () =>
         {
             var instructor = GetInstructor(toUpdate.Id);
             if (instructor is null) return null;
@@ -67,16 +54,12 @@ public sealed class InstructorService(ApplicationDbContext dbContext, ILogger<In
             await dbContext.Entry(instructor).Collection(x => x.TheoryLessons).LoadAsync();
             
             return instructor;
-        }
-        catch (Exception e)
-        {
-            return HandleError<InstructorModel>(e, "Error updating instructor");
-        }
+        }, "Error updating instructor");
     }
     
     public async Task<bool> DeleteInstructorAsync(int id)
     {
-        try
+        return await ExecuteBoolAsync(async () =>
         {
             var instructor = GetInstructor(id);
             if (instructor is null || instructor.IsDeleted) return false;
@@ -86,10 +69,6 @@ public sealed class InstructorService(ApplicationDbContext dbContext, ILogger<In
             await dbContext.SaveChangesAsync();
             
             return true;
-        }
-        catch (Exception e)
-        {
-            return HandleErrorBool(e, "Error deleting instructor");
-        }
+        }, "Error deleting instructor");
     }
 }

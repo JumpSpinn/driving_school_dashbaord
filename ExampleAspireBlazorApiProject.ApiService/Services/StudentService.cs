@@ -24,18 +24,14 @@ public sealed class StudentService(ApplicationDbContext dbContext, ILogger<Stude
 
     public async Task<StudentModel?> CreateStudentAsync(StudentModel newStudent)
     {
-        try
+        return await ExecuteAsync(async () => 
         {
             dbContext.Students.Add(newStudent);
             await dbContext.SaveChangesAsync();
             await dbContext.Entry(newStudent).Reference(x => x.DrivingSchool).LoadAsync();
             await dbContext.Entry(newStudent).Collection(x => x.CourseBookings).LoadAsync();
             return newStudent;
-        }
-        catch (Exception e)
-        {
-            return HandleError<StudentModel>(e, "Error creating student");
-        }
+        }, "Error creating student");
     }
 
     #endregion
@@ -44,20 +40,15 @@ public sealed class StudentService(ApplicationDbContext dbContext, ILogger<Stude
 
     public async Task<bool> DeleteStudentAsync(int id)
     {
-        try
+        return await ExecuteBoolAsync(async () => 
         {
             var student = GetStudent(id);
             if (student is null || student.IsDeleted) return false;
 
             dbContext.Students.Remove(student);
             await dbContext.SaveChangesAsync();
-
             return true;
-        }
-        catch (Exception e)
-        {
-            return HandleErrorBool(e, "Error deleting student");
-        }
+        }, "Error deleting student");
     }
 
     #endregion
@@ -66,7 +57,7 @@ public sealed class StudentService(ApplicationDbContext dbContext, ILogger<Stude
 
     public async Task<StudentModel?> UpdateStudentAsync(StudentModel editStudent)
     {
-        try
+        return await ExecuteAsync(async () => 
         {
             var student = GetStudent(editStudent.Id);
             if (student is null) return null;
@@ -87,11 +78,7 @@ public sealed class StudentService(ApplicationDbContext dbContext, ILogger<Stude
             await dbContext.Entry(student).Collection(x => x.CourseBookings).LoadAsync();
 
             return student;
-        }
-        catch (Exception e)
-        {
-            return HandleError<StudentModel>(e, "Error updating student");
-        }
+        }, "Error updating student");
     }
 
     #endregion
