@@ -8,6 +8,10 @@ const toggleNavigation = () => {
   isNavOpened.value = !isNavOpened.value;
 }
 
+const setNavigationOpenState = (isOpen: boolean) => {
+  isNavOpened.value = isOpen;
+}
+
 </script>
 
 <template>
@@ -19,7 +23,7 @@ const toggleNavigation = () => {
       <h3>Fahrschul Manager</h3>
     </header>
     <main>
-      <Navigation :isOpen="isNavOpened" />
+      <Navigation :isOpen="isNavOpened" @update:isOpen="setNavigationOpenState" />
       <div class="main_content">
         <RouterView />
       </div>
