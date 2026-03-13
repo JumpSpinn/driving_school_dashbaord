@@ -1,0 +1,27 @@
+﻿/* DARK */
+:root {
+  --bg-dark: hsl(0, 0%, 0%);
+  --bg: hsl(0, 0%, 5%);
+  --bg-light: hsl(0, 0%, 10%);
+  --bg-nav: hsla(0, 0%, 0%, 50%);
+
+  --text: hsl(0, 0%, 95%);
+  --text-muted: hsl(0, 0%, 70%);
+  --text-nav-active: hsl(0, 0%, 95%);
+
+  --primary-rgb: 253, 73, 168;
+  --primary-color: rgb(var(--primary-rgb));
+
+  --secondary-rgb: 78, 188, 239;
+  --secondary-color: rgb(var(--secondary-rgb));
+
+  --shadow-combined: 0 4px 4px #00000030, 0 12px 12px #00000015;
+  --shadow-dark: 0 4px 4px #00000030;
+  --shadow-light: 0 12px 12px #00000015;
+
+  --border: hsl(0, 0%, 15%);
+  --border-card: solid 1px var(--border);
+
+  --highlight: hsl(0, 0%, 60%);
+  --modal-bg: hsla(0, 0%, 10%, 10%);
+}
