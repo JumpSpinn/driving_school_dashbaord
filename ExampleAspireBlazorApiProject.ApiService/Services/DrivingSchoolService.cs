@@ -1,6 +1,7 @@
 ﻿namespace ExampleAspireBlazorApiProject.ApiService.Services;
 
-public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger<DrivingSchoolService> logger)
+public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger<DrivingSchoolService> l)
+    : BaseService<DrivingSchoolService>(l)
 {
     #region CREATE
 
@@ -26,10 +27,8 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error creating driving school");
+            return HandleError<DrivingSchoolModel>(e, "Error creating driving school");
         }
-
-        return null;
     }
 
     #endregion
@@ -52,10 +51,8 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error getting driving school");
+            return HandleError<DrivingSchoolModel>(e, "Error getting driving school");
         }
-
-        return null;
     }
 
     private DrivingSchoolModel? GetDrivingSchool(int id) 
@@ -96,10 +93,8 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error updating driving school");
+            return HandleError<DrivingSchoolModel>(e, "Error updating driving school");
         }
-
-        return null;
     }
 
     #endregion
@@ -124,10 +119,8 @@ public sealed class DrivingSchoolService(ApplicationDbContext dbContext, ILogger
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error deleting driving school");
+            return HandleErrorBool(e, "Error deleting driving school");
         }
-
-        return false;
     }
 
     #endregion

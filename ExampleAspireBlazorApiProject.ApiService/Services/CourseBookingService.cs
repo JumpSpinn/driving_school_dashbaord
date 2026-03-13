@@ -1,6 +1,7 @@
 ﻿namespace ExampleAspireBlazorApiProject.ApiService.Services;
 
-public sealed class CourseBookingService(ApplicationDbContext dbContext, ILogger<CourseBookingService> logger)
+public sealed class CourseBookingService(ApplicationDbContext dbContext, ILogger<CourseBookingService> l)
+    : BaseService<CourseBookingService>(l)
 {
     public List<CourseBookingModel> GetCourseBookings()
     {
@@ -13,10 +14,8 @@ public sealed class CourseBookingService(ApplicationDbContext dbContext, ILogger
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error getting course bookings");
+            return HandleError<List<CourseBookingModel>>(e, "Error getting course bookings")!;
         }
-
-        return [];
     }
     
     private CourseBookingModel? GetCourseBooking(int studentId, int theoryLessonId) 
@@ -57,10 +56,8 @@ public sealed class CourseBookingService(ApplicationDbContext dbContext, ILogger
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error creating course booking");
+            return HandleError<CourseBookingModel>(e, "Error creating course bookings");
         }
-
-        return null;
     }
     
     public async Task<CourseBookingModel?> UpdateCourseBookingAsync(CourseBookingModel toUpdate)
@@ -83,10 +80,8 @@ public sealed class CourseBookingService(ApplicationDbContext dbContext, ILogger
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error updating course booking");
+            return HandleError<CourseBookingModel>(e, "Error updating course bookings");
         }
-
-        return null;
     }
     
     public async Task<bool> DeleteCourseBookingAsync(int id)
@@ -103,9 +98,7 @@ public sealed class CourseBookingService(ApplicationDbContext dbContext, ILogger
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error deleting course booking");
+            return HandleErrorBool(e, "Error deleting course bookings");
         }
-
-        return false;
     }
 }

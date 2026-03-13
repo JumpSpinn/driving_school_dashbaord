@@ -1,6 +1,7 @@
 ﻿namespace ExampleAspireBlazorApiProject.ApiService.Services;
 
-public sealed class StudentService(ApplicationDbContext dbContext, ILogger<StudentService> logger)
+public sealed class StudentService(ApplicationDbContext dbContext, ILogger<StudentService> l)
+    : BaseService<StudentService>(l)
 {
     #region GET
 
@@ -33,10 +34,8 @@ public sealed class StudentService(ApplicationDbContext dbContext, ILogger<Stude
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error creating student");
+            return HandleError<StudentModel>(e, "Error creating student");
         }
-
-        return null;
     }
 
     #endregion
@@ -57,10 +56,8 @@ public sealed class StudentService(ApplicationDbContext dbContext, ILogger<Stude
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error deleting student");
+            return HandleErrorBool(e, "Error deleting student");
         }
-
-        return false;
     }
 
     #endregion
@@ -93,10 +90,8 @@ public sealed class StudentService(ApplicationDbContext dbContext, ILogger<Stude
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error updating student #1");
+            return HandleError<StudentModel>(e, "Error updating student");
         }
-
-        return null;
     }
 
     #endregion

@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace ExampleAspireBlazorApiProject.ApiService.Database;
+﻿namespace ExampleAspireBlazorApiProject.ApiService.Database;
 
 [ExcludeFromCodeCoverage]
 public static class DataSeeder

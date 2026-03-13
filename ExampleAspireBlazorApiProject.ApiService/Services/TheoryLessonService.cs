@@ -1,6 +1,7 @@
 ﻿namespace ExampleAspireBlazorApiProject.ApiService.Services;
 
-public sealed class TheoryLessonService(ApplicationDbContext dbContext, ILogger<TheoryLessonService> logger)
+public sealed class TheoryLessonService(ApplicationDbContext dbContext, ILogger<TheoryLessonService> l)
+    : BaseService<TheoryLessonService>(l)
 {
     public List<TheoryLessonModel> GetTheoryLessons()
     {
@@ -13,10 +14,8 @@ public sealed class TheoryLessonService(ApplicationDbContext dbContext, ILogger<
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error getting lessons");
+            return HandleError<List<TheoryLessonModel>>(e, "Error getting lessons")!;
         }
-
-        return [];
     }
     
     private TheoryLessonModel? GetTheoryLesson(int id) 
@@ -53,10 +52,8 @@ public sealed class TheoryLessonService(ApplicationDbContext dbContext, ILogger<
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error creating lesson");
+            return HandleError<TheoryLessonModel>(e, "Error creating lesson");
         }
-
-        return null;
     }
     
     public async Task<TheoryLessonModel?> UpdateTheoryLessonAsync(TheoryLessonModel toUpdate)
@@ -83,10 +80,8 @@ public sealed class TheoryLessonService(ApplicationDbContext dbContext, ILogger<
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error updating lesson");
+            return HandleError<TheoryLessonModel>(e, "Error updating lesson");
         }
-
-        return null;
     }
     
     public async Task<bool> DeleteTheoryLessonAsync(int id)
@@ -107,9 +102,7 @@ public sealed class TheoryLessonService(ApplicationDbContext dbContext, ILogger<
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error deleting lesson");
+            return HandleErrorBool(e, "Error deleting lesson");
         }
-
-        return false;
     }
 }

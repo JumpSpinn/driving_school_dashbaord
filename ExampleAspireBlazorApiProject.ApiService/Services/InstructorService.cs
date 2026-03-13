@@ -1,6 +1,7 @@
 ﻿namespace ExampleAspireBlazorApiProject.ApiService.Services;
 
-public sealed class InstructorService(ApplicationDbContext dbContext, ILogger<InstructorService> logger) : ControllerBase
+public sealed class InstructorService(ApplicationDbContext dbContext, ILogger<InstructorService> l)
+    : BaseService<InstructorService>(l)
 {
     public List<InstructorModel> GetInstructors()
     {
@@ -13,10 +14,8 @@ public sealed class InstructorService(ApplicationDbContext dbContext, ILogger<In
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error getting instructors");
+            return HandleError<List<InstructorModel>>(e, "Error getting instructors")!;
         }
-
-        return [];
     }
     
     private InstructorModel? GetInstructor(int id) 
@@ -48,10 +47,8 @@ public sealed class InstructorService(ApplicationDbContext dbContext, ILogger<In
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error creating instructor");
+            return HandleError<InstructorModel>(e, "Error creating instructor");
         }
-
-        return null;
     }
     
     public async Task<InstructorModel?> UpdateInstructorAsync(InstructorModel toUpdate)
@@ -73,10 +70,8 @@ public sealed class InstructorService(ApplicationDbContext dbContext, ILogger<In
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error updating instructor");
+            return HandleError<InstructorModel>(e, "Error updating instructor");
         }
-
-        return null;
     }
     
     public async Task<bool> DeleteInstructorAsync(int id)
@@ -94,9 +89,7 @@ public sealed class InstructorService(ApplicationDbContext dbContext, ILogger<In
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error deleting instructor");
+            return HandleErrorBool(e, "Error deleting instructor");
         }
-
-        return false;
     }
 }
