@@ -5,6 +5,10 @@ defineProps({
     type: String,
     default: "Placeholder"
   },
+  primeIcon: {
+    type: String,
+    default: "pi pi-home"
+  },
   active: {
     type: Boolean,
     default: false
@@ -16,7 +20,7 @@ defineProps({
 <template>
   <div class="nav_item" :class="{ 'active': active }">
     <div class="nav_icon">
-      <i class="pi pi-home" />
+      <i :class="[primeIcon]" />
     </div>
     <p>{{ text }}</p>
   </div>

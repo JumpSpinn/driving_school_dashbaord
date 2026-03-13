@@ -29,12 +29,12 @@ const isActive = (name: RoutePage) => route.name === name;
 
 <template>
   <nav :class="{ closed: !isOpen }">
-    <NavigationItem class="nav_selector" @click="navigateTo(RoutePage.DASHBOARD)" text="Dashboard" :active="isActive(RoutePage.DASHBOARD)" />
-    <NavigationItem class="nav_selector" @click="navigateTo(RoutePage.DRIVING_SCHOOL)" text="Fahrschulen" :active="isActive(RoutePage.DRIVING_SCHOOL)" />
-    <NavigationItem class="nav_selector" @click="navigateTo(RoutePage.STUDENTS)" text="Fahrschüler" :active="isActive(RoutePage.STUDENTS)" />
-    <NavigationItem class="nav_selector" @click="navigateTo(RoutePage.INSTRUCTOR)" text="Fahrlehrer" :active="isActive(RoutePage.INSTRUCTOR)" />
-    <NavigationItem class="nav_selector" @click="navigateTo(RoutePage.THEORY_LESSON)" text="Kurse" :active="isActive(RoutePage.THEORY_LESSON)" />
-    <NavigationItem class="nav_selector" @click="navigateTo(RoutePage.COURSE_BOOKING)" text="Kursbuchungen" :active="isActive(RoutePage.COURSE_BOOKING)" />
+    <NavigationItem class="nav_selector" prime-icon="pi pi-home" @click="navigateTo(RoutePage.DASHBOARD)" text="Dashboard" :active="isActive(RoutePage.DASHBOARD)" />
+    <NavigationItem class="nav_selector" prime-icon="pi pi-car" @click="navigateTo(RoutePage.DRIVING_SCHOOL)" text="Fahrschulen" :active="isActive(RoutePage.DRIVING_SCHOOL)" />
+    <NavigationItem class="nav_selector" prime-icon="pi pi-users" @click="navigateTo(RoutePage.STUDENTS)" text="Fahrschüler" :active="isActive(RoutePage.STUDENTS)" />
+    <NavigationItem class="nav_selector" prime-icon="pi pi-users" @click="navigateTo(RoutePage.INSTRUCTOR)" text="Fahrlehrer" :active="isActive(RoutePage.INSTRUCTOR)" />
+    <NavigationItem class="nav_selector" prime-icon="pi pi-book" @click="navigateTo(RoutePage.THEORY_LESSON)" text="Kurse" :active="isActive(RoutePage.THEORY_LESSON)" />
+    <NavigationItem class="nav_selector" prime-icon="pi pi-calendar" @click="navigateTo(RoutePage.COURSE_BOOKING)" text="Kursbuchungen" :active="isActive(RoutePage.COURSE_BOOKING)" />
     <NavigationAutoClose class="auto_close nav_selector" :auto-close-on="autoClose" @update:autoCloseOn="autoClose = $event" />
   </nav>
 </template>
@@ -59,7 +59,7 @@ nav{
   transition: all 750ms ease-in-out;
 
   .nav_selector {
-    transition: all 1s ease-in-out;
+    transition: transform 1s ease-in-out;
     transform: translateX(0%);
   }
 
@@ -68,7 +68,7 @@ nav{
     transform: translateX(-150%);
 
     .nav_selector {
-      transition: all 250ms ease-in-out;
+      transition: transform 250ms ease-in-out, opacity 250ms ease-in-out;
       opacity: 0;
     }
   }
