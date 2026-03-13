@@ -1,8 +1,9 @@
 ﻿namespace ExampleAspireBlazorApiProject.Tests.Components;
 
 [TestFixture]
-public sealed class HomePageTests : TestContext
+public sealed class HomePageTests
 {
+    private TestContext _testContext = null!;
     private Mock<ICourseBookingApiClient> _mockCourseBookingApi = null!;
     private Mock<IInstructorApiClient> _mockInstructorApi = null!;
     private Mock<IStudentApiClient> _mockStudentApi = null!;
@@ -12,23 +13,14 @@ public sealed class HomePageTests : TestContext
     [SetUp]
     public void Setup()
     {
-        // Register MudBlazor services
-        Services.AddMudServices();
-
-        // Create mocked HTTP client
-        var httpClient = new HttpClient(new Mock<HttpMessageHandler>().Object)
-        {
-            BaseAddress = new Uri("http://test/")
-        };
-
-        var logger = NullLogger<ICourseBookingApiClient>.Instance;
+        _testContext = new TestContext();
 
         // Create mock API clients
-        _mockCourseBookingApi = new Mock<ICourseBookingApiClient>(httpClient, NullLogger<ICourseBookingApiClient>.Instance);
-        _mockInstructorApi = new Mock<IInstructorApiClient>(httpClient, NullLogger<IInstructorApiClient>.Instance);
-        _mockStudentApi = new Mock<IStudentApiClient>(httpClient, NullLogger<IStudentApiClient>.Instance);
-        _mockDrivingSchoolApi = new Mock<IDrivingSchoolApiClient>(httpClient, NullLogger<IDrivingSchoolApiClient>.Instance);
-        _mockTheoryLessonApi = new Mock<ITheoryLessonApiClient>(httpClient, NullLogger<ITheoryLessonApiClient>.Instance);
+        _mockCourseBookingApi = new Mock<ICourseBookingApiClient>();
+        _mockInstructorApi = new Mock<IInstructorApiClient>();
+        _mockStudentApi = new Mock<IStudentApiClient>();
+        _mockDrivingSchoolApi = new Mock<IDrivingSchoolApiClient>();
+        _mockTheoryLessonApi = new Mock<ITheoryLessonApiClient>();
 
         // Setup default return values (empty lists)
         _mockCourseBookingApi.Setup(x => x.GetAllCourseBookingsAsync()).ReturnsAsync(new List<CourseBookingModel>());
@@ -37,18 +29,30 @@ public sealed class HomePageTests : TestContext
         _mockDrivingSchoolApi.Setup(x => x.GetAllDrivingSchoolsAsync()).ReturnsAsync(new List<DrivingSchoolModel>());
         _mockTheoryLessonApi.Setup(x => x.GetAllLessonsAsync()).ReturnsAsync(new List<TheoryLessonModel>());
 
-        // Register mocked services
-        Services.AddSingleton(_mockCourseBookingApi.Object);
-        Services.AddSingleton(_mockInstructorApi.Object);
-        Services.AddSingleton(_mockStudentApi.Object);
-        Services.AddSingleton(_mockDrivingSchoolApi.Object);
-        Services.AddSingleton(_mockTheoryLessonApi.Object);
+        // Register mocked services BEFORE MudServices
+        _testContext.Services.AddSingleton(_mockCourseBookingApi.Object);
+        _testContext.Services.AddSingleton(_mockInstructorApi.Object);
+        _testContext.Services.AddSingleton(_mockStudentApi.Object);
+        _testContext.Services.AddSingleton(_mockDrivingSchoolApi.Object);
+        _testContext.Services.AddSingleton(_mockTheoryLessonApi.Object);
+
+        // Register MudBlazor services
+        _testContext.Services.AddMudServices();
+
+        // Setup JSInterop AFTER all services registered
+        _testContext.JSInterop.Mode = JSRuntimeMode.Loose;
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        _testContext?.Dispose();
     }
 
     [Test]
     public void HomePage_RendersPageTitle()
     {
-        var cut = RenderComponent<Home>();
+        var cut = _testContext.RenderComponent<Home>();
 
         var pageTitle = cut.FindComponent<Microsoft.AspNetCore.Components.Web.PageTitle>();
         Assert.That(pageTitle.Instance.ChildContent, Is.Not.Null);
@@ -57,7 +61,7 @@ public sealed class HomePageTests : TestContext
     [Test]
     public void HomePage_CallsAllApiEndpointsOnLoad()
     {
-        var cut = RenderComponent<Home>();
+        var cut = _testContext.RenderComponent<Home>();
 
         // Wait for async initialization
         cut.WaitForState(() => !cut.Instance.GetType()
@@ -78,7 +82,7 @@ public sealed class HomePageTests : TestContext
         _mockCourseBookingApi.Setup(x => x.GetAllCourseBookingsAsync())
             .Returns(async () => { await Task.Delay(100); return new List<CourseBookingModel>(); });
 
-        var cut = RenderComponent<Home>();
+        var cut = _testContext.RenderComponent<Home>();
 
         // Check for progress indicator
         var progressIndicator = cut.FindComponents<MudProgressLinear>();
@@ -97,7 +101,7 @@ public sealed class HomePageTests : TestContext
 
         _mockStudentApi.Setup(x => x.GetAllStudentsAsync()).ReturnsAsync(students);
 
-        var cut = RenderComponent<Home>();
+        var cut = _testContext.RenderComponent<Home>();
 
         // Wait for loading to complete
         cut.WaitForState(() => !cut.Instance.GetType()
