@@ -48,8 +48,8 @@ nav{
 
   background-image: linear-gradient(
     to right,
-    rgba(var(--primary-rgb), .3),
-    rgba(var(--secondary-rgb), .3)
+    rgba(var(--primary-rgb), .2),
+    rgba(var(--secondary-rgb), .2)
   );
   background-size: 150%;
 

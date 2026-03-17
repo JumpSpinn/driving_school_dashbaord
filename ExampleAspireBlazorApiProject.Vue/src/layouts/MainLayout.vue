@@ -53,7 +53,7 @@ const setNavigationOpenState = (isOpen: boolean) => {
     display: flex;
     align-items: center;
     min-height: 60px;
-    padding: var(--size-16);
+    padding: 0 var(--size-16);
     border-bottom: 1px solid rgba(255,255,255,.15);
     background-image: linear-gradient(
       to right,
