@@ -4,15 +4,16 @@ import CustomButton from "@/components/button/CustomButton.vue";
 import ButtonGroup from "@/components/button/ButtonGroup.vue";
 import {onClickOutside} from "@vueuse/core";
 import {ref} from "vue";
+import type {IModalOptions} from "@/interfaces/IModalOptions.ts";
 
 const props = defineProps({
   open: {
     type: Boolean,
     default: false
   },
-  backdropClick: {
-    type: Boolean,
-    default: true
+  options: {
+    type: Object as () => IModalOptions | null,
+    default: null
   }
 })
 
@@ -21,7 +22,9 @@ const emit = defineEmits(['abort']);
 const target = ref(null);
 
 onClickOutside(target, () => {
-  if(!props.open || !props.backdropClick) return;
+  if(!props.open) return;
+
+  if(!props.options?.backdropClick) return;
   emit('abort');
 })
 
@@ -35,9 +38,11 @@ onClickOutside(target, () => {
           <slot name="header">Modal Title</slot>
           <i class="pi pi-times" @click="emit('abort')" />
         </div>
-        <slot name="content">
-          <CustomPaper>Modal Content</CustomPaper>
-        </slot>
+        <CustomPaper>
+          <slot name="content">
+            Modal Content
+          </slot>
+        </CustomPaper>
         <div class="actions">
           <slot name="actions">
             <ButtonGroup>
