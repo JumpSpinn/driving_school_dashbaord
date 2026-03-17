@@ -3,20 +3,20 @@ import type {IDrivingSchool} from "@/interfaces/IDrivingSchool";
 import type {ICourseBooking} from "@/interfaces/ICourseBooking";
 
 export interface IStudent {
-  Id: number;
-  FirstName: string;
-  LastName: string;
-  Mail: string;
-  Phone?: string;
-  Birthday?: Date | string | null;
-  License?: LicenseClass;
-  EnrollmentDate?: Date | string | null;
-  ExamDate?: Date | string | null;
-  HasPassed: boolean;
-  IsDeleted: boolean;
+  id: number;
+  firstName: string;
+  lastName: string;
+  mail: string;
+  phone?: string;
+  birthday?: Date | string | null;
+  license?: LicenseClass;
+  enrollmentDate?: Date | string | null;
+  examDate?: Date | string | null;
+  hasPassed: boolean;
+  isDeleted: boolean;
 
   // Navigation properties
-  DrivingSchoolId?: number;
-  DrivingSchool?: IDrivingSchool;
-  CourseBookings?: ICourseBooking[];
+  drivingSchoolId?: number;
+  drivingSchool?: IDrivingSchool;
+  courseBookings?: ICourseBooking[];
 }

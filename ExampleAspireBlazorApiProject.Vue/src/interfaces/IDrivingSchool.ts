@@ -2,12 +2,12 @@
 import type {IInstructor} from "@/interfaces/IInstructor";
 
 export interface IDrivingSchool {
-  Id: number;
-  Name: string;
-  IsDeleted: boolean;
+  id: number;
+  name: string;
+  isDeleted: boolean;
 
   // Navigation properties
-  Students: IStudent[];
-  OwnerId?: number;
-  Owner?: IInstructor;
+  students: IStudent[];
+  ownerId?: number;
+  owner?: IInstructor;
 }

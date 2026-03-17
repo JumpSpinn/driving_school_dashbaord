@@ -1,19 +1,19 @@
 ﻿import type {IInstructor} from "@/interfaces/IInstructor";
 
 export interface ITheoryLesson {
-  Id: number;
-  Name: string;
-  Topic: string;
-  DayOfWeek: number;
-  StartTime: Date | string | null;
-  EndTime: Date | string | null;
-  DurationMinutes: number;
-  MaxStudents: number;
-  Price: number;
-  IsBasic: boolean;
-  IsDeleted: boolean;
+  id: number;
+  name: string;
+  topic: string;
+  dayOfWeek: number;
+  startTime: Date | string | null;
+  endTime: Date | string | null;
+  durationMinutes: number;
+  maxStudents: number;
+  price: number;
+  isBasic: boolean;
+  isDeleted: boolean;
 
   // Navigation properties
-  InstructorId?: number;
-  Instructor?: IInstructor;
+  instructorId?: number;
+  instructor?: IInstructor;
 }

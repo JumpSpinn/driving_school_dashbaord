@@ -2,12 +2,12 @@
 import type {ITheoryLesson} from "@/interfaces/ITheoryLesson";
 
 export interface ICourseBooking {
-  Id: number;
-  StudentId?: number;
-  TheoryLessonId?: number;
-  BookingDate?: Date | string | null;
+  id: number;
+  studentId?: number;
+  theoryLessonId?: number;
+  bookingDate?: Date | string | null;
 
   // Navigation properties
-  Student?: IStudent;
-  TheoryLesson?: ITheoryLesson;
+  student?: IStudent;
+  theoryLesson?: ITheoryLesson;
 }
