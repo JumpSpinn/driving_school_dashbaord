@@ -4,20 +4,6 @@
 @import './tooltip.css';
 @import './base.css';
 
-.intern_design,
-.public_design {
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: center;
-  background-size: cover;
-}
-.public_design {
-  background-image: url("@/assets/images/public_wallpaper.jpg");
-}
-.intern_design {
-  background-image: url("@/assets/images/intern_wallpaper.jpg");
-}
-
 h1,
 h2,
 h3,
@@ -41,19 +27,6 @@ h4 {
   font-size: var(--fs-300);
 }
 
-span,
-p {
-  font-size: var(--fs-300);
-}
-
-span {
-  display: block;
-}
-
-small {
-  color: gray;
-}
-
 a {
   color: var(--text);
   text-decoration: none;
@@ -63,19 +36,4 @@ a {
     text-decoration: underline;
     color: var(--text);
   }
-}
-
-/* Desktop */
-@media (max-width: 1200px) {
-  /* background-color: rgba(255,0,0,.15); */
-}
-
-/* Tablet */
-@media (max-width: 768px) {
-  /* background-color: rgba(0,255,0,.15); */
-}
-
-/* Mobile */
-@media (max-width: 480px) {
-  /* background-color: rgba(0,0,255,.15); */
 }
