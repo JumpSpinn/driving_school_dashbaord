@@ -9,6 +9,9 @@ import Vue3Datatable from '@bhplugin/vue3-datatable'
 import ButtonGroup from "@/components/button/ButtonGroup.vue";
 import {StudentHelper} from "@/helpers/StudentHelper.ts";
 import {TimeHelper} from "@/helpers/TimeHelper.ts";
+import {ModalType} from "@/enums/ModalType.ts";
+import Modal from "@/components/modal/Modal.vue";
+import {ModalHelper} from "@/helpers/ModalHelper.ts";
 
 const cols = ref([
   { field: "id", title: "ID", width: "90px", filter: false },
@@ -55,12 +58,44 @@ const prepareTable = async () => {
   rows.value = data;
 }
 
-const log = (data: IStudent) => {
-  console.log(data);
+// Modals
+const modalOpened = ref<ModalType>(ModalType.NONE);
+const modalData = ref<IStudent>();
+
+const showModal = (data: IStudent, type: ModalType) => {
+  modalData.value = data;
+  modalOpened.value = type;
 }
+
 </script>
 
 <template>
+  <Modal :open="modalOpened === ModalType.INFO" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.InfoOptions">
+    <template #header>Information</template>
+    <template #content>coming soon.. {{ modalData?.id }}</template>
+    <template #actions>
+      <CustomButton @click="modalOpened = ModalType.NONE">Schließen</CustomButton>
+    </template>
+  </Modal>
+
+  <Modal :open="modalOpened === ModalType.EDIT" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions">
+    <template #header>Bearbeiten</template>
+    <template #content>coming soon.. {{ modalData?.id }}</template>
+    <template #actions>
+      <CustomButton>Änderungen übernehmen</CustomButton>
+      <CustomButton @click="modalOpened = ModalType.NONE">Nein</CustomButton>
+    </template>
+  </Modal>
+
+  <Modal :open="modalOpened === ModalType.DELETE" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions">
+    <template #header>Löschen</template>
+    <template #content>Möchtest du for real löschen alla? {{ modalData?.id }}</template>
+    <template #actions>
+      <CustomButton>Ja</CustomButton>
+      <CustomButton @click="modalOpened = ModalType.NONE">Nein</CustomButton>
+    </template>
+  </Modal>
+
   <CustomPaper>
     <PageHeader>
       <h3>Fahrschüler</h3>
@@ -82,13 +117,13 @@ const log = (data: IStudent) => {
     >
       <template #actions="data">
         <ButtonGroup>
-          <CustomButton type="neutral" @click="log(data.value)">
+          <CustomButton type="neutral" @click="showModal(data.value, ModalType.INFO)">
             <i class="pi pi-eye"></i>
           </CustomButton>
-          <CustomButton type="neutral" @click="log(data.value)">
+          <CustomButton type="neutral" @click="showModal(data.value, ModalType.EDIT)">
             <i class="pi pi-pencil"></i>
           </CustomButton>
-          <CustomButton type="neutral" @click="log(data.value)">
+          <CustomButton type="neutral" @click="showModal(data.value, ModalType.DELETE)">
             <i class="pi pi-trash"></i>
           </CustomButton>
         </ButtonGroup>
