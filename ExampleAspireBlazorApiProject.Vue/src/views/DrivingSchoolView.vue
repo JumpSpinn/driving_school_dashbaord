@@ -1,12 +1,22 @@
 ﻿<script setup lang="ts">
-import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
 import {onMounted, ref} from "vue";
 import type {IDrivingSchool} from "@/interfaces/IDrivingSchool.ts";
 import {drivingSchoolApiClient} from "@/apis/DrivingSchoolApiClient.ts";
 import CustomPaper from "@/components/paper/CustomPaper.vue";
 import PageHeader from "@/components/header/PageHeader.vue";
 import CustomButton from "@/components/button/CustomButton.vue";
+import Vue3Datatable from '@bhplugin/vue3-datatable'
+import {InstructorHelper} from "@/helpers/InstructorHelper.ts";
+import ButtonGroup from "@/components/button/ButtonGroup.vue";
 
+const cols = ref([
+  { field: "id", title: "ID", width: "90px", filter: false },
+  { field: "name", title: "Bezeichnung" },
+  { field: "owner", title: "Besitzer" },
+  { field: "students", title: "Fahrschüler" },
+  { field: "actions", title: "Aktionen", slotMode: true, width: "160px" }
+])
+const rows = ref<any[]>([])
 const isLoading = ref(true);
 const drivingSchools = ref<IDrivingSchool[]>([]);
 
@@ -16,18 +26,33 @@ onMounted(async () => {
 
 const loadData = async () => {
   const resp = await drivingSchoolApiClient.getAll();
-
-  if(resp == null)
-    console.error("Error while fetching driving schools");
-  else
-    drivingSchools.value = resp;
-
+  drivingSchools.value = resp ?? [];
+  await prepareTable();
   isLoading.value = false;
 }
+
+const prepareTable = async () => {
+  const data = [];
+
+  for(const drivingSchool of drivingSchools.value) {
+    data.push({
+      id: drivingSchool.id,
+      name: drivingSchool.name,
+      owner: InstructorHelper.getFullName(drivingSchool.owner),
+      students: drivingSchool.students?.length ?? 0,
+    })
+  }
+
+  rows.value = data;
+}
+
+const log = (data: IDrivingSchool) => {
+  console.log(data);
+}
+
 </script>
 
 <template>
-  <LoadingSpinner v-if="isLoading" text="Fahrschulen werden geladen.." />
   <CustomPaper>
     <PageHeader>
       <h3>Fahrschulen</h3>
@@ -39,6 +64,30 @@ const loadData = async () => {
       </template>
     </PageHeader>
   </CustomPaper>
+
+  <CustomPaper>
+    <Vue3Datatable
+      :loading="isLoading"
+      noDataContent="Keine Daten vorhanden"
+      :rows="rows"
+      :columns="cols"
+    >
+      <template #actions="data">
+        <ButtonGroup>
+          <CustomButton type="neutral" @click="log(data.value)">
+            <i class="pi pi-eye"></i>
+          </CustomButton>
+          <CustomButton type="neutral" @click="log(data.value)">
+            <i class="pi pi-pencil"></i>
+          </CustomButton>
+          <CustomButton type="neutral" @click="log(data.value)">
+            <i class="pi pi-trash"></i>
+          </CustomButton>
+        </ButtonGroup>
+      </template>
+    </Vue3Datatable>
+  </CustomPaper>
+
 </template>
 
 <style scoped>
