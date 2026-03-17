@@ -3,4 +3,5 @@
   INFO,
   EDIT,
   DELETE,
+  CREATE,
 }
