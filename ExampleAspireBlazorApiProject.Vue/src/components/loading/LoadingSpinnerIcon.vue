@@ -85,6 +85,10 @@ const animStyle = computed(() => ({
 </template>
 
 <style>
+svg{
+  padding: 0 var(--size-32);
+}
+
 @keyframes triangleDraw {
   0%   {
     stroke-dashoffset: var(--len);
