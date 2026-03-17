@@ -26,7 +26,7 @@ button{
   cursor: pointer;
 
   background-color: unset;
-  padding: var(--size-8) var(--size-16);
+  padding: var(--size-8) var(--size-8);
   border-radius: var(--size-8);
   transition: var(--t-default-all);
 
