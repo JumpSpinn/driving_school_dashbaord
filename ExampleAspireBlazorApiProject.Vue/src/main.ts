@@ -1,3 +1,4 @@
+import '@bhplugin/vue3-datatable/dist/style.css'
 import './assets/main.css'
 import 'primeicons/primeicons.css'
 

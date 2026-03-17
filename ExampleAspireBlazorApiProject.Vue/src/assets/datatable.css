@@ -1,0 +1,435 @@
+﻿/* ============================================
+   BH Datatable – Dark Mode (Slate Design)
+   ============================================ */
+
+/* Slate Color Reference:
+   --slate-300: #cbd5e1
+   --slate-400: #94a3b8   (gedimmter Text)
+*/
+
+:root {
+  --table-main: #10101010;
+  --slate-100: #f1f5f9;
+  --borders: #e2e8f0;
+  --accent: var(--primary-color);
+  --header-footer: #101010;
+  --accent-light: var(--primary-color);
+  --accend-bla: orange;
+  --input-filter: rgba(255,255,255,.07);
+}
+
+.bh-datatable *,
+.bh-datatable :after,
+.bh-datatable :before {
+  border: 0 solid #0000;
+  box-sizing: border-box;
+}
+
+/* ── Scrollbarer Container ── */
+.bh-table-responsive {
+  position: relative;
+  width: 100%;
+  overflow: auto;
+  border-radius: .25rem;
+  background-color: var(--table-main);
+  color: var(--borders);
+}
+
+/* ── Tabelle Grundstruktur ── */
+.bh-table-responsive table {
+  width: 100%;
+  max-width: 100%;
+  border-collapse: collapse !important;
+  background-color: var(--table-main);
+  color: var(--borders);
+}
+
+/* ── Thead & Tfoot ── */
+.bh-table-responsive table thead tr,
+.bh-table-responsive table tfoot tr {
+  background-color: var(--header-footer);
+}
+
+/* ── Zellen allgemein ── */
+.bh-table-responsive table tbody tr td,
+.bh-table-responsive table tfoot tr th,
+.bh-table-responsive table thead tr th {
+  padding: .75rem 1rem;
+  text-align: left;
+  color: var(--borders);
+}
+
+/* ── Header-Zellen ── */
+.bh-table-responsive table tfoot tr th,
+.bh-table-responsive table thead tr th {
+  white-space: nowrap;
+  vertical-align: top;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+/* ── Zebra-Trenner (Body Rows) ── */
+.bh-table-responsive table tbody tr {
+  border-bottom-width: 1px;
+  border-style: solid;
+  border-color: var(--input-filter);
+}
+
+/* ── Striped ── */
+.bh-table-responsive table.bh-table-striped tbody tr:nth-child(odd) {
+  background-color: #202020;
+}
+
+/* ── Hover ── */
+.bh-table-responsive table.bh-table-hover tbody tr:hover {
+  background-color: var(--input-filter);
+}
+
+/* ── Compact ── */
+.bh-table-responsive table.bh-table-compact tbody tr td,
+.bh-table-responsive table.bh-table-compact thead tr th {
+  padding: .5rem .75rem;
+}
+
+/* ── Bordered ── */
+.bh-table-responsive table.bh-table-bordered tbody tr td,
+.bh-table-responsive table.bh-table-bordered thead tr th {
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--input-filter);
+}
+
+/* ═══════════════════════════════════════════
+   PAGINATION
+   ═══════════════════════════════════════════ */
+.bh-pagination .bh-page-item {
+  display: grid;
+  height: 2rem;
+  width: 2rem;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  place-content: center;
+  border-radius: 9999px;
+  border: 1px solid var(--accent-light);
+  background-color: var(--table-main);
+  padding: .375rem .625rem;
+  color: #cbd5e1;
+  outline-width: 0;
+  -webkit-appearance: button;
+  background-image: none;
+}
+
+.bh-pagination .bh-page-item:hover {
+  border-color: var(--accent);
+  background-color: var(--accent);
+  color: #fff;
+  transition-duration: .2s;
+}
+
+.bh-pagination .bh-page-item.disabled:not(.bh-active) {
+  pointer-events: none;
+  opacity: .4;
+}
+
+.bh-pagination .bh-page-item.bh-active {
+  border-color: var(--accent);
+  background-color: var(--accent);
+  color: #fff;
+}
+
+/* ═══════════════════════════════════════════
+   PAGE-SIZE SELECT
+   ═══════════════════════════════════════════ */
+.bh-pagination-info .bh-pagesize {
+  box-sizing: border-box;
+  border-radius: .25rem;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--accent-light);
+  background-color: var(--table-main);
+  padding: .375rem .5rem;
+  font-weight: 400;
+  color: var(--borders);
+  outline-width: 0;
+}
+
+.bh-pagination-info .bh-pagesize:focus {
+  box-shadow: 0 0 0 1px var(--accend-bla);
+}
+
+/* ═══════════════════════════════════════════
+   FILTER INPUTS
+   ═══════════════════════════════════════════ */
+.bh-table-responsive table th .bh-filter {
+  margin-top: .125rem;
+  display: flex;
+  height: 30px;
+  align-items: center;
+}
+
+.bh-table-responsive table th .bh-filter,
+.bh-table-responsive table th .bh-filter > .bh-form-control {
+  width: 100%;
+}
+
+.bh-table-responsive table th .bh-filter > .bh-form-control {
+  box-sizing: border-box;
+  height: 100%;
+  min-width: 60px;
+  border-top-left-radius: .25rem;
+  border-bottom-left-radius: .25rem;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--accent-light);
+  background-color: var(--input-filter);
+  padding: .25rem .75rem;
+  font-size: .875rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+  color: var(--borders);
+  outline-width: 0;
+}
+
+.bh-table-responsive table th .bh-filter > .bh-form-control:focus {
+  box-shadow: 0 0 0 1px var(--accend-bla);
+}
+
+.bh-table-responsive table th .bh-filter > select {
+  border-radius: .25rem;
+  background-color: var(--input-filter);
+  color: var(--borders);
+  border-color: var(--accent-light);
+}
+
+/* Filter-Button (Lupe / Clear) */
+.bh-table-responsive table th .bh-filter > button {
+  display: grid;
+  height: 30px;
+  width: 30px;
+  flex-shrink: 0;
+  cursor: pointer;
+  place-content: center;
+  border-top-right-radius: .25rem;
+  border-bottom-right-radius: .25rem;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--accent-light);
+  background-color: var(--input-filter);
+  color: #94a3b8;
+  -webkit-appearance: button;
+  background-image: none;
+}
+
+.bh-table-responsive table th .bh-filter > button:hover {
+  color: var(--borders);
+}
+
+/* ═══════════════════════════════════════════
+   FILTER DROPDOWN MENU
+   ═══════════════════════════════════════════ */
+.bh-filter-menu button {
+  display: flex;
+  width: 100%;
+  cursor: pointer;
+  border: 1px solid transparent;
+  background-color: var(--table-main);
+  padding: .375rem 1rem;
+  text-align: left;
+  color: #cbd5e1;
+  -webkit-appearance: button;
+  background-image: none;
+}
+
+.bh-filter-menu button:hover {
+  background-color: var(--input-filter);
+  font-weight: 700;
+  color: var(--slate-100);
+}
+
+.bh-filter-menu button.active {
+  background-color: var(--input-filter);
+  font-weight: 700;
+  color: var(--slate-100);
+}
+
+/* ═══════════════════════════════════════════
+   CHECKBOXES
+   ═══════════════════════════════════════════ */
+.bh-table-responsive input[type=checkbox] {
+  position: absolute;
+  opacity: 0;
+}
+
+.bh-table-responsive input[type=checkbox],
+.bh-table-responsive input[type=checkbox] + div {
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+.bh-table-responsive input[type=checkbox] + div {
+  display: grid;
+  place-content: center;
+  border-radius: .25rem;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--accent-light);
+  background-color: var(--input-filter);
+}
+
+.bh-table-responsive input[type=checkbox] + div svg {
+  pointer-events: none;
+  display: none;
+  height: .75rem;
+  width: .75rem;
+  fill: currentColor;
+  color: var(--accent);
+}
+
+.bh-table-responsive input[type=checkbox]:checked + div,
+.bh-table-responsive input[type=checkbox]:indeterminate + div {
+  border-color: var(--accent);
+  background-color: var(--accent);
+}
+
+.bh-table-responsive input[type=checkbox]:checked + div svg.check,
+.bh-table-responsive input[type=checkbox]:indeterminate + div svg.intermediate {
+  display: flex;
+  color: #fff;
+}
+
+/* ═══════════════════════════════════════════
+   UTILITY KLASSEN
+   ═══════════════════════════════════════════ */
+.bh-pointer-events-none  { pointer-events: none; }
+.bh-absolute             { position: absolute; }
+.bh-relative             { position: relative; }
+.bh-sticky               { position: sticky; }
+.bh-inset-0              { top: 0; right: 0; left: 0; }
+.bh-bottom-0,
+.bh-inset-0              { bottom: 0; }
+.bh-left-0               { left: 0; }
+.bh-left-\[52px\]        { left: 52px; }
+.bh-right-0              { right: 0; }
+.bh-top-0                { top: 0; }
+.bh-top-full             { top: 100%; }
+.bh-z-10                 { z-index: 10; }
+.bh-z-\[1\]              { z-index: 1; }
+.bh-mb-2                 { margin-bottom: .5rem; }
+.bh-ml-3                 { margin-left: .75rem; }
+.bh-mr-2                 { margin-right: .5rem; }
+.bh-mt-1                 { margin-top: .25rem; }
+.bh-flex                 { display: flex; }
+.bh-inline-flex          { display: inline-flex; }
+.bh-grid                 { display: grid; }
+.bh-h-11                 { height: 2.75rem; }
+.bh-h-8                  { height: 2rem; }
+.bh-min-h-\[300px\]      { min-height: 300px; }
+.bh-w-32                 { width: 8rem; }
+.bh-w-4                  { width: 1rem; }
+.bh-w-px                 { width: 1px; }
+.bh-cursor-pointer       { cursor: pointer; }
+.bh-select-none          { -webkit-user-select: none; -moz-user-select: none; user-select: none; }
+.bh-flex-col             { flex-direction: column; }
+.bh-flex-wrap            { flex-wrap: wrap; }
+.bh-place-content-center { place-content: center; }
+.bh-items-center         { align-items: center; }
+.bh-gap-4                { gap: 1rem; }
+.bh-space-x-1 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(.25rem * var(--tw-space-x-reverse));
+  margin-left: calc(.25rem * (1 - var(--tw-space-x-reverse)));
+}
+.bh-overflow-hidden      { overflow: hidden; }
+.bh-rounded              { border-radius: .25rem; }
+.bh-rounded-md           { border-radius: .375rem; }
+.bh-border               { border-width: 1px; }
+.bh-border-solid         { border-style: solid; }
+
+.\!bh-border-transparent { border-color: #0000 !important; }
+.bh-border-gray-200      { border-color: var(--input-filter); }
+
+.\!bh-bg-white           { background-color: var(--table-main) !important; }
+.bh-bg-blue-light        { background-color: var(--header-footer); }
+.bh-bg-blue-light\/50    { background-color: rgba(var(--primary-rgb), 0.05); }
+.bh-bg-white             { background-color: var(--table-main); }
+
+.\!bh-p-0                { padding: 0 !important; }
+.bh-p-10                 { padding: 2.5rem; }
+.bh-p-2                  { padding: .5rem; }
+.bh-py-5                 { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+
+.bh-text-\[13px\]        { font-size: 13px; }
+.bh-text-sm              { font-size: .875rem; line-height: 1.25rem; }
+.bh-font-normal          { font-weight: 400; }
+
+.\!bh-text-primary       { color: var(--accent) !important; }
+.bh-text-black           { color: var(--borders); }
+.bh-text-black\/20       { color: rgba(226, 232, 240, 0.2); }
+.bh-text-primary         { color: var(--accent); }
+
+.bh-antialiased          { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+/* ── Shadow ── */
+.bh-shadow-md {
+  --tw-shadow: 0 4px 6px -1px rgba(0,0,0,.4), 0 2px 4px -2px rgba(0,0,0,.4);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+  var(--tw-ring-shadow, 0 0 #0000),
+  var(--tw-shadow);
+}
+
+.bh-outline-0            { outline-width: 0; }
+.bh-filter               { filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow); }
+
+/* ── Inputs & Buttons (Outline Reset) ── */
+.bh-table-responsive button,
+.bh-table-responsive input {
+  outline: 2px solid #0000;
+  outline-offset: 2px;
+}
+
+/* ═══════════════════════════════════════════
+   SKELETON LOADING
+   ═══════════════════════════════════════════ */
+.bh-skeleton-box {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--input-filter);
+}
+
+.bh-skeleton-box:after {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  --tw-translate-x: -100%;
+  transform: translateX(var(--tw-translate-x));
+  animation: bhshimmer 2s infinite;
+  background-image: linear-gradient(
+    90deg,
+    #0000,
+    rgba(148, 163, 184, 0.06) 20%,
+    rgba(148, 163, 184, 0.04) 50%,
+    #0000
+  );
+  content: "";
+}
+
+@keyframes bhshimmer {
+  to { transform: translateX(100%); }
+}
+
+/* ═══════════════════════════════════════════
+   FOCUS STATES
+   ═══════════════════════════════════════════ */
+.focus\:bh-border-gray-200:focus {
+  border-color: var(--accent-light);
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════ */
+@media (min-width: 640px) {
+  .sm\:bh-ml-auto  { margin-left: auto; }
+  .sm\:bh-flex-row { flex-direction: row; }
+}
