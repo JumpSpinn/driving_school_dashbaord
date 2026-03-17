@@ -12,6 +12,7 @@ import {TimeHelper} from "@/helpers/TimeHelper.ts";
 import {ModalType} from "@/enums/ModalType.ts";
 import Modal from "@/components/modal/Modal.vue";
 import {ModalHelper} from "@/helpers/ModalHelper.ts";
+import {ApiHelper} from "@/helpers/ApiHelper.ts";
 
 const cols = ref([
   { field: "id", title: "ID", width: "90px", filter: false },
@@ -33,8 +34,7 @@ onMounted(async () => {
 })
 
 const loadData = async () => {
-  const resp = await studentApiClient.getAll();
-  students.value = resp ?? [];
+  students.value = await ApiHelper.getAll(studentApiClient);
   await prepareTable();
   isLoading.value = false;
 }
@@ -62,19 +62,47 @@ const prepareTable = async () => {
 const modalOpened = ref<ModalType>(ModalType.NONE);
 const modalData = ref<IStudent>();
 
+const getDataFromTable = (data: IStudent) : IStudent | undefined => {
+  return students.value.find(cb => cb.id === data.id);
+}
+
 const showModal = (data: IStudent, type: ModalType) => {
-  modalData.value = data;
+  modalData.value = getDataFromTable(data);
   modalOpened.value = type;
+}
+
+const resetModal = () => {
+  modalData.value = undefined;
+  modalOpened.value = ModalType.NONE;
+}
+
+// Api Calls
+const deleteData = async () => {
+  if(!modalData.value) return;
+  if(await ApiHelper.delete(modalData.value.id, studentApiClient))
+    await loadData();
+  resetModal();
 }
 
 </script>
 
 <template>
+  <Modal :open="modalOpened === ModalType.CREATE" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions">
+    <template #header>Erstellen</template>
+    <template #content>coming soon..</template>
+    <template #actions>
+      <ButtonGroup>
+        <CustomButton @click="modalOpened = ModalType.NONE" :minWidth="100">Abbrechen</CustomButton>
+        <CustomButton>Erstellen</CustomButton>
+      </ButtonGroup>
+    </template>
+  </Modal>
+
   <Modal :open="modalOpened === ModalType.INFO" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.InfoOptions">
     <template #header>Information</template>
     <template #content>coming soon.. {{ modalData?.id }}</template>
     <template #actions>
-      <CustomButton @click="modalOpened = ModalType.NONE">Schließen</CustomButton>
+      <CustomButton @click="modalOpened = ModalType.NONE" :minWidth="100">Schließen</CustomButton>
     </template>
   </Modal>
 
@@ -82,17 +110,25 @@ const showModal = (data: IStudent, type: ModalType) => {
     <template #header>Bearbeiten</template>
     <template #content>coming soon.. {{ modalData?.id }}</template>
     <template #actions>
-      <CustomButton>Änderungen übernehmen</CustomButton>
-      <CustomButton @click="modalOpened = ModalType.NONE">Nein</CustomButton>
+      <ButtonGroup>
+        <CustomButton @click="modalOpened = ModalType.NONE" :minWidth="100">Abbrechen</CustomButton>
+        <CustomButton>Änderungen übernehmen</CustomButton>
+      </ButtonGroup>
     </template>
   </Modal>
 
   <Modal :open="modalOpened === ModalType.DELETE" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions">
-    <template #header>Löschen</template>
-    <template #content>Möchtest du for real löschen alla? {{ modalData?.id }}</template>
+    <template #header>Fahrschüler löschen</template>
+    <template #content>
+      Du bist dabei den Fahrschüler
+      <span class="modal_highlight">{{ StudentHelper.getFullName(modalData) }}</span>
+      zu löschen. Möchtest du fortfahren?
+    </template>
     <template #actions>
-      <CustomButton>Ja</CustomButton>
-      <CustomButton @click="modalOpened = ModalType.NONE">Nein</CustomButton>
+      <ButtonGroup>
+        <CustomButton @click="modalOpened = ModalType.NONE" :minWidth="100">Nein</CustomButton>
+        <CustomButton @click="deleteData" :minWidth="100">Ja</CustomButton>
+      </ButtonGroup>
     </template>
   </Modal>
 
@@ -100,10 +136,10 @@ const showModal = (data: IStudent, type: ModalType) => {
     <PageHeader>
       <h3>Fahrschüler</h3>
       <template #description>
-        <p>Lorem ipsum dolor sit amet</p>
+        <p>Hier sind alle Fahrschüler aufgelistet, die im System eingetragen wurden.</p>
       </template>
       <template #actions>
-        <CustomButton type="secondary" :outline="true" :disabled="isLoading">Fahrschüler eintragen</CustomButton>
+        <CustomButton type="secondary" :outline="true" :disabled="isLoading" @click="modalOpened = ModalType.CREATE">Fahrschüler eintragen</CustomButton>
       </template>
     </PageHeader>
   </CustomPaper>
