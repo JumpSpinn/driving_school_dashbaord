@@ -1,13 +1,13 @@
 ﻿import type {ITheoryLesson} from "@/interfaces/ITheoryLesson";
 
 export interface IInstructor {
-  Id: number;
-  FirstName: string;
-  LastName: string;
-  Mail: string;
-  Phone?: string;
-  IsDeleted: boolean;
+  id: number;
+  firstName: string;
+  lastName: string;
+  mail: string;
+  phone?: string;
+  isDeleted: boolean;
 
   // Navigation properties
-  TheoryLessons?: ITheoryLesson[];
+  theoryLessons?: ITheoryLesson[];
 }
