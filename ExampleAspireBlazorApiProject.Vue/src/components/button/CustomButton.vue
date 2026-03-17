@@ -3,6 +3,7 @@
 interface CustomButtonProps {
   type?: "primary" | "secondary" | "neutral",
   outline?: boolean
+  minWidth?: number
   disabled?: boolean
 }
 
@@ -14,7 +15,7 @@ withDefaults(defineProps<CustomButtonProps>(), {
 </script>
 
 <template>
-  <button :class="[type, { outline: outline, disabled: disabled }]" :disabled="disabled">
+  <button :style="{ 'min-width': `${minWidth ?? 0}px` }" :class="[type, { outline: outline, disabled: disabled }]" :disabled="disabled">
     <slot />
   </button>
 </template>
