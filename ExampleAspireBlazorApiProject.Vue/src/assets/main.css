@@ -38,3 +38,8 @@ a {
     color: var(--text);
   }
 }
+
+.modal_highlight{
+  display: inline-block;
+  color: var(--primary-color);
+}
