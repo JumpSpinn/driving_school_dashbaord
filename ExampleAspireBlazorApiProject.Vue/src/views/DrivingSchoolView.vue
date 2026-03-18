@@ -6,6 +6,7 @@ import {InstructorHelper} from "@/helpers/InstructorHelper.ts";
 import {ModalType} from "@/enums/ModalType.ts";
 import {ModalHelper} from "@/helpers/ModalHelper.ts";
 import {ApiHelper} from "@/helpers/ApiHelper.ts";
+import {useDrivingSchoolStore} from "@/stores/drivingSchoolStore.ts";
 
 const cols = ref([
   { field: "id", title: "ID", width: "90px", filter: false },
@@ -16,14 +17,16 @@ const cols = ref([
 ])
 const rows = ref<any[]>([])
 const isLoading = ref(true);
-const drivingSchools = ref<IDrivingSchool[]>([]);
+const drivingSchoolStore = useDrivingSchoolStore();
 
 onMounted(async () => {
-  await loadData();
+  await loadAllData();
 })
 
-const loadData = async () => {
-  drivingSchools.value = await ApiHelper.getAll(drivingSchoolApiClient)
+const loadAllData = async () => {
+  await Promise.all([
+    drivingSchoolStore.fetchAll(),
+  ]);
   await prepareTable();
   isLoading.value = false;
 }
@@ -31,7 +34,7 @@ const loadData = async () => {
 const prepareTable = async () => {
   const data = [];
 
-  for(const drivingSchool of drivingSchools.value) {
+  for(const drivingSchool of drivingSchoolStore.data) {
     data.push({
       id: drivingSchool.id,
       name: drivingSchool.name,
@@ -48,7 +51,7 @@ const modalOpened = ref<ModalType>(ModalType.NONE);
 const modalData = ref<IDrivingSchool>();
 
 const getDataFromTable = (data: IDrivingSchool) : IDrivingSchool | undefined => {
-  return drivingSchools.value.find(cb => cb.id === data.id);
+  return drivingSchoolStore.data.find(cb => cb.id === data.id);
 }
 
 const showModal = (data: IDrivingSchool, type: ModalType) => {
@@ -64,8 +67,16 @@ const resetModal = () => {
 // Api Calls
 const deleteData = async () => {
   if(!modalData.value) return;
-  if(await ApiHelper.delete(modalData.value.id, drivingSchoolApiClient))
-    await loadData();
+
+  const deleted = await ApiHelper.delete(modalData.value.id, drivingSchoolApiClient);
+  if(!deleted) return;
+
+  const index = drivingSchoolStore.data.findIndex(x => x.id === modalData.value?.id);
+  if(index !== -1){
+    drivingSchoolStore.data.splice(index, 1);
+    await prepareTable();
+  }
+
   resetModal();
 }
 

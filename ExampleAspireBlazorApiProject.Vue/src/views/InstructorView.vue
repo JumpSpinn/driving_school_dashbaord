@@ -6,6 +6,7 @@ import {InstructorHelper} from "@/helpers/InstructorHelper.ts";
 import {ModalType} from "@/enums/ModalType.ts";
 import {ModalHelper} from "@/helpers/ModalHelper.ts";
 import {ApiHelper} from "@/helpers/ApiHelper.ts";
+import {useInstructorStore} from "@/stores/instructorStore.ts";
 
 const cols = ref([
   { field: "id", title: "ID", width: "90px", filter: false },
@@ -17,14 +18,16 @@ const cols = ref([
 ])
 const rows = ref<any[]>([])
 const isLoading = ref(true);
-const instructors = ref<IInstructor[]>([]);
+const instructorStore = useInstructorStore();
 
 onMounted(async () => {
-  await loadData();
+  await loadAllData();
 })
 
-const loadData = async () => {
-  instructors.value = await ApiHelper.getAll(instructorApiClient)
+const loadAllData = async () => {
+  await Promise.all([
+    instructorStore.fetchAll(),
+  ]);
   await prepareTable();
   isLoading.value = false;
 }
@@ -32,7 +35,7 @@ const loadData = async () => {
 const prepareTable = async () => {
   const data = [];
 
-  for(const instructor of instructors.value) {
+  for(const instructor of instructorStore.data) {
     data.push({
       id: instructor.id,
       fullName: InstructorHelper.getFullName(instructor),
@@ -50,7 +53,7 @@ const modalOpened = ref<ModalType>(ModalType.NONE);
 const modalData = ref<IInstructor>();
 
 const getDataFromTable = (data: IInstructor) : IInstructor | undefined => {
-  return instructors.value.find(cb => cb.id === data.id);
+  return instructorStore.data.find(cb => cb.id === data.id);
 }
 
 const showModal = (data: IInstructor, type: ModalType) => {
@@ -66,8 +69,16 @@ const resetModal = () => {
 // Api Calls
 const deleteData = async () => {
   if(!modalData.value) return;
-  if(await ApiHelper.delete(modalData.value.id, instructorApiClient))
-    await loadData();
+
+  const deleted = await ApiHelper.delete(modalData.value.id, instructorApiClient);
+  if(!deleted) return;
+
+  const index = instructorStore.data.findIndex(x => x.id === modalData.value?.id);
+  if(index !== -1){
+    instructorStore.data.splice(index, 1);
+    await prepareTable();
+  }
+
   resetModal();
 }
 

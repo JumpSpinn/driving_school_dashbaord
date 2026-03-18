@@ -1,37 +1,34 @@
 ﻿<script setup lang="ts">
-import {theoryLessonApiClient} from "@/apis/TheoryLessonApiClient.ts";
-import type {IDrivingSchool} from "@/interfaces/IDrivingSchool.ts";
-import type {IStudent} from "@/interfaces/IStudent.ts";
-import type {IInstructor} from "@/interfaces/IInstructor.ts";
-import type {ITheoryLesson} from "@/interfaces/ITheoryLesson.ts";
-import type {ICourseBooking} from "@/interfaces/ICourseBooking.ts";
-import {drivingSchoolApiClient} from "@/apis/DrivingSchoolApiClient.ts";
-import {studentApiClient} from "@/apis/StudentApiClient.ts";
-import {instructorApiClient} from "@/apis/InstructorApiClient.ts";
-import {courseBookingApiClient} from "@/apis/CourseBookingApiClient.ts";
-import {ApiHelper} from "@/helpers/ApiHelper.ts";
 import type {IDropdownItem} from "@/interfaces/IDropdownItem.ts";
 import {useField} from "@/composables/useField.ts";
 import {Rules} from "@/helpers/ValidationRules.ts";
 import {useForm} from "@/composables/useForm.ts";
+import {useDrivingSchoolStore} from "@/stores/drivingSchoolStore.ts";
+import {useStudentStore} from "@/stores/studentStore.ts";
+import {useInstructorStore} from "@/stores/instructorStore.ts";
+import {useTheoryLessonStore} from "@/stores/theoryLessonStore.ts";
+import {useCourseBookingStore} from "@/stores/courseBookingStore.ts";
 
 const isLoading = ref(true);
-const drivingSchools = ref<IDrivingSchool[]>([]);
-const students = ref<IStudent[]>([]);
-const instructors = ref<IInstructor[]>([]);
-const theoryLessons = ref<ITheoryLesson[]>([]);
-const courseBookings = ref<ICourseBooking[]>([]);
+const drivingSchoolStore = useDrivingSchoolStore();
+const studentStore = useStudentStore();
+const instructorStore = useInstructorStore();
+const theoryLessonStore = useTheoryLessonStore();
+const courseBookingStore = useCourseBookingStore();
 
 onMounted(async () => {
   await loadAllData();
 })
 
 const loadAllData = async () => {
-  drivingSchools.value = await ApiHelper.getAll(drivingSchoolApiClient);
-  students.value = await ApiHelper.getAll(studentApiClient);
-  instructors.value = await ApiHelper.getAll(instructorApiClient);
-  theoryLessons.value = await ApiHelper.getAll(theoryLessonApiClient);
-  courseBookings.value = await ApiHelper.getAll(courseBookingApiClient);
+  await Promise.all([
+    drivingSchoolStore.fetchAll(),
+    studentStore.fetchAll(),
+    instructorStore.fetchAll(),
+    theoryLessonStore.fetchAll(),
+    courseBookingStore.fetchAll(),
+  ]);
+
   isLoading.value = false;
 }
 

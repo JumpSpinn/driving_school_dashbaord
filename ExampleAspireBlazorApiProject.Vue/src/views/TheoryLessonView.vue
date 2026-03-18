@@ -6,6 +6,7 @@ import {InstructorHelper} from "@/helpers/InstructorHelper.ts";
 import {ModalType} from "@/enums/ModalType.ts";
 import {ModalHelper} from "@/helpers/ModalHelper.ts";
 import {ApiHelper} from "@/helpers/ApiHelper.ts";
+import {useTheoryLessonStore} from "@/stores/theoryLessonStore.ts";
 
 const cols = ref([
   { field: "id", title: "ID", width: "90px", filter: false },
@@ -17,14 +18,16 @@ const cols = ref([
 ])
 const rows = ref<any[]>([])
 const isLoading = ref(true);
-const theoryLessons = ref<ITheoryLesson[]>([]);
+const theoryLessonStore = useTheoryLessonStore();
 
 onMounted(async () => {
-  await loadData();
+  await loadAllData();
 })
 
-const loadData = async () => {
-  theoryLessons.value = await ApiHelper.getAll(theoryLessonApiClient);
+const loadAllData = async () => {
+  await Promise.all([
+    theoryLessonStore.fetchAll(),
+  ]);
   await prepareTable();
   isLoading.value = false;
 }
@@ -32,7 +35,7 @@ const loadData = async () => {
 const prepareTable = async () => {
   const data = [];
 
-  for(const theoryLesson of theoryLessons.value) {
+  for(const theoryLesson of theoryLessonStore.data) {
     data.push({
       id: theoryLesson.id,
       name: theoryLesson.name,
@@ -50,7 +53,7 @@ const modalOpened = ref<ModalType>(ModalType.NONE);
 const modalData = ref<ITheoryLesson>();
 
 const getDataFromTable = (data: ITheoryLesson) : ITheoryLesson | undefined => {
-  return theoryLessons.value.find(cb => cb.id === data.id);
+  return theoryLessonStore.data.find(cb => cb.id === data.id);
 }
 
 const showModal = (data: ITheoryLesson, type: ModalType) => {
@@ -66,8 +69,16 @@ const resetModal = () => {
 // Api Calls
 const deleteData = async () => {
   if(!modalData.value) return;
-  if(await ApiHelper.delete(modalData.value.id, theoryLessonApiClient))
-    await loadData();
+
+  const deleted = await ApiHelper.delete(modalData.value.id, theoryLessonApiClient);
+  if(!deleted) return;
+
+  const index = theoryLessonStore.data.findIndex(x => x.id === modalData.value?.id);
+  if(index !== -1){
+    theoryLessonStore.data.splice(index, 1);
+    await prepareTable();
+  }
+
   resetModal();
 }
 

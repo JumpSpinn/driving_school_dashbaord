@@ -8,6 +8,7 @@ import {TimeHelper} from "@/helpers/TimeHelper.ts";
 import {ModalHelper} from "@/helpers/ModalHelper.ts";
 import {ApiHelper} from "@/helpers/ApiHelper.ts";
 import {ModalType} from "@/enums/ModalType.ts";
+import {useCourseBookingStore} from "@/stores/courseBookingStore.ts";
 
 const cols = ref([
   { field: "id", title: "ID", width: "90px", filter: false },
@@ -18,14 +19,16 @@ const cols = ref([
 ])
 const rows = ref<any[]>([])
 const isLoading = ref(true);
-const courseBookings = ref<ICourseBooking[]>([]);
+const courseBookingStore = useCourseBookingStore();
 
 onMounted(async () => {
-  await loadData();
+  await loadAllData();
 })
 
-const loadData = async () => {
-  courseBookings.value = await ApiHelper.getAll(courseBookingApiClient);
+const loadAllData = async () => {
+  await Promise.all([
+    courseBookingStore.fetchAll(),
+  ]);
   await prepareTable();
   isLoading.value = false;
 }
@@ -33,7 +36,7 @@ const loadData = async () => {
 const prepareTable = async () => {
   const data = [];
 
-  for(const courseBooking of courseBookings.value) {
+  for(const courseBooking of courseBookingStore.data) {
     data.push({
       id: courseBooking.id,
       bookingDate: TimeHelper.convert(courseBooking.bookingDate, "date"),
@@ -50,7 +53,7 @@ const modalOpened = ref<ModalType>(ModalType.NONE);
 const modalData = ref<ICourseBooking>();
 
 const getDataFromTable = (data: ICourseBooking) : ICourseBooking | undefined => {
-  return courseBookings.value.find(cb => cb.id === data.id);
+  return courseBookingStore.data.find(cb => cb.id === data.id);
 }
 
 const showModal = (data: ICourseBooking, type: ModalType) => {
@@ -66,8 +69,16 @@ const resetModal = () => {
 // Api Calls
 const deleteData = async () => {
   if(!modalData.value) return;
-  if(await ApiHelper.delete(modalData.value.id, courseBookingApiClient))
-    await loadData();
+
+  const deleted = await ApiHelper.delete(modalData.value.id, courseBookingApiClient);
+  if(!deleted) return;
+
+  const index = courseBookingStore.data.findIndex(x => x.id === modalData.value?.id);
+  if(index !== -1){
+    courseBookingStore.data.splice(index, 1);
+    await prepareTable();
+  }
+
   resetModal();
 }
 

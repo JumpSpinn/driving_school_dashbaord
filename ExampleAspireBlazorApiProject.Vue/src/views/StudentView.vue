@@ -7,6 +7,7 @@ import {TimeHelper} from "@/helpers/TimeHelper.ts";
 import {ModalType} from "@/enums/ModalType.ts";
 import {ModalHelper} from "@/helpers/ModalHelper.ts";
 import {ApiHelper} from "@/helpers/ApiHelper.ts";
+import {useStudentStore} from "@/stores/studentStore.ts";
 
 const cols = ref([
   { field: "id", title: "ID", width: "90px", filter: false },
@@ -21,14 +22,16 @@ const cols = ref([
 ])
 const rows = ref<any[]>([])
 const isLoading = ref(true);
-const students = ref<IStudent[]>([]);
+const studentStore = useStudentStore();
 
 onMounted(async () => {
-  await loadData();
+  await loadAllData();
 })
 
-const loadData = async () => {
-  students.value = await ApiHelper.getAll(studentApiClient);
+const loadAllData = async () => {
+  await Promise.all([
+    studentStore.fetchAll(),
+  ]);
   await prepareTable();
   isLoading.value = false;
 }
@@ -36,7 +39,7 @@ const loadData = async () => {
 const prepareTable = async () => {
   const data = [];
 
-  for(const student of students.value) {
+  for(const student of studentStore.data) {
     data.push({
       id: student.id,
       fullName: StudentHelper.getFullName(student),
@@ -57,7 +60,7 @@ const modalOpened = ref<ModalType>(ModalType.NONE);
 const modalData = ref<IStudent>();
 
 const getDataFromTable = (data: IStudent) : IStudent | undefined => {
-  return students.value.find(cb => cb.id === data.id);
+  return studentStore.data.find(cb => cb.id === data.id);
 }
 
 const showModal = (data: IStudent, type: ModalType) => {
@@ -73,8 +76,16 @@ const resetModal = () => {
 // Api Calls
 const deleteData = async () => {
   if(!modalData.value) return;
-  if(await ApiHelper.delete(modalData.value.id, studentApiClient))
-    await loadData();
+
+  const deleted = await ApiHelper.delete(modalData.value.id, studentApiClient);
+  if(!deleted) return;
+
+  const index = studentStore.data.findIndex(x => x.id === modalData.value?.id);
+  if(index !== -1){
+    studentStore.data.splice(index, 1);
+    await prepareTable();
+  }
+
   resetModal();
 }
 
