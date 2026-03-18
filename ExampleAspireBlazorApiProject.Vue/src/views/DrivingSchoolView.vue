@@ -1,5 +1,9 @@
 ﻿<script setup lang="ts">
-import type {IDrivingSchool} from "@/interfaces/IDrivingSchool.ts";
+import type {
+  IDrivingSchool,
+  IDrivingSchoolBase,
+  IDrivingSchoolUpdate
+} from "@/interfaces/IDrivingSchool.ts";
 import {drivingSchoolApiClient} from "@/apis/DrivingSchoolApiClient.ts";
 import Vue3Datatable from '@bhplugin/vue3-datatable'
 import {InstructorHelper} from "@/helpers/InstructorHelper.ts";
@@ -7,6 +11,10 @@ import {ModalType} from "@/enums/ModalType.ts";
 import {ModalHelper} from "@/helpers/ModalHelper.ts";
 import {ApiHelper} from "@/helpers/ApiHelper.ts";
 import {useDrivingSchoolStore} from "@/stores/drivingSchoolStore.ts";
+import {useField} from "@/composables/useField.ts";
+import {Rules} from "@/helpers/ValidationRules.ts";
+import {useInstructorStore} from "@/stores/instructorStore.ts";
+import {useForm} from "@/composables/useForm.ts";
 
 const cols = ref([
   { field: "id", title: "ID", width: "90px", filter: false },
@@ -18,6 +26,14 @@ const cols = ref([
 const rows = ref<any[]>([])
 const isLoading = ref(true);
 const drivingSchoolStore = useDrivingSchoolStore();
+const instructorStore = useInstructorStore();
+const name = useField([
+  Rules.required(),
+  Rules.minLength(3),
+  Rules.maxLength(50),
+])
+const ownerId = useField();
+const form = useForm([name, ownerId]);
 
 onMounted(async () => {
   await loadAllData();
@@ -26,6 +42,7 @@ onMounted(async () => {
 const loadAllData = async () => {
   await Promise.all([
     drivingSchoolStore.fetchAll(),
+    instructorStore.fetchAll(),
   ]);
   await prepareTable();
   isLoading.value = false;
@@ -56,12 +73,19 @@ const getDataFromTable = (data: IDrivingSchool) : IDrivingSchool | undefined => 
 
 const showModal = (data: IDrivingSchool, type: ModalType) => {
   modalData.value = getDataFromTable(data);
+  if(modalData.value) setModalData(modalData.value);
   modalOpened.value = type;
+}
+
+const setModalData = (data: IDrivingSchool) => {
+  name.value = data.name;
+  ownerId.value = data.ownerId ?? '';
 }
 
 const resetModal = () => {
   modalData.value = undefined;
   modalOpened.value = ModalType.NONE;
+  form.reset();
 }
 
 // Api Calls
@@ -80,16 +104,66 @@ const deleteData = async () => {
   resetModal();
 }
 
+const createData = async () => {
+  if(!form.validate()) return;
+
+  const data: IDrivingSchoolBase = {
+    name: name.value,
+    ownerId: Number(ownerId.value),
+  };
+
+  const createdData = await ApiHelper.create(data, drivingSchoolApiClient);
+  if(!createdData) return;
+
+  drivingSchoolStore.data.push(createdData);
+  await prepareTable();
+  resetModal();
+}
+
+const updateData = async () => {
+  if(!modalData.value) return;
+  if(!form.validate()) return;
+
+  const data: IDrivingSchoolUpdate = {
+    id: modalData.value.id,
+    name: name.value,
+    ownerId: Number(ownerId.value),
+  };
+
+  const updateData = await ApiHelper.update(data, drivingSchoolApiClient);
+  if(!updateData) return;
+
+  const index = drivingSchoolStore.data.findIndex(x => x.id === modalData.value?.id);
+  if(index !== -1){
+    drivingSchoolStore.data[index] = updateData;
+    await prepareTable();
+    resetModal();
+  }
+}
+
 </script>
 
 <template>
   <Modal :open="modalOpened === ModalType.CREATE" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions">
-    <template #header>Erstellen</template>
-    <template #content>coming soon..</template>
+    <template #header>Fahrschule erstellen</template>
+    <template #content>
+      <form @submit.prevent="createData">
+        <CustomTextInput label="Bezeichnung:"
+                         :required="true"
+                         v-model="name.value"
+                         :error="name.error"
+        />
+        <CustomDropdown label="Besitzer festlegen:"
+                        v-model="ownerId.value"
+                        :error="ownerId.error"
+                        :options="instructorStore.data.map(x => ({label: InstructorHelper.getFullName(x), value: x.id}))"
+        />
+      </form>
+    </template>
     <template #actions>
       <ButtonGroup>
-        <CustomButton @click="modalOpened = ModalType.NONE" type="neutral">Abbrechen</CustomButton>
-        <CustomButton :outline="false" type="success">Erstellen</CustomButton>
+        <CustomButton @click="resetModal" type="neutral">Abbrechen</CustomButton>
+        <CustomButton :outline="false" type="success" @click="createData">Erstellen</CustomButton>
       </ButtonGroup>
     </template>
   </Modal>
@@ -98,17 +172,30 @@ const deleteData = async () => {
     <template #header>Information</template>
     <template #content>coming soon.. {{ modalData?.id }}</template>
     <template #actions>
-      <CustomButton @click="modalOpened = ModalType.NONE" :outline="false" type="neutral">Schließen</CustomButton>
+      <CustomButton @click="resetModal" :outline="false" type="neutral">Schließen</CustomButton>
     </template>
   </Modal>
 
   <Modal :open="modalOpened === ModalType.EDIT" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions">
-    <template #header>Bearbeiten</template>
-    <template #content>coming soon.. {{ modalData?.id }}</template>
+    <template #header>Fahrschule <span class="modal_highlight">{{ modalData?.name }}</span> bearbeiten</template>
+    <template #content>
+      <form @submit.prevent="updateData">
+        <CustomTextInput label="Bezeichnung:"
+                         :required="true"
+                         v-model="name.value"
+                         :error="name.error"
+        />
+        <CustomDropdown label="Besitzer festlegen:"
+                        v-model="ownerId.value"
+                        :error="ownerId.error"
+                        :options="instructorStore.data.map(x => ({label: InstructorHelper.getFullName(x), value: x.id}))"
+        />
+      </form>
+    </template>
     <template #actions>
       <ButtonGroup>
-        <CustomButton @click="modalOpened = ModalType.NONE" type="neutral">Abbrechen</CustomButton>
-        <CustomButton :outline="false" type="success">Änderungen übernehmen</CustomButton>
+        <CustomButton @click="resetModal" type="neutral">Abbrechen</CustomButton>
+        <CustomButton :outline="false" type="success" @click="updateData">Änderungen übernehmen</CustomButton>
       </ButtonGroup>
     </template>
   </Modal>
@@ -122,7 +209,7 @@ const deleteData = async () => {
     </template>
     <template #actions>
       <ButtonGroup>
-        <CustomButton @click="modalOpened = ModalType.NONE" type="neutral">Abbrechen</CustomButton>
+        <CustomButton @click="resetModal" type="neutral">Abbrechen</CustomButton>
         <CustomButton @click="deleteData" :outline="false" type="error">Löschen</CustomButton>
       </ButtonGroup>
     </template>
