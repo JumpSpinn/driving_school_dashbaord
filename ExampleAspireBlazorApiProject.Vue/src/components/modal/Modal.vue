@@ -1,6 +1,8 @@
 ﻿<script setup lang="ts">
 import {onClickOutside} from "@vueuse/core";
 import type {IModalOptions} from "@/interfaces/IModalOptions.ts";
+import {KeyUtil} from "@/utils/KeyUtil.ts";
+import {Key} from "@/enums/Key.ts";
 
 const props = defineProps({
   open: {
@@ -26,6 +28,16 @@ onClickOutside(target, () => {
 
   if(!props.options?.backdropClick) return;
   emit('abort');
+})
+
+onMounted(() => {
+  KeyUtil.register(Key.ESC, {
+    onPress: () => {
+      if(!props.open) return;
+      if(!props.options?.closeWithEsc) return;
+      emit('abort');
+    }
+  })
 })
 
 </script>
