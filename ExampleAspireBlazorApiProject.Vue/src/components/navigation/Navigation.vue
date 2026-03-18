@@ -41,16 +41,8 @@ nav{
   display: flex;
   flex-direction: column;
   width: var(--nav-width);
-
-  background-image: linear-gradient(
-    to right,
-    rgba(var(--primary-rgb), .2),
-    rgba(var(--secondary-rgb), .2)
-  );
-  background-size: 150%;
-
+  background-color: var(--bg-light);
   border-right: 1px solid rgba(255,255,255,.15);
-
   overflow: hidden;
   transition: all 750ms ease-in-out;
 

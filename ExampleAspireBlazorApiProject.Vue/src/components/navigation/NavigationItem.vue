@@ -60,14 +60,14 @@ defineProps({
   }
 
   &.active{
-    background-color: rgba(255,255,255,.15);
-    background-image: linear-gradient(
-      to right,
-      rgba(var(--primary-rgb), .15),
-      rgba(var(--secondary-rgb), .05)
-    );
+    background-color: rgba(var(--primary-rgb), .7);
     --text-color: var(--text-nav-active);
     --icon-color: var(--text-nav-active);
+
+    .nav_icon{
+      background-color: var(--bg-light);
+      border-radius: var(--size-8);
+    }
   }
 }
 </style>

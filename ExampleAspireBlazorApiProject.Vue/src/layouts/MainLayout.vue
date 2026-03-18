@@ -52,13 +52,12 @@ const setNavigationOpenState = (isOpen: boolean) => {
   header{
     display: flex;
     align-items: center;
-    min-height: 60px;
-    padding: 0 var(--size-16);
+    padding: var(--size-16);
     border-bottom: 1px solid rgba(255,255,255,.15);
     background-image: linear-gradient(
       to right,
-      rgba(var(--primary-rgb), .4),
-      rgba(var(--secondary-rgb), .4)
+      rgba(var(--primary-rgb), .7),
+      rgba(var(--secondary-rgb), .7)
     );
 
     h3{
@@ -73,13 +72,7 @@ const setNavigationOpenState = (isOpen: boolean) => {
       font-size: var(--fs-400);
       margin-right: var(--size-16);
       cursor: pointer;
-      color: var(--text-muted);
-      transition: var(--t-default-all);
-
-      &.opened{
-        color: var(--primary-color);
-        opacity: 1;
-      }
+      color: var(--text);
     }
   }
 }
