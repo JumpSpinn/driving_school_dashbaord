@@ -16,6 +16,8 @@ import PageHeader from "@/components/header/PageHeader.vue";
 import CustomTextInput from "@/components/input/CustomTextInput.vue";
 import Modal from "@/components/modal/Modal.vue";
 import CustomToggle from "@/components/input/CustomToggle.vue";
+import CustomDropdown from "@/components/input/CustomDropdown.vue";
+import type {IDropdownItem} from "@/interfaces/IDropdownItem.ts";
 
 const isLoading = ref(true);
 const drivingSchools = ref<IDrivingSchool[]>([]);
@@ -37,6 +39,13 @@ const loadAllData = async () => {
   isLoading.value = false;
 }
 
+const dropdownItems = ref<IDropdownItem[]>([
+  { label: "Option 1", value: "1" },
+  { label: "Option 2", value: "2" },
+  { label: "Option 3", value: "3" },
+])
+const dropdownSelected = ref();
+
 </script>
 
 <template>
@@ -50,13 +59,9 @@ const loadAllData = async () => {
     <template #header>Input Test</template>
     <template #content>
       <CustomTextInput :vertical="true" label="Benutzername:" />
-      <CustomTextInput style="background-color: red;" :vertical="false" label="Benutzername:" />
-
-      <div style="background-color: red;">
-
-        <CustomToggle label="Prüfung bestanden" />
-      </div>
-
+      <CustomTextInput :vertical="false" label="Benutzername:" />
+      <CustomToggle label="Prüfung bestanden" />
+      <CustomDropdown label="Klasse wählen" :options="dropdownItems" v-model="dropdownSelected" :search-on="true"></CustomDropdown>
     </template>
   </Modal>
 
