@@ -15,7 +15,17 @@
   --secondary-rgb: 78, 188, 239;
   --secondary-color: rgb(var(--secondary-rgb));
 
+  --success-color-rgb: 21, 213, 85;
+  --success-color: rgb(var(--success-color-rgb));
+
   --error-color-rgb: 235, 64, 52;
+  --error-color: rgb(var(--error-color-rgb));
+
+  --warn-color-rgb: 235, 125, 52;
+  --warn-color: rgb(var(--warn-color-rgb));
+
+  --info-color-rgb: 52, 171, 235;
+  --info-color: rgb(var(--info-color-rgb));
 
   --shadow-combined: 0 4px 4px #00000030, 0 12px 12px #00000015;
   --shadow-dark: 0 4px 4px #00000030;

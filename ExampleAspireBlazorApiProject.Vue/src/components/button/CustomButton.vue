@@ -1,7 +1,7 @@
 ﻿<script setup lang="ts">
 
 interface CustomButtonProps {
-  type?: "primary" | "secondary" | "neutral",
+  type?: "primary" | "secondary" | "neutral" | "success" | "info" | "warn" | "error",
   outline?: boolean
   minWidth?: number
   disabled?: boolean
@@ -10,6 +10,7 @@ interface CustomButtonProps {
 withDefaults(defineProps<CustomButtonProps>(), {
   type: "primary",
   outline: true,
+  minWidth: 100,
 });
 
 </script>
@@ -22,78 +23,72 @@ withDefaults(defineProps<CustomButtonProps>(), {
 
 <style scoped>
 button{
-  border: none;
+  --button-color: var(--primary-color);
+
   outline: none;
   cursor: pointer;
-
   background-color: unset;
   padding: var(--size-8) var(--size-8);
   border-radius: var(--size-8);
   transition: var(--t-default-all);
-
-  color: var(--text);
   font-size: var(--fs-200);
-
   user-select: none;
   width: fit-content;
+  border: 1px solid var(--button-color);
+  color: var(--button-color);
 
-  &.primary{
-    border: 1px solid var(--primary-color);
-    color: var(--primary-color);
+  &:not(.outline){
+    background-color: var(--button-color);
+    color: hsl(0, 0%, 95%);
+  }
+
+  &:hover:not(.disabled){
+    background-color: var(--button-color);
+    border-color: var(--button-color);
+    color: hsl(0, 0%, 95%);
 
     &:not(.outline){
-      background-color: var(--primary-color);
-      color: hsl(0, 0%, 95%);
+      box-shadow: 0 0 5px var(--button-color);
     }
+  }
 
-    &:hover:not(.disabled){
-      background-color: var(--primary-color);
-      border-color: var(--primary-color);
-      color: hsl(0, 0%, 95%);
-
-      &:not(.outline){
-        box-shadow: 0 0 5px var(--primary-color);
-      }
-    }
+  &.primary{
+    --button-color: var(--primary-color);
   }
 
   &.secondary{
-    border: 1px solid var(--secondary-color);
-    color: var(--secondary-color);
+    --button-color: var(--secondary-color);
+  }
 
-    &:not(.outline){
-      background-color: var(--secondary-color);
-      color: hsl(0, 0%, 95%);
-    }
+  &.secondary{
+    --button-color: var(--secondary-color);
+  }
 
-    &:hover:not(.disabled){
-      background-color: var(--secondary-color);
-      border-color: var(--secondary-color);
-      color: hsl(0, 0%, 95%);
+  &.success{
+    --button-color: var(--success-color);
+  }
 
-      &:not(.outline){
-        box-shadow: 0 0 5px var(--secondary-color);
-      }
-    }
+  &.info{
+    --button-color: var(--info-color);
+  }
+
+  &.warn{
+    --button-color: var(--warn-color);
+  }
+
+  &.error{
+    --button-color: var(--error-color);
   }
 
   &.neutral{
-    border: 1px solid var(--text);
-    color: var(--text);
+    --button-color: var(--text);
 
     &:not(.outline){
-      background-color: var(--text);
       color: var(--bg);
     }
 
     &:hover:not(.disabled){
-      background-color: var(--text);
-      border-color: var(--text);
       color: var(--bg);
-
-      &:not(.outline){
-        box-shadow: 0 0 5px var(--text);
-      }
     }
   }
 
