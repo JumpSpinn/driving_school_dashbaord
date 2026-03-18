@@ -1,9 +1,10 @@
 ﻿<script setup lang="ts">
+import type {PropType} from "vue";
 
 defineProps({
   id: String,
   label: String,
-  error: String,
+  error: String as PropType<string | null>,
   vertical: Boolean,
   required: Boolean,
 })

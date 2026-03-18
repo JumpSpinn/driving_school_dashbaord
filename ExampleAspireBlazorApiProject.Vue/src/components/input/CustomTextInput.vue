@@ -1,5 +1,5 @@
 ﻿<script setup lang="ts">
-import {computed} from "vue";
+import {computed, type PropType} from "vue";
 import BaseInput from "@/components/input/BaseInput.vue";
 import {InputHelper} from "@/helpers/InputHelper.ts";
 
@@ -9,7 +9,7 @@ const props = defineProps({
   modelValue: String,
   placeholder: String,
   disabled: Boolean,
-  error: String,
+  error: String as PropType<string | null>,
   vertical: Boolean,
   required: Boolean,
 });

@@ -1,5 +1,5 @@
 ﻿<script setup lang="ts">
-import {computed, ref} from "vue";
+import {computed, type PropType, ref} from "vue";
 import {InputHelper} from "@/helpers/InputHelper.ts";
 import {onClickOutside} from "@vueuse/core";
 import BaseInput from "@/components/input/BaseInput.vue";
@@ -17,7 +17,7 @@ const props = defineProps({
     required: true,
   },
   placeholder: String,
-  error: String,
+  error: String as PropType<string | null>,
   required: Boolean,
   disabled: Boolean,
   vertical: Boolean,
