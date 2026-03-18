@@ -10,6 +10,10 @@ const props = defineProps({
   options: {
     type: Object as () => IModalOptions | null,
     default: null
+  },
+  error: {
+    type: String as PropType<string | null>,
+    default: null
   }
 })
 
@@ -41,6 +45,9 @@ onClickOutside(target, () => {
             Modal Content
           </slot>
         </CustomPaper>
+        <TransitionGroup tag="div" name="fade">
+          <div class="error" v-if="error">{{ error }}</div>
+        </TransitionGroup>
         <div class="actions">
           <slot name="actions">
             <ButtonGroup>
@@ -111,6 +118,31 @@ onClickOutside(target, () => {
     .actions{
       border-top: 1px solid var(--border);
       justify-content: flex-end;
+    }
+
+    .error{
+      margin: var(--size-16);
+      border-radius: var(--size-8);
+      padding: var(--size-16);
+      box-shadow: var(--shadow-dark);
+
+      font-size: var(--fs-200);
+      line-height: var(--size-20);
+      color: var(--text);
+      font-weight: 200;
+
+      background-color: rgb(var(--error-color-rgb), 0.6);
+      border: 1px solid rgb(var(--error-color-rgb));
+
+      &.fade-enter-active,
+      &.fade-leave-active{
+        transition: var(--t-default-all);
+      }
+      &.fade-enter-from,
+      &.fade-leave-to{
+        opacity: 0;
+        transform: translateY(-10px);
+      }
     }
   }
 }

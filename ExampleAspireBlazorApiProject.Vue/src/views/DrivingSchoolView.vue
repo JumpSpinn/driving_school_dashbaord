@@ -66,6 +66,7 @@ const prepareTable = async () => {
 // Modals
 const modalOpened = ref<ModalType>(ModalType.NONE);
 const modalData = ref<IDrivingSchool>();
+const modalError = ref<string | null>(null);
 
 const showModal = (data: IDrivingSchool, type: ModalType) => {
   modalData.value = drivingSchoolStore.findById(data.id);
@@ -81,6 +82,7 @@ const setModalData = (data?: IDrivingSchool) => {
 const resetModal = () => {
   modalData.value = undefined;
   modalOpened.value = ModalType.NONE;
+  modalError.value = null;
   form.reset();
 }
 
@@ -89,7 +91,10 @@ const deleteData = async () => {
   if(!modalData.value) return;
 
   const deleted = await ApiHelper.delete(modalData.value.id, drivingSchoolApiClient);
-  if(!deleted) return;
+  if(!deleted){
+    modalError.value = "Eintrag konnte nicht gelöscht werden.";
+    return;
+  }
 
   const index = drivingSchoolStore.findIndexById(modalData.value.id);
   if(index !== -1){
@@ -109,7 +114,10 @@ const createData = async () => {
   };
 
   const createdData = await ApiHelper.create(data, drivingSchoolApiClient);
-  if(!createdData) return;
+  if(!createdData){
+    modalError.value = "Eintrag konnte nicht gespeichert werden.";
+    return;
+  }
 
   drivingSchoolStore.data.push(createdData);
   await prepareTable();
@@ -127,7 +135,10 @@ const updateData = async () => {
   };
 
   const updateData = await ApiHelper.update(data, drivingSchoolApiClient);
-  if(!updateData) return;
+  if(!updateData){
+    modalError.value = "Änderungen konnten nicht übernommen werden.";
+    return;
+  }
 
   const index = drivingSchoolStore.data.findIndex(x => x.id === modalData.value?.id);
   if(index !== -1){
@@ -140,7 +151,7 @@ const updateData = async () => {
 </script>
 
 <template>
-  <Modal :open="modalOpened === ModalType.CREATE" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions">
+  <Modal :open="modalOpened === ModalType.CREATE" @abort="resetModal" :options="ModalHelper.DefaultOptions" :error="modalError">
     <template #header>Fahrschule erstellen</template>
     <template #content>
       <form @submit.prevent="createData">
@@ -164,7 +175,7 @@ const updateData = async () => {
     </template>
   </Modal>
 
-  <Modal :open="modalOpened === ModalType.INFO" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.InfoOptions">
+  <Modal :open="modalOpened === ModalType.INFO" @abort="resetModal" :options="ModalHelper.InfoOptions">
     <template #header><span class="modal_highlight">{{ modalData?.name }}</span> | Information</template>
     <template #content>
 
@@ -183,7 +194,7 @@ const updateData = async () => {
     </template>
   </Modal>
 
-  <Modal :open="modalOpened === ModalType.EDIT" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions">
+  <Modal :open="modalOpened === ModalType.EDIT" @abort="resetModal" :options="ModalHelper.DefaultOptions" :error="modalError">
     <template #header>Fahrschule <span class="modal_highlight">{{ modalData?.name }}</span> bearbeiten</template>
     <template #content>
       <form @submit.prevent="updateData">
@@ -207,7 +218,7 @@ const updateData = async () => {
     </template>
   </Modal>
 
-  <Modal :open="modalOpened === ModalType.DELETE" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions">
+  <Modal :open="modalOpened === ModalType.DELETE" @abort="resetModal" :options="ModalHelper.DefaultOptions" :error="modalError">
     <template #header>Fahrschule löschen</template>
     <template #content>
       Du bist dabei die Fahrschule
