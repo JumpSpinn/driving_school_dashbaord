@@ -1,7 +1,7 @@
 ﻿import type { ValidationRule } from '@/helpers/ValidationRules';
 
 export function useField(rules: ValidationRule[] = [], initialValue: string = '') {
-  const value = ref(initialValue);
+  const value = ref<any>(initialValue);
   const error = ref<string | null>(null);
 
   const validate = (): boolean => {
