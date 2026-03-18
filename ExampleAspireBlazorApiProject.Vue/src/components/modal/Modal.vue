@@ -31,7 +31,9 @@ onClickOutside(target, () => {
     <div class="modal_backdrop" v-if="props.open">
       <div class="modal" ref="target">
         <div class="header">
-          <slot name="header">Modal Title</slot>
+          <div>
+            <slot name="header">Modal Title</slot>
+          </div>
           <i class="pi pi-times" @click="emit('abort')" />
         </div>
         <CustomPaper>
