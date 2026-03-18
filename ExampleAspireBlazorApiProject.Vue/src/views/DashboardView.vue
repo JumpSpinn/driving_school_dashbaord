@@ -18,6 +18,10 @@ import Modal from "@/components/modal/Modal.vue";
 import CustomToggle from "@/components/input/CustomToggle.vue";
 import CustomDropdown from "@/components/input/CustomDropdown.vue";
 import type {IDropdownItem} from "@/interfaces/IDropdownItem.ts";
+import {useField} from "@/composables/useField.ts";
+import {Rules} from "@/helpers/ValidationRules.ts";
+import {useForm} from "@/composables/useForm.ts";
+import CustomButton from "@/components/button/CustomButton.vue";
 
 const isLoading = ref(true);
 const drivingSchools = ref<IDrivingSchool[]>([]);
@@ -39,12 +43,34 @@ const loadAllData = async () => {
   isLoading.value = false;
 }
 
+// Form tests
 const dropdownItems = ref<IDropdownItem[]>([
   { label: "Option 1", value: "1" },
   { label: "Option 2", value: "2" },
   { label: "Option 3", value: "3" },
 ])
-const dropdownSelected = ref();
+
+const username = useField([
+  Rules.required(),
+  Rules.minLength(3),
+  Rules.maxLength(50),
+])
+
+const category = useField([
+  Rules.required(),
+])
+
+const { validate, reset } = useForm([username, category]);
+
+const handleSubmit = () => {
+  if(!validate()) {
+    console.log("Validation failed");
+    return;
+  }
+
+  console.log("Benutzername: ", username.value);
+  console.log("Kategorie: ", category.value);
+}
 
 </script>
 
@@ -58,17 +84,15 @@ const dropdownSelected = ref();
   <Modal :open="true">
     <template #header>Input Test</template>
     <template #content>
-      <CustomTextInput :vertical="true" label="Benutzername:" />
-      <CustomTextInput :vertical="false" label="Benutzername:" />
-      <CustomToggle label="Prüfung bestanden" />
-      <CustomDropdown label="Klasse wählen" :options="dropdownItems" v-model="dropdownSelected" :search-on="true"></CustomDropdown>
+      <form @submit.prevent="handleSubmit">
+        <CustomTextInput label="Benutzername:" :required="true" id="username" v-model="username.value" :error="username.error" />
+        <CustomDropdown label="Kategorie wählen:" :options="dropdownItems" v-model="category.value" :required="true" :error="category.error" />
+      </form>
+    </template>
+    <template #actions>
+      <CustomButton @click="handleSubmit">Abschicken</CustomButton>
     </template>
   </Modal>
-
-  <CustomPaper>
-    <div>
-    </div>
-  </CustomPaper>
 
 </template>
 
