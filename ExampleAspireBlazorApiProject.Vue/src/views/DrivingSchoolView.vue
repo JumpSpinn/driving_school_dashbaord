@@ -73,13 +73,13 @@ const getDataFromTable = (data: IDrivingSchool) : IDrivingSchool | undefined => 
 
 const showModal = (data: IDrivingSchool, type: ModalType) => {
   modalData.value = getDataFromTable(data);
-  if(modalData.value) setModalData(modalData.value);
+  setModalData(modalData.value);
   modalOpened.value = type;
 }
 
-const setModalData = (data: IDrivingSchool) => {
-  name.value = data.name;
-  ownerId.value = data.ownerId ?? '';
+const setModalData = (data?: IDrivingSchool) => {
+  name.value = data?.name ?? '';
+  ownerId.value = data?.ownerId ?? '';
 }
 
 const resetModal = () => {
@@ -169,8 +169,19 @@ const updateData = async () => {
   </Modal>
 
   <Modal :open="modalOpened === ModalType.INFO" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.InfoOptions">
-    <template #header>Information</template>
-    <template #content>coming soon.. {{ modalData?.id }}</template>
+    <template #header><span class="modal_highlight">{{ modalData?.name }}</span> | Information</template>
+    <template #content>
+
+      <h4>Besitzer:</h4>
+      <p>{{ InstructorHelper.getFullName(modalData?.owner) }}</p>
+
+      <h4>Fahrschüler</h4>
+      <p v-if="modalData?.students.length" v-for="student in modalData?.students">
+        {{ student.firstName }} {{ student.lastName }}
+      </p>
+      <p v-else>Diese Fahrschule hat keine Fahrschüler zugewiesen.</p>
+
+    </template>
     <template #actions>
       <CustomButton @click="resetModal" :outline="false" type="neutral">Schließen</CustomButton>
     </template>
@@ -222,7 +233,7 @@ const updateData = async () => {
         <p>Hier sind alle Fahrschulen aufgelistet, die im System registriert wurden.</p>
       </template>
       <template #actions>
-        <CustomButton type="primary" :outline="true" :disabled="isLoading" @click="modalOpened = ModalType.CREATE">Fahrschule eintragen</CustomButton>
+        <CustomButton type="primary" :outline="true" :disabled="isLoading" @click="modalOpened = ModalType.CREATE; setModalData()">Fahrschule eintragen</CustomButton>
       </template>
     </PageHeader>
   </CustomPaper>
