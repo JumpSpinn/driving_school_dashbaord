@@ -10,6 +10,7 @@ h2,
 h3,
 h4 {
   font-weight: 600;
+  margin-bottom: var(--size-8);
 }
 
 h1 {
