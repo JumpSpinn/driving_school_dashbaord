@@ -1,7 +1,6 @@
 ﻿import type {IInstructor} from "@/interfaces/IInstructor";
 
-export interface ITheoryLesson {
-  id: number;
+export interface ITheoryLessonBase {
   name: string;
   topic: string;
   dayOfWeek: number;
@@ -11,6 +10,12 @@ export interface ITheoryLesson {
   maxStudents: number;
   price: number;
   isBasic: boolean;
+}
+
+export type ITheoryLessonUpdate = ITheoryLessonBase & { id: number };
+
+export interface ITheoryLesson extends ITheoryLessonBase {
+  id: number;
   isDeleted: boolean;
 
   // Navigation properties

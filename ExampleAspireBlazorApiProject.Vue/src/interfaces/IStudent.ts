@@ -2,8 +2,7 @@
 import type {IDrivingSchool} from "@/interfaces/IDrivingSchool";
 import type {ICourseBooking} from "@/interfaces/ICourseBooking";
 
-export interface IStudent {
-  id: number;
+export interface IStudentBase {
   firstName: string;
   lastName: string;
   mail: string;
@@ -13,6 +12,12 @@ export interface IStudent {
   enrollmentDate?: Date | string | null;
   examDate?: Date | string | null;
   hasPassed: boolean;
+}
+
+export type IStudentUpdate = IStudentBase & { id: number };
+
+export interface IStudent extends IStudentBase {
+  id: number;
   isDeleted: boolean;
 
   // Navigation properties
