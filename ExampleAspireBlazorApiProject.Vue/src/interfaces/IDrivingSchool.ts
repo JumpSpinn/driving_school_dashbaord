@@ -3,6 +3,7 @@ import type {IInstructor} from "@/interfaces/IInstructor";
 
 export interface IDrivingSchoolBase {
   name: string;
+  ownerId?: number;
 }
 
 export type IDrivingSchoolUpdate = IDrivingSchoolBase & { id: number };
@@ -13,6 +14,5 @@ export interface IDrivingSchool extends IDrivingSchoolBase {
 
   // Navigation properties
   students: IStudent[];
-  ownerId?: number;
   owner?: IInstructor;
 }
