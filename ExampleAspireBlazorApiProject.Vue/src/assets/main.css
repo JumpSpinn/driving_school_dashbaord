@@ -43,3 +43,29 @@ a {
   display: inline-block;
   color: var(--primary-color);
 }
+
+input{
+  border: 1px solid var(--border);
+  outline: none;
+  padding: var(--size-8);
+  border-radius: var(--size-4);
+  background-color: var(--bg);
+  color: var(--text);
+
+  transition: all var(--t-duration) ease;
+
+  &:focus:not(.error){
+    border-color: var(--secondary-color);
+  }
+
+  &:hover:not(:focus, .error){
+    border-color: var(--highlight);
+  }
+
+  &.error{
+    border-bottom: unset;
+    border-bottom-left-radius: unset;
+    border-bottom-right-radius: unset;
+    border-color: rgb(var(--error-color-rgb));
+  }
+}
