@@ -1,11 +1,16 @@
 ﻿<script setup lang="ts">
 
+import CustomToggle from "@/components/input/CustomToggle.vue";
+import {computed} from "vue";
+
 const props = defineProps({
   autoCloseOn: {
     type: Boolean,
     default: false
   }
 })
+
+const isToggled = computed(() => props.autoCloseOn);
 
 const emit = defineEmits(['update:autoCloseOn']);
 
@@ -20,15 +25,13 @@ const toggleAutoClose = () => {
     <div class="nav_icon">
       <i class="pi pi-cog" />
     </div>
-    <p>Autom. schließen</p>
-    <input type="checkbox" :checked="autoCloseOn" @click="toggleAutoClose" />
+    <CustomToggle class="toggle" label="Autom. schließen" v-model="isToggled" @update:modelValue="toggleAutoClose"  />
   </div>
 </template>
 
 <style scoped>
 .nav_auto_close{
   display: flex;
-  align-items: center;
   border-top: 1px solid rgba(255,255,255,.075);
   padding: var(--size-8);
 
@@ -41,9 +44,12 @@ const toggleAutoClose = () => {
     color: var(--icon-color);
   }
 
-  input{
-    margin-left: auto;
-    margin-right: var(--size-8);
+  .toggle{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
   }
 }
 </style>
