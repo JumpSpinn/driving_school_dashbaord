@@ -1,16 +1,10 @@
 ﻿<script setup lang="ts">
-import {onMounted, ref} from "vue";
 import type {IStudent} from "@/interfaces/IStudent.ts";
 import {studentApiClient} from "@/apis/StudentApiClient.ts";
-import CustomButton from "@/components/button/CustomButton.vue";
-import CustomPaper from "@/components/paper/CustomPaper.vue";
-import PageHeader from "@/components/header/PageHeader.vue";
 import Vue3Datatable from '@bhplugin/vue3-datatable'
-import ButtonGroup from "@/components/button/ButtonGroup.vue";
 import {StudentHelper} from "@/helpers/StudentHelper.ts";
 import {TimeHelper} from "@/helpers/TimeHelper.ts";
 import {ModalType} from "@/enums/ModalType.ts";
-import Modal from "@/components/modal/Modal.vue";
 import {ModalHelper} from "@/helpers/ModalHelper.ts";
 import {ApiHelper} from "@/helpers/ApiHelper.ts";
 

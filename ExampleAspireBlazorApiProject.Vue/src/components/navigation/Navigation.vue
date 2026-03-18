@@ -1,9 +1,5 @@
 ﻿<script setup lang="ts">
-import NavigationItem from "@/components/navigation/NavigationItem.vue";
-import {useRoute, useRouter} from "vue-router";
 import {RoutePage} from "@/enums/RoutePage.ts";
-import {ref} from "vue";
-import NavigationAutoClose from "@/components/navigation/NavigationAutoClose.vue";
 
 defineProps({
   isOpen: {

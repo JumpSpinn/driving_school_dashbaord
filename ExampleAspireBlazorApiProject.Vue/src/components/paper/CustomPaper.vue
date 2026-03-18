@@ -1,8 +1,4 @@
-﻿<script setup lang="ts">
-
-</script>
-
-<template>
+﻿<template>
   <div class="custom_paper">
     <slot />
   </div>

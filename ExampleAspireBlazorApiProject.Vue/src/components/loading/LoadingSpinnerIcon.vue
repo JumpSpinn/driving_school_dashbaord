@@ -1,5 +1,4 @@
 ﻿<script setup lang="ts">
-import { computed, ref, onMounted, watch } from 'vue'
 
 const props = defineProps({
   size:         { type: Number, default: 160 },

@@ -1,6 +1,4 @@
 ﻿<script setup lang="ts">
-import {computed, type PropType} from "vue";
-import BaseInput from "@/components/input/BaseInput.vue";
 import {InputHelper} from "@/helpers/InputHelper.ts";
 
 const props = defineProps({

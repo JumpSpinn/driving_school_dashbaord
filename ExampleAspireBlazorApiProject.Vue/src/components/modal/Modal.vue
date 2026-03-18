@@ -1,9 +1,5 @@
 ﻿<script setup lang="ts">
-import CustomPaper from "@/components/paper/CustomPaper.vue";
-import CustomButton from "@/components/button/CustomButton.vue";
-import ButtonGroup from "@/components/button/ButtonGroup.vue";
 import {onClickOutside} from "@vueuse/core";
-import {ref} from "vue";
 import type {IModalOptions} from "@/interfaces/IModalOptions.ts";
 
 const props = defineProps({

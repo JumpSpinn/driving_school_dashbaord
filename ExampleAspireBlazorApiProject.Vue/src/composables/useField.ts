@@ -1,5 +1,4 @@
-﻿import {ref, computed, reactive} from 'vue';
-import type { ValidationRule } from '@/helpers/ValidationRules';
+﻿import type { ValidationRule } from '@/helpers/ValidationRules';
 
 export function useField(rules: ValidationRule[] = []) {
   const value = ref('');

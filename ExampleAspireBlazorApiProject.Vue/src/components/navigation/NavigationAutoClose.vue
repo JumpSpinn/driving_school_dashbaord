@@ -1,8 +1,5 @@
 ﻿<script setup lang="ts">
 
-import CustomToggle from "@/components/input/CustomToggle.vue";
-import {computed} from "vue";
-
 const props = defineProps({
   autoCloseOn: {
     type: Boolean,

@@ -1,5 +1,4 @@
 ﻿<script setup lang="ts">
-import LoadingSpinnerIcon from "@/components/loading/LoadingSpinnerIcon.vue";
 
 defineProps({
   text: {

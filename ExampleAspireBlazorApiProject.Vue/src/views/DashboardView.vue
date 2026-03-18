@@ -1,5 +1,4 @@
 ﻿<script setup lang="ts">
-import {onMounted, ref} from "vue";
 import {theoryLessonApiClient} from "@/apis/TheoryLessonApiClient.ts";
 import type {IDrivingSchool} from "@/interfaces/IDrivingSchool.ts";
 import type {IStudent} from "@/interfaces/IStudent.ts";
@@ -11,17 +10,10 @@ import {studentApiClient} from "@/apis/StudentApiClient.ts";
 import {instructorApiClient} from "@/apis/InstructorApiClient.ts";
 import {courseBookingApiClient} from "@/apis/CourseBookingApiClient.ts";
 import {ApiHelper} from "@/helpers/ApiHelper.ts";
-import CustomPaper from "@/components/paper/CustomPaper.vue";
-import PageHeader from "@/components/header/PageHeader.vue";
-import CustomTextInput from "@/components/input/CustomTextInput.vue";
-import Modal from "@/components/modal/Modal.vue";
-import CustomDropdown from "@/components/input/CustomDropdown.vue";
 import type {IDropdownItem} from "@/interfaces/IDropdownItem.ts";
 import {useField} from "@/composables/useField.ts";
 import {Rules} from "@/helpers/ValidationRules.ts";
 import {useForm} from "@/composables/useForm.ts";
-import CustomButton from "@/components/button/CustomButton.vue";
-import ButtonGroup from "@/components/button/ButtonGroup.vue";
 
 const isLoading = ref(true);
 const drivingSchools = ref<IDrivingSchool[]>([]);
@@ -81,7 +73,7 @@ const handleSubmit = () => {
     </PageHeader>
   </CustomPaper>
 
-  <Modal :open="true">
+  <Modal :open="false">
     <template #header>Input Test</template>
     <template #content>
       <form @submit.prevent="handleSubmit">

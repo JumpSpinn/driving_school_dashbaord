@@ -1,8 +1,6 @@
 ﻿<script setup lang="ts">
-import {computed, type PropType, ref} from "vue";
 import {InputHelper} from "@/helpers/InputHelper.ts";
 import {onClickOutside} from "@vueuse/core";
-import BaseInput from "@/components/input/BaseInput.vue";
 import { ChevronDown } from 'lucide-vue-next';
 
 const props = defineProps({

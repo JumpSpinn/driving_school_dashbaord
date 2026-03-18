@@ -1,15 +1,9 @@
 ﻿<script setup lang="ts">
-import {onMounted, ref} from "vue";
 import type {ITheoryLesson} from "@/interfaces/ITheoryLesson.ts";
 import {theoryLessonApiClient} from "@/apis/TheoryLessonApiClient.ts";
-import CustomButton from "@/components/button/CustomButton.vue";
-import CustomPaper from "@/components/paper/CustomPaper.vue";
-import PageHeader from "@/components/header/PageHeader.vue";
 import Vue3Datatable from '@bhplugin/vue3-datatable'
-import ButtonGroup from "@/components/button/ButtonGroup.vue";
 import {InstructorHelper} from "@/helpers/InstructorHelper.ts";
 import {ModalType} from "@/enums/ModalType.ts";
-import Modal from "@/components/modal/Modal.vue";
 import {ModalHelper} from "@/helpers/ModalHelper.ts";
 import {ApiHelper} from "@/helpers/ApiHelper.ts";
 
