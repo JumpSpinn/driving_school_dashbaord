@@ -151,10 +151,10 @@ const updateData = async () => {
 </script>
 
 <template>
-  <Modal :open="modalOpened === ModalType.CREATE" @abort="resetModal" :options="ModalHelper.DefaultOptions" :error="modalError">
-    <template #header>Fahrschule erstellen</template>
+  <Modal :open="modalOpened === ModalType.CREATE || modalOpened === ModalType.EDIT" @abort="resetModal" :options="ModalHelper.DefaultOptions" :error="modalError">
+    <template #header>{{ modalOpened === ModalType.CREATE ? "Fahrschule erstellen" : "Fahrschule bearbeiten" }}</template>
     <template #content>
-      <form @submit.prevent="createData">
+      <form @submit.prevent="modalOpened === ModalType.CREATE ? createData() : updateData()">
         <CustomTextInput label="Bezeichnung:"
                          :required="true"
                          v-model="name.value"
@@ -170,13 +170,15 @@ const updateData = async () => {
     <template #actions>
       <ButtonGroup>
         <CustomButton @click="resetModal" type="neutral">Abbrechen</CustomButton>
-        <CustomButton :outline="false" type="success" @click="createData">Erstellen</CustomButton>
+        <CustomButton :outline="false" type="success" @click="modalOpened === ModalType.CREATE ? createData() : updateData()">
+          {{ modalOpened === ModalType.CREATE ? "Erstellen" : "Änderungen übernehmen" }}
+        </CustomButton>
       </ButtonGroup>
     </template>
   </Modal>
 
   <Modal :open="modalOpened === ModalType.INFO" @abort="resetModal" :options="ModalHelper.InfoOptions">
-    <template #header><span class="modal_highlight">{{ modalData?.name }}</span> | Information</template>
+    <template #header>{{ modalData?.name }} | Information</template>
     <template #content>
 
       <h4>Besitzer:</h4>
@@ -191,30 +193,6 @@ const updateData = async () => {
     </template>
     <template #actions>
       <CustomButton @click="resetModal" :outline="false" type="neutral">Schließen</CustomButton>
-    </template>
-  </Modal>
-
-  <Modal :open="modalOpened === ModalType.EDIT" @abort="resetModal" :options="ModalHelper.DefaultOptions" :error="modalError">
-    <template #header>Fahrschule <span class="modal_highlight">{{ modalData?.name }}</span> bearbeiten</template>
-    <template #content>
-      <form @submit.prevent="updateData">
-        <CustomTextInput label="Bezeichnung:"
-                         :required="true"
-                         v-model="name.value"
-                         :error="name.error"
-        />
-        <CustomDropdown label="Besitzer festlegen:"
-                        v-model="ownerId.value"
-                        :error="ownerId.error"
-                        :options="instructorStore.data.map(x => ({label: InstructorHelper.getFullName(x), value: x.id}))"
-        />
-      </form>
-    </template>
-    <template #actions>
-      <ButtonGroup>
-        <CustomButton @click="resetModal" type="neutral">Abbrechen</CustomButton>
-        <CustomButton :outline="false" type="success" @click="updateData">Änderungen übernehmen</CustomButton>
-      </ButtonGroup>
     </template>
   </Modal>
 

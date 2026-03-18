@@ -88,13 +88,15 @@ const deleteData = async () => {
 </script>
 
 <template>
-  <Modal :open="modalOpened === ModalType.CREATE" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions">
-    <template #header>Erstellen</template>
+  <Modal :open="modalOpened === ModalType.CREATE || modalOpened === ModalType.EDIT" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions">
+    <template #header>{{ modalOpened === ModalType.CREATE ? "Erstellen" : "Bearbeiten" }}</template>
     <template #content>coming soon..</template>
     <template #actions>
       <ButtonGroup>
         <CustomButton @click="modalOpened = ModalType.NONE" type="neutral">Abbrechen</CustomButton>
-        <CustomButton :outline="false" type="success">Erstellen</CustomButton>
+        <CustomButton :outline="false" type="success">
+          {{ modalOpened === ModalType.CREATE ? "Erstellen" : "Änderungen übernehmen" }}
+        </CustomButton>
       </ButtonGroup>
     </template>
   </Modal>
@@ -104,17 +106,6 @@ const deleteData = async () => {
     <template #content>coming soon.. {{ modalData?.id }}</template>
     <template #actions>
       <CustomButton @click="modalOpened = ModalType.NONE" :outline="false" type="neutral">Schließen</CustomButton>
-    </template>
-  </Modal>
-
-  <Modal :open="modalOpened === ModalType.EDIT" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions">
-    <template #header>Bearbeiten</template>
-    <template #content>coming soon.. {{ modalData?.id }}</template>
-    <template #actions>
-      <ButtonGroup>
-        <CustomButton @click="modalOpened = ModalType.NONE" type="neutral">Abbrechen</CustomButton>
-        <CustomButton :outline="false" type="success">Änderungen übernehmen</CustomButton>
-      </ButtonGroup>
     </template>
   </Modal>
 
