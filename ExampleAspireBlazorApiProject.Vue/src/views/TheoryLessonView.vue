@@ -129,7 +129,7 @@ const deleteData = async () => {
   <CustomPaper>
     <Vue3Datatable
       :loading="isLoading"
-      noDataContent="Keine Daten vorhanden"
+      noDataContent="Es wurden noch keine Kurse eingetragen."
       :rows="rows"
       :columns="cols"
       paginationInfo="Es werden die Einträge {0} bis {1} von {2} angezeigt."
