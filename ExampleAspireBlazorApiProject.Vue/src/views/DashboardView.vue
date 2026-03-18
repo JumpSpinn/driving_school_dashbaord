@@ -1,5 +1,4 @@
 ﻿<script setup lang="ts">
-import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
 import {onMounted, ref} from "vue";
 import {theoryLessonApiClient} from "@/apis/TheoryLessonApiClient.ts";
 import type {IDrivingSchool} from "@/interfaces/IDrivingSchool.ts";
@@ -11,6 +10,12 @@ import {drivingSchoolApiClient} from "@/apis/DrivingSchoolApiClient.ts";
 import {studentApiClient} from "@/apis/StudentApiClient.ts";
 import {instructorApiClient} from "@/apis/InstructorApiClient.ts";
 import {courseBookingApiClient} from "@/apis/CourseBookingApiClient.ts";
+import {ApiHelper} from "@/helpers/ApiHelper.ts";
+import CustomPaper from "@/components/paper/CustomPaper.vue";
+import PageHeader from "@/components/header/PageHeader.vue";
+import CustomTextInput from "@/components/input/CustomTextInput.vue";
+import Modal from "@/components/modal/Modal.vue";
+import CustomToggle from "@/components/input/CustomToggle.vue";
 
 const isLoading = ref(true);
 const drivingSchools = ref<IDrivingSchool[]>([]);
@@ -24,63 +29,42 @@ onMounted(async () => {
 })
 
 const loadAllData = async () => {
-  await loadDrivingSchoolData();
-  await loadStudentsData();
-  await loadInstructorsData();
-  await loadTheoryLessonsData();
-  await loadCourseBookingsData();
+  drivingSchools.value = await ApiHelper.getAll(drivingSchoolApiClient);
+  students.value = await ApiHelper.getAll(studentApiClient);
+  instructors.value = await ApiHelper.getAll(instructorApiClient);
+  theoryLessons.value = await ApiHelper.getAll(theoryLessonApiClient);
+  courseBookings.value = await ApiHelper.getAll(courseBookingApiClient);
   isLoading.value = false;
 }
 
-const loadDrivingSchoolData = async () => {
-  const resp = await drivingSchoolApiClient.getAll();
-
-  if(resp == null)
-    console.error("Error while fetching driving schools");
-  else
-    drivingSchools.value = resp;
-}
-
-const loadStudentsData = async () => {
-  const resp = await studentApiClient.getAll();
-
-  if(resp == null)
-    console.error("Error while fetching students");
-  else
-    students.value = resp;
-}
-
-const loadInstructorsData = async () => {
-  const resp = await instructorApiClient.getAll();
-
-  if(resp == null)
-    console.error("Error while fetching instructors");
-  else
-    instructors.value = resp;
-}
-
-const loadTheoryLessonsData = async () => {
-  const resp = await theoryLessonApiClient.getAll();
-
-  if(resp == null)
-    console.error("Error while fetching theory lessons");
-  else
-    theoryLessons.value = resp;
-}
-
-const loadCourseBookingsData = async () => {
-  const resp = await courseBookingApiClient.getAll();
-
-  if(resp == null)
-    console.error("Error while fetching course bookings");
-  else
-    courseBookings.value = resp;
-}
 </script>
 
 <template>
-  <LoadingSpinner v-if="isLoading" text="Dashboard wird geladen.." />
-  <h1>Dashbaord</h1>
+  <CustomPaper>
+    <PageHeader>
+      <h3>Dashboard</h3>
+    </PageHeader>
+  </CustomPaper>
+
+  <Modal :open="true">
+    <template #header>Input Test</template>
+    <template #content>
+      <CustomTextInput :vertical="true" label="Benutzername:" />
+      <CustomTextInput style="background-color: red;" :vertical="false" label="Benutzername:" />
+
+      <div style="background-color: red;">
+
+        <CustomToggle label="Prüfung bestanden" />
+      </div>
+
+    </template>
+  </Modal>
+
+  <CustomPaper>
+    <div>
+    </div>
+  </CustomPaper>
+
 </template>
 
 <style scoped>
