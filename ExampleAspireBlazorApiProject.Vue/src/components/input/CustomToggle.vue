@@ -9,7 +9,6 @@ const props = defineProps({
   label: String,
   modelValue: Boolean,
   disabled: Boolean,
-  required: Boolean,
 });
 
 defineEmits(['update:modelValue']);
@@ -25,7 +24,6 @@ const setId = computed(() => {
     :id="setId"
     :label="label"
     :vertical="false"
-    :required="required"
   >
     <label class="switch">
       <input
