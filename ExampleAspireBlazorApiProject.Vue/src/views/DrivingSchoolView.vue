@@ -67,12 +67,8 @@ const prepareTable = async () => {
 const modalOpened = ref<ModalType>(ModalType.NONE);
 const modalData = ref<IDrivingSchool>();
 
-const getDataFromTable = (data: IDrivingSchool) : IDrivingSchool | undefined => {
-  return drivingSchoolStore.data.find(cb => cb.id === data.id);
-}
-
 const showModal = (data: IDrivingSchool, type: ModalType) => {
-  modalData.value = getDataFromTable(data);
+  modalData.value = drivingSchoolStore.findById(data.id);
   setModalData(modalData.value);
   modalOpened.value = type;
 }
@@ -95,7 +91,7 @@ const deleteData = async () => {
   const deleted = await ApiHelper.delete(modalData.value.id, drivingSchoolApiClient);
   if(!deleted) return;
 
-  const index = drivingSchoolStore.data.findIndex(x => x.id === modalData.value?.id);
+  const index = drivingSchoolStore.findIndexById(modalData.value.id);
   if(index !== -1){
     drivingSchoolStore.data.splice(index, 1);
     await prepareTable();

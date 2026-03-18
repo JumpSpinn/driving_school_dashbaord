@@ -15,9 +15,19 @@ export const useDrivingSchoolStore = defineStore("drivingSchool", () => {
     isLoading.value = false;
   }
 
+  const findById = (id: number) => {
+    return data.value.find(cb => cb.id === id);
+  }
+
+  const findIndexById = (id: number) => {
+    return data.value.findIndex(cb => cb.id === id);
+  }
+
   return {
     data,
     isLoading,
     fetchAll,
+    findById,
+    findIndexById
   }
 })

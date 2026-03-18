@@ -59,12 +59,8 @@ const prepareTable = async () => {
 const modalOpened = ref<ModalType>(ModalType.NONE);
 const modalData = ref<IStudent>();
 
-const getDataFromTable = (data: IStudent) : IStudent | undefined => {
-  return studentStore.data.find(cb => cb.id === data.id);
-}
-
 const showModal = (data: IStudent, type: ModalType) => {
-  modalData.value = getDataFromTable(data);
+  modalData.value = studentStore.findById(data.id);
   modalOpened.value = type;
 }
 
@@ -80,7 +76,7 @@ const deleteData = async () => {
   const deleted = await ApiHelper.delete(modalData.value.id, studentApiClient);
   if(!deleted) return;
 
-  const index = studentStore.data.findIndex(x => x.id === modalData.value?.id);
+  const index = studentStore.findIndexById(modalData.value.id);
   if(index !== -1){
     studentStore.data.splice(index, 1);
     await prepareTable();

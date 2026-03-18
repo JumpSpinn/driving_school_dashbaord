@@ -52,12 +52,8 @@ const prepareTable = async () => {
 const modalOpened = ref<ModalType>(ModalType.NONE);
 const modalData = ref<ICourseBooking>();
 
-const getDataFromTable = (data: ICourseBooking) : ICourseBooking | undefined => {
-  return courseBookingStore.data.find(cb => cb.id === data.id);
-}
-
 const showModal = (data: ICourseBooking, type: ModalType) => {
-  modalData.value = getDataFromTable(data);
+  modalData.value = courseBookingStore.findById(data.id);
   modalOpened.value = type;
 }
 
@@ -73,7 +69,7 @@ const deleteData = async () => {
   const deleted = await ApiHelper.delete(modalData.value.id, courseBookingApiClient);
   if(!deleted) return;
 
-  const index = courseBookingStore.data.findIndex(x => x.id === modalData.value?.id);
+  const index = courseBookingStore.findIndexById(modalData.value.id);
   if(index !== -1){
     courseBookingStore.data.splice(index, 1);
     await prepareTable();
