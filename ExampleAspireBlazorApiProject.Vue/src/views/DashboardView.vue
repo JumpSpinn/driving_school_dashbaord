@@ -15,7 +15,6 @@ import CustomPaper from "@/components/paper/CustomPaper.vue";
 import PageHeader from "@/components/header/PageHeader.vue";
 import CustomTextInput from "@/components/input/CustomTextInput.vue";
 import Modal from "@/components/modal/Modal.vue";
-import CustomToggle from "@/components/input/CustomToggle.vue";
 import CustomDropdown from "@/components/input/CustomDropdown.vue";
 import type {IDropdownItem} from "@/interfaces/IDropdownItem.ts";
 import {useField} from "@/composables/useField.ts";
