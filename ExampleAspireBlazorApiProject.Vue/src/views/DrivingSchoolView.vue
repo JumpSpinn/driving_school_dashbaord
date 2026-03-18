@@ -229,6 +229,7 @@ const updateData = async () => {
       noDataContent="Keine Daten vorhanden"
       :rows="rows"
       :columns="cols"
+      paginationInfo="Es werden die Einträge {0} bis {1} von {2} angezeigt."
     >
       <template #actions="data">
         <ButtonGroup>

@@ -8,6 +8,7 @@ import {ModalType} from "@/enums/ModalType.ts";
 import {ModalHelper} from "@/helpers/ModalHelper.ts";
 import {ApiHelper} from "@/helpers/ApiHelper.ts";
 import {useStudentStore} from "@/stores/studentStore.ts";
+import {LicenseHelper} from "@/helpers/LicenseHelper.ts";
 
 const cols = ref([
   { field: "id", title: "ID", width: "90px", filter: false },
@@ -45,7 +46,7 @@ const prepareTable = async () => {
       fullName: StudentHelper.getFullName(student),
       mail: StudentHelper.getMail(student),
       phone: StudentHelper.getPhone(student),
-      license: 0,
+      license: LicenseHelper.getName(student.license),
       examDate: TimeHelper.convert(student.examDate, "date"),
       hasPassed: student.hasPassed ? "Ja" : "in Ausbildung",
       drivingSchool: StudentHelper.getDrivingSchoolName(student),
@@ -142,6 +143,7 @@ const deleteData = async () => {
       noDataContent="Keine Daten vorhanden"
       :rows="rows"
       :columns="cols"
+      paginationInfo="Es werden die Einträge {0} bis {1} von {2} angezeigt."
     >
       <template #actions="data">
         <ButtonGroup>
