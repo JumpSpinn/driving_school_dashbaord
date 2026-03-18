@@ -15,7 +15,7 @@
   --secondary-rgb: 78, 188, 239;
   --secondary-color: rgb(var(--secondary-rgb));
 
-  --error-color-rgb: 255,0,0;
+  --error-color-rgb: 235, 64, 52;
 
   --shadow-combined: 0 4px 4px #00000030, 0 12px 12px #00000015;
   --shadow-dark: 0 4px 4px #00000030;
