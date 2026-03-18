@@ -85,8 +85,8 @@ const deleteData = async () => {
     <template #content>coming soon..</template>
     <template #actions>
       <ButtonGroup>
-        <CustomButton @click="modalOpened = ModalType.NONE" :minWidth="100">Abbrechen</CustomButton>
-        <CustomButton>Erstellen</CustomButton>
+        <CustomButton @click="modalOpened = ModalType.NONE" type="neutral">Abbrechen</CustomButton>
+        <CustomButton :outline="false" type="success">Erstellen</CustomButton>
       </ButtonGroup>
     </template>
   </Modal>
@@ -95,7 +95,7 @@ const deleteData = async () => {
     <template #header>Information</template>
     <template #content>coming soon.. {{ modalData?.id }}</template>
     <template #actions>
-      <CustomButton @click="modalOpened = ModalType.NONE" :minWidth="100">Schließen</CustomButton>
+      <CustomButton @click="modalOpened = ModalType.NONE" :outline="false" type="neutral">Schließen</CustomButton>
     </template>
   </Modal>
 
@@ -104,8 +104,8 @@ const deleteData = async () => {
     <template #content>coming soon.. {{ modalData?.id }}</template>
     <template #actions>
       <ButtonGroup>
-        <CustomButton @click="modalOpened = ModalType.NONE" :minWidth="100">Abbrechen</CustomButton>
-        <CustomButton>Änderungen übernehmen</CustomButton>
+        <CustomButton @click="modalOpened = ModalType.NONE" type="neutral">Abbrechen</CustomButton>
+        <CustomButton :outline="false" type="success">Änderungen übernehmen</CustomButton>
       </ButtonGroup>
     </template>
   </Modal>
@@ -119,8 +119,8 @@ const deleteData = async () => {
     </template>
     <template #actions>
       <ButtonGroup>
-        <CustomButton @click="modalOpened = ModalType.NONE" :minWidth="100">Nein</CustomButton>
-        <CustomButton @click="deleteData" :minWidth="100">Ja</CustomButton>
+        <CustomButton @click="modalOpened = ModalType.NONE" type="neutral">Abbrechen</CustomButton>
+        <CustomButton @click="deleteData" :outline="false" type="error">Löschen</CustomButton>
       </ButtonGroup>
     </template>
   </Modal>
@@ -129,7 +129,7 @@ const deleteData = async () => {
     <PageHeader>
       <h3>Kurse</h3>
       <template #actions>
-        <CustomButton type="secondary" :outline="true" :disabled="isLoading" @click="modalOpened = ModalType.CREATE">Kurs eintragen</CustomButton>
+        <CustomButton type="primary" :outline="true" :disabled="isLoading" @click="modalOpened = ModalType.CREATE">Kurs eintragen</CustomButton>
       </template>
     </PageHeader>
   </CustomPaper>
@@ -143,13 +143,13 @@ const deleteData = async () => {
     >
       <template #actions="data">
         <ButtonGroup>
-          <CustomButton type="neutral" @click="showModal(data.value, ModalType.INFO)">
+          <CustomButton :min-width="0" type="neutral" :outline="true" @click="showModal(data.value, ModalType.INFO)">
             <i class="pi pi-eye"></i>
           </CustomButton>
-          <CustomButton type="neutral" @click="showModal(data.value, ModalType.EDIT)">
+          <CustomButton :min-width="0" type="primary" :outline="true" @click="showModal(data.value, ModalType.EDIT)">
             <i class="pi pi-pencil"></i>
           </CustomButton>
-          <CustomButton type="neutral" @click="showModal(data.value, ModalType.DELETE)">
+          <CustomButton :min-width="0" type="error" :outline="true" @click="showModal(data.value, ModalType.DELETE)">
             <i class="pi pi-trash"></i>
           </CustomButton>
         </ButtonGroup>
