@@ -23,6 +23,7 @@
     "lucide-vue-next": "^0.577.0",
     "pinia": "^3.0.4",
     "primeicons": "^7.0.0",
+    "uuid": "^13.0.0",
     "vue": "^3.5.29",
     "vue-router": "^5.0.3"
   },
@@ -30,6 +31,7 @@
     "@tsconfig/node24": "^24.0.4",
     "@types/jsdom": "^28.0.0",
     "@types/node": "^24.11.0",
+    "@types/uuid": "^10.0.0",
     "@vitejs/plugin-vue": "^6.0.4",
     "@vitest/eslint-plugin": "^1.6.9",
     "@vue/eslint-config-typescript": "^14.7.0",

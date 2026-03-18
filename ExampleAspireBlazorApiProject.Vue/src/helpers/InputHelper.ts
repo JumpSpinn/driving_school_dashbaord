@@ -1,4 +1,5 @@
 ﻿import { BaseUtil } from "@/utils/BaseUtil";
+import { v4 as uuidv4 } from 'uuid';
 
 export class InputHelper {
   private static MIN_TEXTAREA_ROWS = 4;
@@ -6,9 +7,7 @@ export class InputHelper {
 
   public static getInputId(id: string | undefined) {
     if (BaseUtil.isNullOrUndefined(id))
-      // return crypto.randomUUID();
-      // TODO: own UUID stuff writen alla
-      return 'unknown';
+      return uuidv4();
     return id;
   }
 
