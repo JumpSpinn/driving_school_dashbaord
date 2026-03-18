@@ -43,11 +43,11 @@
   --input-placeholder-text-color: var(--text-muted);
   --input-placeholder-text-opacity: .5;
   --input-hover-border-color: rgba(255,255,255,.5);
-  --input-focus-border-color: rgb(var(--secondary-rgb));
+  --input-focus-border-color: rgb(var(--primary-rgb));
   --input-disabled-bg-color: rgba(20,20,20,.55);
   --input-error-border-color: rgb(var(--error-color-rgb));
 
   --input-toggle-inactive-bg-color: var(--bg);
   --input-toggle-knob-active-color: var(--text);
-  --input-toggle-active-bg-color: rgb(var(--secondary-rgb));
+  --input-toggle-active-bg-color: rgb(var(--primary-rgb));
 }

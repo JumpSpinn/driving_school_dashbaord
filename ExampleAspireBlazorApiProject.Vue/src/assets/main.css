@@ -55,7 +55,7 @@ input{
   transition: all var(--t-duration) ease;
 
   &:focus:not(.error){
-    border-color: var(--secondary-color);
+    border-color: var(--primary-color);
   }
 
   &:hover:not(:focus, .error){

@@ -82,7 +82,7 @@ const handleSubmit = () => {
     </PageHeader>
   </CustomPaper>
 
-  <Modal :open="false">
+  <Modal :open="true">
     <template #header>Input Test</template>
     <template #content>
       <form @submit.prevent="handleSubmit">
@@ -92,13 +92,7 @@ const handleSubmit = () => {
     </template>
     <template #actions>
       <ButtonGroup>
-        <CustomButton type="primary" @click="handleSubmit">primary</CustomButton>
-        <CustomButton type="secondary" @click="handleSubmit">secondary</CustomButton>
-        <CustomButton type="neutral" @click="handleSubmit">neutral</CustomButton>
-        <CustomButton type="success" @click="handleSubmit">success</CustomButton>
-        <CustomButton type="info" @click="handleSubmit">info</CustomButton>
-        <CustomButton type="warn" @click="handleSubmit">warn</CustomButton>
-        <CustomButton type="error" @click="handleSubmit">error</CustomButton>
+        <CustomButton type="primary" @click="handleSubmit">Senden</CustomButton>
       </ButtonGroup>
     </template>
   </Modal>

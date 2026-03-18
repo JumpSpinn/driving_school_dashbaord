@@ -211,11 +211,11 @@ onClickOutside(target, () => {
       &:hover:not(.selected, .no_search) {
         background-color: rgba(255, 255, 255, 0.2);
         color: var(--text);
-        background-color: rgb(var(--secondary-rgb), 0.3);
+        background-color: rgb(var(--primary-rgb), 0.3);
       }
 
       &.selected {
-        background-color: rgb(var(--secondary-rgb));
+        background-color: rgb(var(--primary-rgb));
         color: var(--text);
       }
 
