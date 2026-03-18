@@ -84,7 +84,7 @@ onClickOutside(target, () => {
   }
 
   .modal{
-    min-width: 300px;
+    min-width: 550px;
     max-width: 550px;
     border-radius: var(--size-8);
     background-color: var(--bg);
