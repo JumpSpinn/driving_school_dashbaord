@@ -22,6 +22,7 @@ import {useField} from "@/composables/useField.ts";
 import {Rules} from "@/helpers/ValidationRules.ts";
 import {useForm} from "@/composables/useForm.ts";
 import CustomButton from "@/components/button/CustomButton.vue";
+import ButtonGroup from "@/components/button/ButtonGroup.vue";
 
 const isLoading = ref(true);
 const drivingSchools = ref<IDrivingSchool[]>([]);
@@ -81,7 +82,7 @@ const handleSubmit = () => {
     </PageHeader>
   </CustomPaper>
 
-  <Modal :open="true">
+  <Modal :open="false">
     <template #header>Input Test</template>
     <template #content>
       <form @submit.prevent="handleSubmit">
@@ -90,7 +91,15 @@ const handleSubmit = () => {
       </form>
     </template>
     <template #actions>
-      <CustomButton @click="handleSubmit">Abschicken</CustomButton>
+      <ButtonGroup>
+        <CustomButton type="primary" @click="handleSubmit">primary</CustomButton>
+        <CustomButton type="secondary" @click="handleSubmit">secondary</CustomButton>
+        <CustomButton type="neutral" @click="handleSubmit">neutral</CustomButton>
+        <CustomButton type="success" @click="handleSubmit">success</CustomButton>
+        <CustomButton type="info" @click="handleSubmit">info</CustomButton>
+        <CustomButton type="warn" @click="handleSubmit">warn</CustomButton>
+        <CustomButton type="error" @click="handleSubmit">error</CustomButton>
+      </ButtonGroup>
     </template>
   </Modal>
 
