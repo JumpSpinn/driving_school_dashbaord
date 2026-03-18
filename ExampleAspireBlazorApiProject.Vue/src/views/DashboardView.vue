@@ -11,6 +11,7 @@ import {TimeHelper} from "@/helpers/TimeHelper.ts";
 import {StudentHelper} from "@/helpers/StudentHelper.ts";
 import {TheoryLessonHelper} from "@/helpers/TheoryLessonHelper.ts";
 import { Building2, LucideGraduationCap, LibraryBig, BookCheck, UserStar } from "lucide-vue-next";
+import {BaseUtil} from "@/utils/BaseUtil.ts";
 
 const isLoading = ref(true);
 const drivingSchoolStore = useDrivingSchoolStore();
@@ -76,13 +77,15 @@ const lineData = {
 }
 
 const prepareCharts = () => {
+  const studentsData = BaseUtil.deepCopy(studentStore.data);
+
   // Data (Passed, Non-Passed)
-  donutPassedData.value.datasets[0]!.data[0] = studentStore.data.filter(s => s.hasPassed).length;
-  donutPassedData.value.datasets[0]!.data[1] = studentStore.data.filter(s => !s.hasPassed).length;
+  donutPassedData.value.datasets[0]!.data[0] = studentsData.filter(s => s.hasPassed).length;
+  donutPassedData.value.datasets[0]!.data[1] = studentsData.filter(s => !s.hasPassed).length;
 
   // Data (Driving School, Non-Driving School)
-  donutDrivingSchoolData.value.datasets[0]!.data[0] = studentStore.data.filter(s => s.drivingSchool).length;
-  donutDrivingSchoolData.value.datasets[0]!.data[1] = studentStore.data.filter(s => !s.drivingSchool).length;
+  donutDrivingSchoolData.value.datasets[0]!.data[0] = studentsData.filter(s => s.drivingSchool).length;
+  donutDrivingSchoolData.value.datasets[0]!.data[1] = studentsData.filter(s => !s.drivingSchool).length;
 
   // Data (Booking per Day)
   const dayMap: Record<number, number> = {
@@ -116,7 +119,7 @@ const rows = ref<any[]>([]);
 
 const prepareTable = () => {
   const data = [];
-  const bookings = courseBookingStore.data;
+  const bookings = BaseUtil.deepCopy(courseBookingStore.data);
   bookings.sort((a,b) => a.bookingDate! > b.bookingDate! ? -1 : 1);
   bookings.splice(5, bookings.length - 5);
 
@@ -141,7 +144,7 @@ const prepareTable = () => {
           <h3>Fahrschulen</h3>
           <Building2 :size="50" :stroke-width="1" class="icon" />
         </div>
-        <h1>{{ drivingSchoolStore.data.length }}</h1>
+        <h1><AnimatedCount :value="drivingSchoolStore.data.length" /></h1>
       </PageHeader>
     </CustomPaper>
 
@@ -151,7 +154,7 @@ const prepareTable = () => {
           <h3>Fahrlehrer</h3>
           <UserStar :size="50" :stroke-width="1" class="icon" />
         </div>
-        <h1>{{ instructorStore.data.length }}</h1>
+        <h1><AnimatedCount :value="instructorStore.data.length" /></h1>
       </PageHeader>
     </CustomPaper>
 
@@ -161,7 +164,7 @@ const prepareTable = () => {
           <h3>Fahrschüler</h3>
           <LucideGraduationCap :size="50" :stroke-width="1" class="icon" />
         </div>
-        <h1>{{ studentStore.data.length }}</h1>
+        <h1><AnimatedCount :value="studentStore.data.length" /></h1>
       </PageHeader>
     </CustomPaper>
 
@@ -171,7 +174,7 @@ const prepareTable = () => {
           <h3>Kurse</h3>
           <LibraryBig :size="50" :stroke-width="1" class="icon" />
         </div>
-        <h1>{{ theoryLessonStore.data.length }}</h1>
+        <h1><AnimatedCount :value="theoryLessonStore.data.length" /></h1>
       </PageHeader>
     </CustomPaper>
 
@@ -181,7 +184,7 @@ const prepareTable = () => {
           <h3>Kurs-Buchungen</h3>
           <BookCheck :size="50" :stroke-width="1" class="icon" />
         </div>
-        <h1>{{ courseBookingStore.data.length }}</h1>
+        <h1><AnimatedCount :value="courseBookingStore.data.length" /></h1>
       </PageHeader>
     </CustomPaper>
   </div>

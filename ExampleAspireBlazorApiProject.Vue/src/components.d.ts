@@ -11,6 +11,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AnimatedCount: typeof import('./components/AnimatedCount.vue')['default']
     BaseInput: typeof import('./components/input/BaseInput.vue')['default']
     ButtonGroup: typeof import('./components/button/ButtonGroup.vue')['default']
     CustomButton: typeof import('./components/button/CustomButton.vue')['default']
