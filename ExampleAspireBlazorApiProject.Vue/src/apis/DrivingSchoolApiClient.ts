@@ -1,6 +1,6 @@
 ﻿import {BaseApiClient} from "@/apis/base/BaseApiClient.ts";
 import {ApiEndpoint} from "@/enums/ApiEndpoint.ts";
-import type {IDrivingSchool} from "@/interfaces/IDrivingSchool.ts";
+import type {IDrivingSchool, IDrivingSchoolBase, IDrivingSchoolUpdate} from "@/interfaces/IDrivingSchool.ts";
 import type {ICustomApi} from "@/interfaces/ICustomApi.ts";
 
 class DrivingSchoolApiClient extends BaseApiClient implements ICustomApi {
@@ -15,6 +15,29 @@ class DrivingSchoolApiClient extends BaseApiClient implements ICustomApi {
     catch(err){
       console.error("no driving schools registered!", err);
       return null;
+    }
+  }
+
+  async create(data: IDrivingSchoolBase){
+    try{
+      const resp = await this.client.post<IDrivingSchool>(this._endpoint, data);
+      console.info("driving school created!", resp.data);
+      return resp.data;
+    }
+    catch(err){
+      console.error("driving school cant be created", err);
+      return null;
+    }
+  }
+
+  async update(data: IDrivingSchoolUpdate){
+    try{
+      const resp = await this.client.put<IDrivingSchool>(this._endpoint, data);
+      console.info("driving school updated!", resp.data);
+      return resp.data;
+    }
+    catch(err){
+      console.error("driving school cant be updated", err);
     }
   }
 

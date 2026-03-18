@@ -1,4 +1,8 @@
-﻿import type {ICourseBooking} from "@/interfaces/ICourseBooking.ts";
+﻿import type {
+  ICourseBooking,
+  ICourseBookingBase,
+  ICourseBookingUpdate
+} from "@/interfaces/ICourseBooking.ts";
 import {ApiEndpoint} from "@/enums/ApiEndpoint.ts";
 import {BaseApiClient} from "@/apis/base/BaseApiClient.ts";
 import type {ICustomApi} from "@/interfaces/ICustomApi.ts";
@@ -15,6 +19,29 @@ class CourseBookingApiClient extends BaseApiClient implements ICustomApi {
     catch(err){
       console.error("no course bookings registered!", err);
       return null;
+    }
+  }
+
+  async create(data: ICourseBookingBase){
+    try{
+      const resp = await this.client.post<ICourseBooking>(this._endpoint, data);
+      console.info("course booking created!", resp.data);
+      return resp.data;
+    }
+    catch(err){
+      console.error("course booking cant be created", err);
+      return null;
+    }
+  }
+
+  async update(data: ICourseBookingUpdate){
+    try{
+      const resp = await this.client.put<ICourseBooking>(this._endpoint, data);
+      console.info("course booking updated!", resp.data);
+      return resp.data;
+    }
+    catch(err){
+      console.error("course booking cant be updated", err);
     }
   }
 
