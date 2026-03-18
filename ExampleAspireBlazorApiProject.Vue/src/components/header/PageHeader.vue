@@ -18,6 +18,10 @@
   justify-content: space-between;
   align-items: center;
 
+  .content{
+    flex: 1;
+  }
+
   .desc{
     color: var(--text-muted);
   }
