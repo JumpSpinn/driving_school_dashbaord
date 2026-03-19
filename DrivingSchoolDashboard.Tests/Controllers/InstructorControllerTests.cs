@@ -62,7 +62,7 @@ public sealed class InstructorControllerTests
         var instructor = new InstructorModel { FirstName = "Jane", LastName = "Smith" };
         var created = await _service.CreateInstructorAsync(instructor);
 
-        var result = await _controller.DeleteStudentAsync(created!.Id);
+        var result = await _controller.DeleteInstructorAsync(created!.Id);
 
         Assert.That(result, Is.InstanceOf<NoContentResult>());
     }
@@ -70,7 +70,7 @@ public sealed class InstructorControllerTests
     [Test]
     public async Task DeleteStudentAsync_ReturnsNotFoundWhenNotExists()
     {
-        var result = await _controller.DeleteStudentAsync(999) as NotFoundObjectResult;
+        var result = await _controller.DeleteInstructorAsync(999) as NotFoundObjectResult;
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.StatusCode, Is.EqualTo(404));
@@ -87,7 +87,7 @@ public sealed class InstructorControllerTests
         var created = await _service.CreateInstructorAsync(instructor);
         created!.Mail = "new@test.com";
 
-        var result = await _controller.UpdateStudentAsync(created);
+        var result = await _controller.UpdateInstructorAsync(created);
 
         Assert.That(result, Is.InstanceOf<NoContentResult>());
     }
@@ -97,7 +97,7 @@ public sealed class InstructorControllerTests
     {
         var instructor = new InstructorModel { Id = 999, FirstName = "Unknown", LastName = "User" };
 
-        var result = await _controller.UpdateStudentAsync(instructor) as NotFoundObjectResult;
+        var result = await _controller.UpdateInstructorAsync(instructor) as NotFoundObjectResult;
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.StatusCode, Is.EqualTo(404));

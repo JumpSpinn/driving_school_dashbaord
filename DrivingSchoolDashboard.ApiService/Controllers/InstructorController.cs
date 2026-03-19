@@ -23,7 +23,7 @@ public sealed class InstructorController(InstructorService instructorService, IL
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteStudentAsync(int id)
+    public async Task<IActionResult> DeleteInstructorAsync(int id)
     {
         var deleted = await instructorService.DeleteInstructorAsync(id);
         logger.LogDebug("Instructor #{Id} deleted: {Result}", id, deleted);
@@ -33,12 +33,12 @@ public sealed class InstructorController(InstructorService instructorService, IL
     }
     
     [HttpPut]
-    public async Task<IActionResult> UpdateStudentAsync(InstructorModel editInstructor)
+    public async Task<IActionResult> UpdateInstructorAsync(InstructorModel editInstructor)
     {
         var instructor = await instructorService.UpdateInstructorAsync(editInstructor);
         logger.LogDebug("Instructor #{Id} updated: {Result}", editInstructor.Id, instructor is not null);
         if (instructor is null)
             return NotFound($"Fahrlehrer mit der ID {editInstructor.Id} konnte nicht aktualisiert werden!");
-        return NoContent();
+        return StatusCode(StatusCodes.Status201Created, instructor);
     }
 }
