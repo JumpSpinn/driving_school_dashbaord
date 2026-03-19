@@ -1,5 +1,8 @@
 ﻿<script setup lang="ts">
-import type {ICourseBooking} from "@/interfaces/ICourseBooking.ts";
+import type {
+  ICourseBooking,
+  ICourseBookingBase,
+} from "@/interfaces/ICourseBooking.ts";
 import {courseBookingApiClient} from "@/apis/CourseBookingApiClient.ts";
 import Vue3Datatable from '@bhplugin/vue3-datatable'
 import {StudentHelper} from "@/helpers/StudentHelper.ts";
@@ -9,6 +12,11 @@ import {ModalHelper} from "@/helpers/ModalHelper.ts";
 import {ApiHelper} from "@/helpers/ApiHelper.ts";
 import {ModalType} from "@/enums/ModalType.ts";
 import {useCourseBookingStore} from "@/stores/courseBookingStore.ts";
+import {useField} from "@/composables/useField.ts";
+import {Rules} from "@/helpers/ValidationRules.ts";
+import {useForm} from "@/composables/useForm.ts";
+import {useStudentStore} from "@/stores/studentStore.ts";
+import {useTheoryLessonStore} from "@/stores/theoryLessonStore.ts";
 
 const cols = ref([
   { field: "id", title: "ID", width: "90px", filter: false },
@@ -20,6 +28,15 @@ const cols = ref([
 const rows = ref<any[]>([])
 const isLoading = ref(true);
 const courseBookingStore = useCourseBookingStore();
+const studentStore = useStudentStore();
+const theoryLessonStore = useTheoryLessonStore();
+const studentId = useField([
+  Rules.required()
+]);
+const theoryLessonId = useField([
+  Rules.required()
+]);
+const form = useForm([studentId, theoryLessonId]);
 
 onMounted(async () => {
   await loadAllData();
@@ -28,6 +45,8 @@ onMounted(async () => {
 const loadAllData = async () => {
   await Promise.all([
     courseBookingStore.fetchAll(),
+    studentStore.fetchAll(),
+    theoryLessonStore.fetchAll(),
   ]);
   await prepareTable();
   isLoading.value = false;
@@ -51,15 +70,24 @@ const prepareTable = async () => {
 // Modals
 const modalOpened = ref<ModalType>(ModalType.NONE);
 const modalData = ref<ICourseBooking>();
+const modalError = ref<string | null>(null);
 
 const showModal = (data: ICourseBooking, type: ModalType) => {
   modalData.value = courseBookingStore.findById(data.id);
+  setModalData(modalData.value);
   modalOpened.value = type;
+}
+
+const setModalData = (data?: ICourseBooking) => {
+  studentId.value = data?.student ?? "";
+  theoryLessonId.value = data?.theoryLesson ?? "";
 }
 
 const resetModal = () => {
   modalData.value = undefined;
   modalOpened.value = ModalType.NONE;
+  modalError.value = null;
+  form.reset();
 }
 
 // Api Calls
@@ -78,18 +106,53 @@ const deleteData = async () => {
   resetModal();
 }
 
+const createData = async () => {
+  if(!form.validate()) return;
+
+  const data: ICourseBookingBase = {
+    studentId: Number(studentId.value),
+    theoryLessonId: Number(theoryLessonId.value),
+  };
+
+  const createdData = await ApiHelper.create(data, courseBookingApiClient);
+  if(!createdData){
+    modalError.value = "Eintrag konnte nicht gespeichert werden.";
+    return;
+  }
+
+  courseBookingStore.data.push(createdData);
+  await prepareTable();
+  resetModal();
+}
+
 </script>
 
 <template>
-  <Modal :open="modalOpened === ModalType.CREATE || modalOpened === ModalType.EDIT" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions">
-    <template #header>{{ modalOpened === ModalType.CREATE ? "Erstellen" : "Bearbeiten" }}</template>
-    <template #content>coming soon..</template>
+  <Modal :open="modalOpened === ModalType.CREATE" @abort="resetModal" :options="ModalHelper.DefaultOptions">
+    <template #header>Erstellen</template>
+    <template #content>
+      <form @submit.prevent="createData">
+        <CustomDropdown label="Fahrschüler:"
+                        :required="true"
+                        :searchOn="true"
+                        v-model="studentId.value"
+                        :error="studentId.error"
+                        :options="studentStore.data.map(x => ({label: StudentHelper.getFullName(x), value: x.id.toString()}))"
+        />
+        <CustomDropdown label="Kurs:"
+                        :required="true"
+                        :searchOn="true"
+                        v-model="theoryLessonId.value"
+                        :error="theoryLessonId.error"
+                        :options="theoryLessonStore.data.map(x => ({label: TheoryLessonHelper.getName(x), value: x.id.toString()}))"
+        />
+        <button type="submit" style="display:none" />
+      </form>
+    </template>
     <template #actions>
       <ButtonGroup>
-        <CustomButton @click="modalOpened = ModalType.NONE" type="neutral">Abbrechen</CustomButton>
-        <CustomButton :outline="false" type="success">
-          {{ modalOpened === ModalType.CREATE ? "Erstellen" : "Änderungen übernehmen" }}
-        </CustomButton>
+        <CustomButton @click="resetModal" type="neutral">Abbrechen</CustomButton>
+        <CustomButton :outline="false" type="success" @click="createData">Erstellen</CustomButton>
       </ButtonGroup>
     </template>
   </Modal>
@@ -141,9 +204,6 @@ const deleteData = async () => {
         <ButtonGroup>
           <CustomButton :min-width="0" type="neutral" :outline="true" @click="showModal(data.value, ModalType.INFO)">
             <i class="pi pi-eye"></i>
-          </CustomButton>
-          <CustomButton :min-width="0" type="primary" :outline="true" @click="showModal(data.value, ModalType.EDIT)">
-            <i class="pi pi-pencil"></i>
           </CustomButton>
           <CustomButton :min-width="0" type="error" :outline="true" @click="showModal(data.value, ModalType.DELETE)">
             <i class="pi pi-trash"></i>
