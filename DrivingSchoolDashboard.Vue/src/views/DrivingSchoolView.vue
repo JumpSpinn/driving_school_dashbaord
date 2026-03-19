@@ -152,7 +152,7 @@ const updateData = async () => {
 
 <template>
   <Modal :open="modalOpened === ModalType.CREATE || modalOpened === ModalType.EDIT" @abort="resetModal" :options="ModalHelper.DefaultOptions" :error="modalError">
-    <template #header>{{ modalOpened === ModalType.CREATE ? "Fahrschule erstellen" : "Fahrschule bearbeiten" }}</template>
+    <template #header>{{ modalOpened === ModalType.CREATE ? "Fahrschule eintragen" : "Fahrschule bearbeiten" }}</template>
     <template #content>
       <form @submit.prevent="modalOpened === ModalType.CREATE ? createData() : updateData()">
         <CustomTextInput label="Bezeichnung:"
@@ -172,7 +172,7 @@ const updateData = async () => {
       <ButtonGroup>
         <CustomButton @click="resetModal" type="neutral">Abbrechen</CustomButton>
         <CustomButton :outline="false" type="success" @click="modalOpened === ModalType.CREATE ? createData() : updateData()">
-          {{ modalOpened === ModalType.CREATE ? "Erstellen" : "Änderungen übernehmen" }}
+          {{ modalOpened === ModalType.CREATE ? "Eintragen" : "Änderungen übernehmen" }}
         </CustomButton>
       </ButtonGroup>
     </template>

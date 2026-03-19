@@ -128,8 +128,8 @@ const createData = async () => {
 </script>
 
 <template>
-  <Modal :open="modalOpened === ModalType.CREATE" @abort="resetModal" :options="ModalHelper.DefaultOptions">
-    <template #header>Erstellen</template>
+  <Modal :open="modalOpened === ModalType.CREATE" @abort="resetModal" :options="ModalHelper.DefaultOptions" :error="modalError">
+    <template #header>Kursbuchung eintragen</template>
     <template #content>
       <form @submit.prevent="createData">
         <CustomDropdown label="Fahrschüler:"
@@ -152,20 +152,20 @@ const createData = async () => {
     <template #actions>
       <ButtonGroup>
         <CustomButton @click="resetModal" type="neutral">Abbrechen</CustomButton>
-        <CustomButton :outline="false" type="success" @click="createData">Erstellen</CustomButton>
+        <CustomButton :outline="false" type="success" @click="createData">Eintragen</CustomButton>
       </ButtonGroup>
     </template>
   </Modal>
 
   <Modal :open="modalOpened === ModalType.INFO" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.InfoOptions">
-    <template #header>Information</template>
+    <template #header>Kursbuchung | Information</template>
     <template #content>coming soon.. {{ modalData?.id }}</template>
     <template #actions>
       <CustomButton @click="modalOpened = ModalType.NONE" :outline="false" type="neutral">Schließen</CustomButton>
     </template>
   </Modal>
 
-  <Modal :open="modalOpened === ModalType.DELETE" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions">
+  <Modal :open="modalOpened === ModalType.DELETE" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions" :error="modalError">
     <template #header>Kursbuchung löschen</template>
     <template #content>
       Du bist dabei die Kursbuchung von
@@ -187,7 +187,7 @@ const createData = async () => {
         <p>Hier sind alle Kurse aufgelistet, die eine Buchung aufweisen.</p>
       </template>
       <template #actions>
-        <CustomButton type="primary" :outline="true" :disabled="isLoading" @click="modalOpened = ModalType.CREATE">Buchung eintragen</CustomButton>
+        <CustomButton type="primary" :outline="true" :disabled="isLoading" @click="modalOpened = ModalType.CREATE">Kursbuchung eintragen</CustomButton>
       </template>
     </PageHeader>
   </CustomPaper>

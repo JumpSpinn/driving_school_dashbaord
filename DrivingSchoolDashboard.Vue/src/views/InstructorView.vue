@@ -158,8 +158,8 @@ const updateData = async () => {
 </script>
 
 <template>
-  <Modal :open="modalOpened === ModalType.CREATE || modalOpened === ModalType.EDIT" @abort="resetModal" :options="ModalHelper.DefaultOptions">
-    <template #header>{{ modalOpened === ModalType.CREATE ? "Erstellen" : "Bearbeiten" }}</template>
+  <Modal :open="modalOpened === ModalType.CREATE || modalOpened === ModalType.EDIT" @abort="resetModal" :options="ModalHelper.DefaultOptions" :error="modalError">
+    <template #header>{{ modalOpened === ModalType.CREATE ? "Fahrlehrer eintragen" : "Fahrlehrer bearbeiten" }}</template>
     <template #content>
       <form @submit.prevent="modalOpened === ModalType.CREATE ? createData() : updateData()">
         <CustomTextInput label="Vorname:"
@@ -188,21 +188,21 @@ const updateData = async () => {
       <ButtonGroup>
         <CustomButton @click="resetModal" type="neutral">Abbrechen</CustomButton>
         <CustomButton :outline="false" type="success" @click="modalOpened === ModalType.CREATE ? createData() : updateData()">
-          {{ modalOpened === ModalType.CREATE ? "Erstellen" : "Änderungen übernehmen" }}
+          {{ modalOpened === ModalType.CREATE ? "Eintragen" : "Änderungen übernehmen" }}
         </CustomButton>
       </ButtonGroup>
     </template>
   </Modal>
 
   <Modal :open="modalOpened === ModalType.INFO" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.InfoOptions">
-    <template #header>Information</template>
+    <template #header>Fahrlehrer | Information</template>
     <template #content>coming soon.. {{ modalData?.id }}</template>
     <template #actions>
       <CustomButton @click="modalOpened = ModalType.NONE" :outline="false" type="neutral">Schließen</CustomButton>
     </template>
   </Modal>
 
-  <Modal :open="modalOpened === ModalType.DELETE" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions">
+  <Modal :open="modalOpened === ModalType.DELETE" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions" :error="modalError">
     <template #header>Fahrlehrer löschen</template>
     <template #content>
       Du bist dabei den Fahrlehrer

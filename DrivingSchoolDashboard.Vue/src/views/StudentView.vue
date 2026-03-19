@@ -59,6 +59,7 @@ const prepareTable = async () => {
 // Modals
 const modalOpened = ref<ModalType>(ModalType.NONE);
 const modalData = ref<IStudent>();
+const modalError = ref<string | null>(null);
 
 const showModal = (data: IStudent, type: ModalType) => {
   modalData.value = studentStore.findById(data.id);
@@ -89,28 +90,28 @@ const deleteData = async () => {
 </script>
 
 <template>
-  <Modal :open="modalOpened === ModalType.CREATE || modalOpened === ModalType.EDIT" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions">
-    <template #header>{{ modalOpened === ModalType.CREATE ? "Erstellen" : "Bearbeiten" }}</template>
+  <Modal :open="modalOpened === ModalType.CREATE || modalOpened === ModalType.EDIT" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions" :error="modalError">
+    <template #header>{{ modalOpened === ModalType.CREATE ? "Fahrschüler eintragen" : "Fahrschüler bearbeiten" }}</template>
     <template #content>coming soon..</template>
     <template #actions>
       <ButtonGroup>
         <CustomButton @click="modalOpened = ModalType.NONE" type="neutral">Abbrechen</CustomButton>
         <CustomButton :outline="false" type="success">
-          {{ modalOpened === ModalType.CREATE ? "Erstellen" : "Änderungen übernehmen" }}
+          {{ modalOpened === ModalType.CREATE ? "Eintragen" : "Änderungen übernehmen" }}
         </CustomButton>
       </ButtonGroup>
     </template>
   </Modal>
 
   <Modal :open="modalOpened === ModalType.INFO" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.InfoOptions">
-    <template #header>Information</template>
+    <template #header>Fahrschüler | Information</template>
     <template #content>coming soon.. {{ modalData?.id }}</template>
     <template #actions>
       <CustomButton @click="modalOpened = ModalType.NONE" :outline="false" type="neutral">Schließen</CustomButton>
     </template>
   </Modal>
 
-  <Modal :open="modalOpened === ModalType.DELETE" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions">
+  <Modal :open="modalOpened === ModalType.DELETE" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions" :error="modalError">
     <template #header>Fahrschüler löschen</template>
     <template #content>
       Du bist dabei den Fahrschüler
