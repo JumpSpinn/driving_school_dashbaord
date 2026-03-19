@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<IsPackable>false</IsPackable>
+		<IsTestProject>true</IsTestProject>
+		<RootNamespace>DrivingSchoolDashboard.Tests</RootNamespace>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="Aspire.Hosting.Testing" Version="13.1.0"/>
+		<PackageReference Include="bunit" Version="1.32.7"/>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.13" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1"/>
+		<PackageReference Include="Moq" Version="4.20.72"/>
+		<PackageReference Include="NUnit" Version="4.4.0"/>
+		<PackageReference Include="NUnit.Analyzers" Version="4.10.0"/>
+		<PackageReference Include="NUnit3TestAdapter" Version="4.6.0"/>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\DrivingSchoolDashboard.ApiService\DrivingSchoolDashboard.ApiService.csproj" />
+		<ProjectReference Include="..\DrivingSchoolDashboard.AppHost\DrivingSchoolDashboard.AppHost.csproj" />
+		<ProjectReference Include="..\DrivingSchoolDashboard.Web\DrivingSchoolDashboard.Web.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="System.Net"/>
+		<Using Include="System.Net.Http.Json"/>
+		<Using Include="System.ComponentModel.DataAnnotations"/>
+		<Using Include="Microsoft.Extensions.DependencyInjection"/>
+		<Using Include="Microsoft.Extensions.Logging"/>
+		<Using Include="Microsoft.Extensions.Logging.Abstractions"/>
+		<Using Include="Microsoft.EntityFrameworkCore"/>
+		<Using Include="Microsoft.AspNetCore.Http"/>
+		<Using Include="Microsoft.AspNetCore.Mvc"/>
+		<Using Include="Aspire.Hosting.ApplicationModel"/>
+		<Using Include="Aspire.Hosting.Testing"/>
+		<Using Include="NUnit.Framework"/>
+		<Using Include="DrivingSchoolDashboard.Shared.Models"/>
+		<Using Include="DrivingSchoolDashboard.Shared.Enums"/>
+		<Using Include="DrivingSchoolDashboard.Shared.Helpers"/>
+		<Using Include="DrivingSchoolDashboard.Web.Apis"/>
+		<Using Include="DrivingSchoolDashboard.Web.Helpers"/>
+		<Using Include="DrivingSchoolDashboard.ApiService.Services"/>
+		<Using Include="DrivingSchoolDashboard.ApiService.Controllers"/>
+		<Using Include="DrivingSchoolDashboard.ApiService.Database"/>
+		<Using Include="DrivingSchoolDashboard.Web.Data"/>
+		<Using Include="MudBlazor"/>
+		<Using Include="Bunit"/>
+		<Using Include="Moq"/>
+	</ItemGroup>
+
+</Project>

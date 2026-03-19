@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="DrivingSchoolDashboard.ApiService/DrivingSchoolDashboard.ApiService.csproj" />
+  <Project Path="DrivingSchoolDashboard.AppHost/DrivingSchoolDashboard.AppHost.csproj" />
+  <Project Path="DrivingSchoolDashboard.ServiceDefaults/DrivingSchoolDashboard.ServiceDefaults.csproj" />
+  <Project Path="DrivingSchoolDashboard.Shared/DrivingSchoolDashboard.Shared.csproj" />
+  <Project Path="DrivingSchoolDashboard.Tests/DrivingSchoolDashboard.Tests.csproj" />
+  <Project Path="DrivingSchoolDashboard.Web/DrivingSchoolDashboard.Web.csproj" />
+</Solution>
