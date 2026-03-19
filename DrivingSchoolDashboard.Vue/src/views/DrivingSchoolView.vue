@@ -165,6 +165,7 @@ const updateData = async () => {
                         :error="ownerId.error"
                         :options="instructorStore.data.map(x => ({label: InstructorHelper.getFullName(x), value: x.id}))"
         />
+        <button type="submit" style="display:none" />
       </form>
     </template>
     <template #actions>

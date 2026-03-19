@@ -1,12 +1,15 @@
 ﻿<script setup lang="ts">
 import {instructorApiClient} from "@/apis/InstructorApiClient.ts";
-import type {IInstructor} from "@/interfaces/IInstructor.ts";
+import type {IInstructor, IInstructorBase, IInstructorUpdate} from "@/interfaces/IInstructor.ts";
 import Vue3Datatable from '@bhplugin/vue3-datatable'
 import {InstructorHelper} from "@/helpers/InstructorHelper.ts";
 import {ModalType} from "@/enums/ModalType.ts";
 import {ModalHelper} from "@/helpers/ModalHelper.ts";
 import {ApiHelper} from "@/helpers/ApiHelper.ts";
 import {useInstructorStore} from "@/stores/instructorStore.ts";
+import {useField} from "@/composables/useField.ts";
+import {Rules} from "@/helpers/ValidationRules.ts";
+import {useForm} from "@/composables/useForm.ts";
 
 const cols = ref([
   { field: "id", title: "ID", width: "90px", filter: false },
@@ -19,6 +22,22 @@ const cols = ref([
 const rows = ref<any[]>([])
 const isLoading = ref(true);
 const instructorStore = useInstructorStore();
+const firstName = useField([
+  Rules.required(),
+  Rules.minLength(3),
+  Rules.maxLength(50),
+]);
+const lastName = useField([
+  Rules.required(),
+  Rules.minLength(3),
+  Rules.maxLength(50),
+]);
+const mail = useField([
+  Rules.required(),
+  Rules.email(),
+]);
+const phone = useField();
+const form = useForm([firstName, lastName, mail, phone]);
 
 onMounted(async () => {
   await loadAllData();
@@ -51,15 +70,26 @@ const prepareTable = async () => {
 // Modals
 const modalOpened = ref<ModalType>(ModalType.NONE);
 const modalData = ref<IInstructor>();
+const modalError = ref<string | null>(null);
 
 const showModal = (data: IInstructor, type: ModalType) => {
   modalData.value = instructorStore.findById(data.id);
+  setModalData(modalData.value);
   modalOpened.value = type;
+}
+
+const setModalData = (data?: IInstructor) => {
+  firstName.value = data?.firstName ?? "";
+  lastName.value = data?.lastName ?? "";
+  mail.value = data?.mail ?? "";
+  phone.value = data?.phone ?? "";
 }
 
 const resetModal = () => {
   modalData.value = undefined;
   modalOpened.value = ModalType.NONE;
+  modalError.value = null;
+  form.reset();
 }
 
 // Api Calls
@@ -78,16 +108,86 @@ const deleteData = async () => {
   resetModal();
 }
 
+const createData = async () => {
+  if(!form.validate()) return;
+
+  const data: IInstructorBase = {
+    firstName: firstName.value,
+    lastName: lastName.value,
+    mail: mail.value,
+    phone: phone.value,
+  };
+
+  const createdData = await ApiHelper.create(data, instructorApiClient);
+  if(!createdData){
+    modalError.value = "Eintrag konnte nicht gespeichert werden.";
+    return;
+  }
+
+  instructorStore.data.push(createdData);
+  await prepareTable();
+  resetModal();
+}
+
+const updateData = async () => {
+  if(!modalData.value) return;
+  if(!form.validate()) return;
+
+  const data: IInstructorUpdate = {
+    id: modalData.value.id,
+    firstName: firstName.value,
+    lastName: lastName.value,
+    mail: mail.value,
+    phone: phone.value,
+  };
+
+  const updateData = await ApiHelper.update(data, instructorApiClient);
+  if(!updateData){
+    modalError.value = "Änderungen konnten nicht übernommen werden.";
+    return;
+  }
+
+  const index = instructorStore.data.findIndex(x => x.id === modalData.value?.id);
+  if(index !== -1){
+    instructorStore.data[index] = updateData;
+    await prepareTable();
+    resetModal();
+  }
+}
+
 </script>
 
 <template>
-  <Modal :open="modalOpened === ModalType.CREATE || modalOpened === ModalType.EDIT" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.DefaultOptions">
+  <Modal :open="modalOpened === ModalType.CREATE || modalOpened === ModalType.EDIT" @abort="resetModal" :options="ModalHelper.DefaultOptions">
     <template #header>{{ modalOpened === ModalType.CREATE ? "Erstellen" : "Bearbeiten" }}</template>
-    <template #content>coming soon..</template>
+    <template #content>
+      <form @submit.prevent="modalOpened === ModalType.CREATE ? createData() : updateData()">
+        <CustomTextInput label="Vorname:"
+                         :required="true"
+                         v-model="firstName.value"
+                         :error="firstName.error"
+        />
+        <CustomTextInput label="Nachname:"
+                         :required="true"
+                         v-model="lastName.value"
+                         :error="lastName.error"
+        />
+        <CustomTextInput label="E-Mail:"
+                         :required="true"
+                         v-model="mail.value"
+                         :error="mail.error"
+        />
+        <CustomTextInput label="Telefon:"
+                         v-model="phone.value"
+                         :error="phone.error"
+        />
+        <button type="submit" style="display:none" />
+      </form>
+    </template>
     <template #actions>
       <ButtonGroup>
-        <CustomButton @click="modalOpened = ModalType.NONE" type="neutral">Abbrechen</CustomButton>
-        <CustomButton :outline="false" type="success">
+        <CustomButton @click="resetModal" type="neutral">Abbrechen</CustomButton>
+        <CustomButton :outline="false" type="success" @click="modalOpened === ModalType.CREATE ? createData() : updateData()">
           {{ modalOpened === ModalType.CREATE ? "Erstellen" : "Änderungen übernehmen" }}
         </CustomButton>
       </ButtonGroup>
@@ -124,7 +224,7 @@ const deleteData = async () => {
         <p>Hier sind alle Fahrlehrer aufgelistet, die unterrichten dürfen.</p>
       </template>
       <template #actions>
-        <CustomButton type="primary" :outline="true" :disabled="isLoading" @click="modalOpened = ModalType.CREATE">Fahrlehrer eintragen</CustomButton>
+        <CustomButton type="primary" :outline="true" :disabled="isLoading" @click="modalOpened = ModalType.CREATE; setModalData()">Fahrlehrer eintragen</CustomButton>
       </template>
     </PageHeader>
   </CustomPaper>
