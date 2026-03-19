@@ -1,4 +1,6 @@
-﻿export class TimeHelper {
+﻿import {DayOfWeek} from "@/enums/DayOfWeek.ts";
+
+export class TimeHelper {
   static convert(timestamp: string | Date | null | undefined, format: 'full' | 'date' | 'time' | 'datetime' = 'full'): string {
     if(timestamp == null) return "Keine Angabe";
 
@@ -36,5 +38,17 @@
 
   public static async wait(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  public static getDayOfWeekName = (dayOfWeek: DayOfWeek) => {
+    switch(dayOfWeek){
+      case DayOfWeek.Monday: return "Montag";
+      case DayOfWeek.Tuesday: return "Dienstag";
+      case DayOfWeek.Wednesday: return "Mittwoch";
+      case DayOfWeek.Thursday: return "Donnerstag";
+      case DayOfWeek.Friday: return "Freitag";
+      case DayOfWeek.Saturday: return "Samstag";
+      case DayOfWeek.Sunday: return "Sonntag";
+    }
   }
 }
