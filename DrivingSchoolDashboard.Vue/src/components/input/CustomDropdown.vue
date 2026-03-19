@@ -2,6 +2,7 @@
 import {InputHelper} from "@/helpers/InputHelper.ts";
 import {onClickOutside} from "@vueuse/core";
 import { ChevronDown } from 'lucide-vue-next';
+import {BaseUtil} from "@/utils/BaseUtil.ts";
 
 const props = defineProps({
   id: String,
@@ -34,7 +35,8 @@ const setId = computed(() => {
 
 const selectedLabel = computed(() => {
   const option = props.options.find((x) => x.value === props.modelValue);
-  return option ? option.label : props.placeholder || '..';
+  const returnVal = option ? option.label : props.placeholder || '..';
+  return BaseUtil.substringStringFromZeroToLength(returnVal, 40);
 });
 
 const getOptions = computed(() => {
