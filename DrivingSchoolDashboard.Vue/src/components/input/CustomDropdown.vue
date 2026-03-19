@@ -83,7 +83,7 @@ onClickOutside(target, () => {
         @click="toggleOpen"
         :class="{ open: isOpen, error: error }"
       >
-        <span :class="{ placeholder: !modelValue }">{{ selectedLabel }}</span>
+        <span :class="{ placeholder: modelValue == null }">{{ selectedLabel }}</span>
         <ChevronDown
           class="icon"
           :class="{ rotate: isOpen }"
