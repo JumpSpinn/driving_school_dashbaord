@@ -7,7 +7,7 @@ export class InstructorHelper {
   }
 
   public static getPhone(instructor?: IInstructor) : string {
-    if(instructor == null || instructor.phone == null) return "Keine Angabe";
+    if(instructor == null || instructor.phone == null || instructor.phone.trim().length == 0) return "Keine Angabe";
     return instructor.phone;
   }
 

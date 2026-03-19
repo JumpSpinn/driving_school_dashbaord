@@ -7,7 +7,7 @@ export class StudentHelper {
   }
 
   public static getPhone(student?: IStudent) : string {
-    if(student == null || student.phone == null) return "Keine Angabe";
+    if(student == null || student.phone == null || student.phone.trim().length == 0) return "Keine Angabe";
     return student.phone;
   }
 
