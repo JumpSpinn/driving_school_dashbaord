@@ -15,6 +15,7 @@ declare module 'vue' {
     BaseInput: typeof import('./components/input/BaseInput.vue')['default']
     ButtonGroup: typeof import('./components/button/ButtonGroup.vue')['default']
     CustomButton: typeof import('./components/button/CustomButton.vue')['default']
+    CustomDatePicker: typeof import('./components/input/CustomDatePicker.vue')['default']
     CustomDropdown: typeof import('./components/input/CustomDropdown.vue')['default']
     CustomPaper: typeof import('./components/paper/CustomPaper.vue')['default']
     CustomTextInput: typeof import('./components/input/CustomTextInput.vue')['default']
