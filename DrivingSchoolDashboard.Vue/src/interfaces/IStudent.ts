@@ -12,6 +12,7 @@ export interface IStudentBase {
   enrollmentDate?: Date | string | null;
   examDate?: Date | string | null;
   hasPassed: boolean;
+  drivingSchoolId?: number;
 }
 
 export type IStudentUpdate = IStudentBase & { id: number };
@@ -21,7 +22,6 @@ export interface IStudent extends IStudentBase {
   isDeleted: boolean;
 
   // Navigation properties
-  drivingSchoolId?: number;
   drivingSchool?: IDrivingSchool;
   courseBookings?: ICourseBooking[];
 }
