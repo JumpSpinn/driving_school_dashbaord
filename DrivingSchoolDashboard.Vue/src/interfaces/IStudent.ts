@@ -9,7 +9,6 @@ export interface IStudentBase {
   phone?: string;
   birthday?: Date | string | null;
   license?: LicenseClass;
-  enrollmentDate?: Date | string | null;
   examDate?: Date | string | null;
   hasPassed: boolean;
   drivingSchoolId?: number;
@@ -19,6 +18,7 @@ export type IStudentUpdate = IStudentBase & { id: number };
 
 export interface IStudent extends IStudentBase {
   id: number;
+  enrollmentDate?: Date | string | null;
   isDeleted: boolean;
 
   // Navigation properties
