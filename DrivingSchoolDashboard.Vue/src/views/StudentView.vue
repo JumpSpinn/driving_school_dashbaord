@@ -142,9 +142,9 @@ const createData = async () => {
     lastName: lastName.value,
     mail: mail.value,
     phone: phone.value,
-    birthday: birthday.value,
+    birthday: (birthday.value as string)?.trim().length > 0 ? (birthday.value as string) : null,
     license: Number(license.value),
-    examDate: examDate.value,
+    examDate: (examDate.value as string)?.trim().length > 0 ? (examDate.value as string) : null,
     drivingSchoolId: drivingSchoolId.value,
     hasPassed: false // default false
   };
@@ -170,9 +170,9 @@ const updateData = async () => {
     lastName: lastName.value,
     mail: mail.value,
     phone: phone.value,
-    birthday: birthday.value,
+    birthday: (birthday.value as string)?.trim().length > 0 ? (birthday.value as string) : null,
     license: Number(license.value),
-    examDate: examDate.value,
+    examDate: (examDate.value as string)?.trim().length > 0 ? (examDate.value as string) : null,
     drivingSchoolId: drivingSchoolId.value,
     hasPassed: Boolean(hasPassed.value),
   };
