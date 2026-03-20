@@ -15,6 +15,9 @@ import {useField} from "@/composables/useField.ts";
 import {Rules} from "@/helpers/ValidationRules.ts";
 import {useInstructorStore} from "@/stores/instructorStore.ts";
 import {useForm} from "@/composables/useForm.ts";
+import ChipAvatar from "@/components/chip/ChipAvatar.vue";
+import {StudentHelper} from "@/helpers/StudentHelper.ts";
+import ChipWrapper from "@/components/chip/ChipWrapper.vue";
 
 const cols = ref([
   { field: "id", title: "ID", width: "90px", filter: false },
@@ -180,18 +183,22 @@ const updateData = async () => {
 
   <Modal :open="modalOpened === ModalType.INFO" @abort="resetModal" :options="ModalHelper.InfoOptions">
     <template #header>{{ modalData?.name }} | Information</template>
-    <template #content>
-
-      <h4>Besitzer:</h4>
+    <CustomPaper>
+      <span class="modal_info_highlight">Besitzer:</span>
       <p>{{ InstructorHelper.getFullName(modalData?.owner) }}</p>
-
-      <h4>Fahrschüler</h4>
-      <p v-if="modalData?.students.length" v-for="student in modalData?.students">
-        {{ student.firstName }} {{ student.lastName }}
-      </p>
-      <p v-else>Diese Fahrschule hat keine Fahrschüler zugewiesen.</p>
-
-    </template>
+    </CustomPaper>
+    <CustomPaper>
+      <ChipWrapper>
+        <ChipAvatar v-if="modalData?.students.length" v-for="student in modalData?.students">
+          <template #short>
+            {{ student.firstName[0] }}
+            {{ student.lastName[0] }}
+          </template>
+          <template #long>{{ StudentHelper.getFullName(student) }}</template>
+        </ChipAvatar>
+        <p v-else>Diese Fahrschule hat keine Fahrschüler zugewiesen.</p>
+      </ChipWrapper>
+    </CustomPaper>
     <template #actions>
       <CustomButton @click="resetModal" :outline="false" type="neutral">Schließen</CustomButton>
     </template>

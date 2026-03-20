@@ -256,7 +256,31 @@ const updateData = async () => {
 
   <Modal :open="modalOpened === ModalType.INFO" @abort="resetModal" :options="ModalHelper.InfoOptions">
     <template #header>Fahrschüler | Information</template>
-    <template #content>coming soon.. {{ modalData?.id }}</template>
+
+    <div class="grid">
+      <CustomPaper>
+        <p class="modal_info_highlight">Geburtstag:</p>
+        {{ TimeHelper.convert(modalData?.birthday, "date") }}
+      </CustomPaper>
+      <CustomPaper>
+        <p class="modal_info_highlight">Anmeldedatum:</p>
+        {{ TimeHelper.convert(modalData?.enrollmentDate, "date") }}
+      </CustomPaper>
+    </div>
+
+    <CustomPaper>
+      <p class="modal_info_highlight">Gebuchte Kurse:</p>
+      <ListWrapper v-if="modalData?.courseBookings">
+        <ListItem v-for="booking in modalData?.courseBookings">
+          {{ TimeHelper.convert(booking.bookingDate, "date") }}
+          <template #description>
+            {{ booking.theoryLesson?.name }} ({{ booking.theoryLesson?.topic }})
+          </template>
+        </ListItem>
+      </ListWrapper>
+      <p v-else>Keine Kurse gebucht.</p>
+    </CustomPaper>
+
     <template #actions>
       <CustomButton @click="resetModal" :outline="false" type="neutral">Schließen</CustomButton>
     </template>
@@ -316,5 +340,9 @@ const updateData = async () => {
 </template>
 
 <style scoped>
-
+.grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  margin-bottom: -16px;
+}
 </style>

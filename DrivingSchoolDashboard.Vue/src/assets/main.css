@@ -45,6 +45,11 @@ a {
   color: var(--primary-color);
 }
 
+.modal_info_highlight {
+  font-size: var(--fs-200);
+  color: var(--primary-color);
+}
+
 input{
   border: 1px solid var(--border);
   outline: none;

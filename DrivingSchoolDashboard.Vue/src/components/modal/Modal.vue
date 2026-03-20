@@ -21,6 +21,8 @@ const props = defineProps({
 
 const emit = defineEmits(['abort']);
 
+const slots = useSlots();
+
 const target = ref(null);
 
 onClickOutside(target, () => {
@@ -52,11 +54,14 @@ onMounted(() => {
           </div>
           <i class="pi pi-times" @click="emit('abort')" />
         </div>
-        <CustomPaper>
+        <CustomPaper v-if="slots.content">
           <slot name="content">
-            Modal Content
+            Modal Content Paper
           </slot>
         </CustomPaper>
+        <slot name="default" v-if="slots.default">
+          Modal Content without Paper
+        </slot>
         <TransitionGroup tag="div" name="fade">
           <div class="error" v-if="error">{{ error }}</div>
         </TransitionGroup>

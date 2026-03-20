@@ -258,8 +258,21 @@ const updateData = async () => {
   </Modal>
 
   <Modal :open="modalOpened === ModalType.INFO" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.InfoOptions">
-    <template #header>Kurs | Information</template>
-    <template #content>coming soon.. {{ modalData?.id }}</template>
+    <template #header>{{ modalData?.name }} | Information</template>
+    <div class="grid">
+      <CustomPaper>
+        <p class="modal_info_highlight">Dauer:</p>
+        {{ modalData?.durationMinutes }} Minuten
+      </CustomPaper>
+      <CustomPaper>
+        <p class="modal_info_highlight">Max. Teilnehmer:</p>
+        {{ modalData?.maxStudents }}
+      </CustomPaper>
+      <CustomPaper>
+        <p class="modal_info_highlight">Preis:</p>
+        {{ modalData?.price}}€
+      </CustomPaper>
+    </div>
     <template #actions>
       <CustomButton @click="modalOpened = ModalType.NONE" :outline="false" type="neutral">Schließen</CustomButton>
     </template>
@@ -316,5 +329,8 @@ const updateData = async () => {
 </template>
 
 <style scoped>
-
+.grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+}
 </style>

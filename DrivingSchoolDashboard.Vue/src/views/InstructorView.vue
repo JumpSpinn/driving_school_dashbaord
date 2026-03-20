@@ -10,6 +10,8 @@ import {useInstructorStore} from "@/stores/instructorStore.ts";
 import {useField} from "@/composables/useField.ts";
 import {Rules} from "@/helpers/ValidationRules.ts";
 import {useForm} from "@/composables/useForm.ts";
+import ListWrapper from "@/components/list/ListWrapper.vue";
+import ListItem from "@/components/list/ListItem.vue";
 
 const cols = ref([
   { field: "id", title: "ID", width: "90px", filter: false },
@@ -195,8 +197,19 @@ const updateData = async () => {
   </Modal>
 
   <Modal :open="modalOpened === ModalType.INFO" @abort="modalOpened = ModalType.NONE" :options="ModalHelper.InfoOptions">
-    <template #header>Fahrlehrer | Information</template>
-    <template #content>coming soon.. {{ modalData?.id }}</template>
+    <template #header>{{ modalData?.firstName }} {{ modalData?.lastName }} | Information</template>
+    <CustomPaper>
+      <p class="modal_info_highlight">Zugewiesene Kurse:</p>
+      <ListWrapper v-if="modalData?.theoryLessons">
+        <ListItem v-for="lesson in modalData?.theoryLessons">
+          {{ lesson.name }}
+          <template #description>
+            {{ lesson.topic }}
+          </template>
+        </ListItem>
+      </ListWrapper>
+      <p v-else>Keine Kurse zugewiesen.</p>
+    </CustomPaper>
     <template #actions>
       <CustomButton @click="modalOpened = ModalType.NONE" :outline="false" type="neutral">Schließen</CustomButton>
     </template>
